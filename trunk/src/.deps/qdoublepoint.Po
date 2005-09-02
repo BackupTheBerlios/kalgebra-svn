@@ -1,0 +1,3 @@
+qdoublepoint.o qdoublepoint.o: qdoublepoint.cpp qdoublepoint.h
+
+qdoublepoint.h:

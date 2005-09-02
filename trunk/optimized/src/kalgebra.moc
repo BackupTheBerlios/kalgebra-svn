@@ -1,0 +1,163 @@
+/****************************************************************************
+** KAlgebra meta object code from reading C++ file 'kalgebra.h'
+**
+** Created: Mon Aug 29 05:52:48 2005
+**      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.3   edited Aug 5 16:40 $)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#undef QT_NO_COMPAT
+#include "../../src/kalgebra.h"
+#include <qmetaobject.h>
+#include <qapplication.h>
+
+#include <private/qucomextra_p.h>
+#if !defined(Q_MOC_OUTPUT_REVISION) || (Q_MOC_OUTPUT_REVISION != 26)
+#error "This file was generated using the moc from 3.3.3. It"
+#error "cannot be used with the include files from this version of Qt."
+#error "(The moc has changed too much.)"
+#endif
+
+const char *KAlgebra::className() const
+{
+    return "KAlgebra";
+}
+
+QMetaObject *KAlgebra::metaObj = 0;
+static QMetaObjectCleanUp cleanUp_KAlgebra( "KAlgebra", &KAlgebra::staticMetaObject );
+
+#ifndef QT_NO_TRANSLATION
+QString KAlgebra::tr( const char *s, const char *c )
+{
+    if ( qApp )
+	return qApp->translate( "KAlgebra", s, c, QApplication::DefaultCodec );
+    else
+	return QString::fromLatin1( s );
+}
+#ifndef QT_NO_TRANSLATION_UTF8
+QString KAlgebra::trUtf8( const char *s, const char *c )
+{
+    if ( qApp )
+	return qApp->translate( "KAlgebra", s, c, QApplication::UnicodeUTF8 );
+    else
+	return QString::fromUtf8( s );
+}
+#endif // QT_NO_TRANSLATION_UTF8
+
+#endif // QT_NO_TRANSLATION
+
+QMetaObject* KAlgebra::staticMetaObject()
+{
+    if ( metaObj )
+	return metaObj;
+    QMetaObject* parentObject = KMainWindow::staticMetaObject();
+    static const QUMethod slot_0 = {"opera", 0, 0 };
+    static const QUMethod slot_1 = {"operaMML", 0, 0 };
+    static const QUMethod slot_2 = {"saveLog", 0, 0 };
+    static const QUMethod slot_3 = {"set_res_16", 0, 0 };
+    static const QUMethod slot_4 = {"set_res_32", 0, 0 };
+    static const QUMethod slot_5 = {"set_res_64", 0, 0 };
+    static const QUMethod slot_6 = {"set_res_128", 0, 0 };
+    static const QUParameter param_slot_7[] = {
+	{ 0, &static_QUType_ptr, "QListViewItem", QUParameter::In }
+    };
+    static const QUMethod slot_7 = {"slot_editat", 1, param_slot_7 };
+    static const QUMethod slot_8 = {"new_func", 0, 0 };
+    static const QUMethod slot_9 = {"imatge2d", 0, 0 };
+    static const QUMethod slot_10 = {"dibuixaMML", 0, 0 };
+    static const QUParameter param_slot_11[] = {
+	{ "item", &static_QUType_ptr, "QListViewItem", QUParameter::In },
+	{ "p", &static_QUType_varptr, "\x0e", QUParameter::In },
+	{ 0, &static_QUType_int, 0, QUParameter::In }
+    };
+    static const QUMethod slot_11 = {"edit_func", 3, param_slot_11 };
+    static const QUMethod slot_12 = {"slot_3dpoints", 0, 0 };
+    static const QUMethod slot_13 = {"slot_3dlines", 0, 0 };
+    static const QUMethod slot_14 = {"slot_3dsolid", 0, 0 };
+    static const QUMethod slot_15 = {"slot_transparencia", 0, 0 };
+    static const QUMethod slot_16 = {"slot_getpixmap", 0, 0 };
+    static const QUMethod slot_17 = {"dibuixa3d", 0, 0 };
+    static const QUMethod slot_18 = {"dibuixa3dMML", 0, 0 };
+    static const QMetaData slot_tbl[] = {
+	{ "opera()", &slot_0, QMetaData::Public },
+	{ "operaMML()", &slot_1, QMetaData::Public },
+	{ "saveLog()", &slot_2, QMetaData::Public },
+	{ "set_res_16()", &slot_3, QMetaData::Public },
+	{ "set_res_32()", &slot_4, QMetaData::Public },
+	{ "set_res_64()", &slot_5, QMetaData::Public },
+	{ "set_res_128()", &slot_6, QMetaData::Public },
+	{ "slot_editat(QListViewItem*)", &slot_7, QMetaData::Public },
+	{ "new_func()", &slot_8, QMetaData::Public },
+	{ "imatge2d()", &slot_9, QMetaData::Public },
+	{ "dibuixaMML()", &slot_10, QMetaData::Public },
+	{ "edit_func(QListViewItem*,const QPoint&,int)", &slot_11, QMetaData::Public },
+	{ "slot_3dpoints()", &slot_12, QMetaData::Public },
+	{ "slot_3dlines()", &slot_13, QMetaData::Public },
+	{ "slot_3dsolid()", &slot_14, QMetaData::Public },
+	{ "slot_transparencia()", &slot_15, QMetaData::Public },
+	{ "slot_getpixmap()", &slot_16, QMetaData::Public },
+	{ "dibuixa3d()", &slot_17, QMetaData::Public },
+	{ "dibuixa3dMML()", &slot_18, QMetaData::Public }
+    };
+    metaObj = QMetaObject::new_metaobject(
+	"KAlgebra", parentObject,
+	slot_tbl, 19,
+	0, 0,
+#ifndef QT_NO_PROPERTIES
+	0, 0,
+	0, 0,
+#endif // QT_NO_PROPERTIES
+	0, 0 );
+    cleanUp_KAlgebra.setMetaObject( metaObj );
+    return metaObj;
+}
+
+void* KAlgebra::qt_cast( const char* clname )
+{
+    if ( !qstrcmp( clname, "KAlgebra" ) )
+	return this;
+    return KMainWindow::qt_cast( clname );
+}
+
+bool KAlgebra::qt_invoke( int _id, QUObject* _o )
+{
+    switch ( _id - staticMetaObject()->slotOffset() ) {
+    case 0: opera(); break;
+    case 1: operaMML(); break;
+    case 2: saveLog(); break;
+    case 3: set_res_16(); break;
+    case 4: set_res_32(); break;
+    case 5: set_res_64(); break;
+    case 6: set_res_128(); break;
+    case 7: slot_editat((QListViewItem*)static_QUType_ptr.get(_o+1)); break;
+    case 8: new_func(); break;
+    case 9: imatge2d(); break;
+    case 10: dibuixaMML(); break;
+    case 11: edit_func((QListViewItem*)static_QUType_ptr.get(_o+1),(const QPoint&)*((const QPoint*)static_QUType_ptr.get(_o+2)),(int)static_QUType_int.get(_o+3)); break;
+    case 12: slot_3dpoints(); break;
+    case 13: slot_3dlines(); break;
+    case 14: slot_3dsolid(); break;
+    case 15: slot_transparencia(); break;
+    case 16: slot_getpixmap(); break;
+    case 17: dibuixa3d(); break;
+    case 18: dibuixa3dMML(); break;
+    default:
+	return KMainWindow::qt_invoke( _id, _o );
+    }
+    return TRUE;
+}
+
+bool KAlgebra::qt_emit( int _id, QUObject* _o )
+{
+    return KMainWindow::qt_emit(_id,_o);
+}
+#ifndef QT_NO_PROPERTIES
+
+bool KAlgebra::qt_property( int id, int f, QVariant* v)
+{
+    return KMainWindow::qt_property( id, f, v);
+}
+
+bool KAlgebra::qt_static_property( QObject* , int , int , QVariant* ){ return FALSE; }
+#endif // QT_NO_PROPERTIES
