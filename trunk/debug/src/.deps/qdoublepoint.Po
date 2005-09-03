@@ -1,4 +1,0 @@
-qdoublepoint.o qdoublepoint.o: /home/aleix/kalgebra/src/qdoublepoint.cpp \
-  /home/aleix/kalgebra/src/qdoublepoint.h
-
-/home/aleix/kalgebra/src/qdoublepoint.h:
