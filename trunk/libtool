@@ -44,7 +44,7 @@ available_tags=" CXX"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host portatil:
+# Libtool was configured on host localhost:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -6766,7 +6766,7 @@ build_old_libs=`case $build_libtool_libs in yes) $echo no;; *) $echo yes;; esac`
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host portatil:
+# Libtool was configured on host localhost:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -6939,11 +6939,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc-lib/i486-linux/3.3.5/../../../crti.o /usr/lib/gcc-lib/i486-linux/3.3.5/crtbeginS.o"
+predep_objects="/usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3/../../../crti.o /usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc-lib/i486-linux/3.3.5/crtendS.o /usr/lib/gcc-lib/i486-linux/3.3.5/../../../crtn.o"
+postdep_objects="/usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3/crtendS.o /usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3/../../../crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -6955,7 +6955,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc-lib/i486-linux/3.3.5 -L/usr/lib/gcc-lib/i486-linux/3.3.5/../../.."
+compiler_lib_search_path="-L/usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3 -L/usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3 -L/usr/lib/gcc/i586-mandrake-linux-gnu/3.4.3/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
