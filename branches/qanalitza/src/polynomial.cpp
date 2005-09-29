@@ -180,7 +180,7 @@ Polynomial Polynomial::operator*=(Polynomial &a){
 		p+= *this*m;
 		(*it).print("It's meeeeee");
 	}
-	*this=*p;
+	*this = p;
 	return *this;
 }
 

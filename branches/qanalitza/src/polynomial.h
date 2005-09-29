@@ -122,7 +122,7 @@ public:
 	Polynomial root(double exp){ m_err=true; return *this; } //not implemented
 	Polynomial root(Polynomial exp){ m_err=true; return *this; } //not implemented
 	Polynomial pow(double exp){ m_err=true; return *this; } //not implemented
-	Polynomial pow(Polynomial exp){ m_err=true; return *this; } //not implemented
+	Polynomial pow(Polynomial exp);
 	Polynomial factorial(){ m_err=true; return *this; }  //not implemented
 	Polynomial abs(){ m_err=true; return *this; } //not implemented
 	Polynomial derive();
