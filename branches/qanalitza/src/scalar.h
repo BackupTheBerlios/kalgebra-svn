@@ -17,6 +17,10 @@ public:
 	void setValue(const QDomElement& theValue);
 	double value() const { return m_value; }
 	QDomElement value(QDomDocument d);
+	void print(QString append="") const { qDebug("%s%f", append.ascii(), m_value); } //debug
+	QString str() const { return m_boolean ? 
+					m_value == 0.? QString("false") : QString("true")
+					: QString("%1").arg(m_value);}
 	
 	//ops
 	Scalar operator+(const Scalar &a) const {return Scalar(m_value + a.m_value);}
@@ -112,7 +116,7 @@ public:
 		}
 		qDebug("aaaaaaa");
 		return a;*/
-		return Scalar(1.0);
+		return Scalar(a);
 	}
 	Scalar lcm(const Scalar &a){ //code by miquel canes :)
 		/*long residu; long ia = (long) m_value, ib=(long)a.m_value; En quarentena
@@ -124,6 +128,9 @@ public:
 		}
 		return Scalar(ic/ia);*/
 		return Scalar(a);
+	}
+	bool isInteger() const {
+		return std::floor(m_value)==m_value;
 	}
 };
 

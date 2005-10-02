@@ -1,7 +1,6 @@
 #include "polynomial.h"
 
 Polynomial::Polynomial() : m_err(false){}
-
 Polynomial::~Polynomial(){}
 
 
@@ -11,7 +10,7 @@ bool Polynomial::isPoly(const QDomElement& s){
 	if(s.tagName()=="apply" && s.childNodes().item(0).toElement().tagName()=="plus"){
 		ispoly=true;
 		for(unsigned int i=1;i<s.childNodes().length() && ispoly ; i++){
-			ispoly=Monomial::isMono(s.childNodes().item(i).toElement());
+			ispoly=Monomial::isMono(s.childNodes().item(i).toElement()) || Scalar::isScalar(s.childNodes().item(i).toElement());
 		}
 	} else if(Monomial::isMono(s)) ispoly=true;
 	return ispoly;
@@ -21,17 +20,22 @@ bool Polynomial::isPoly(const QDomElement& s){
 
 bool Polynomial::setValue(const QDomElement& s){
 	bool ispoly=false;
+	m_var="";
 	poly.clear();
-	Monomial m = Monomial();
+	Monomial m = Monomial(0., 0., "");
 	if(s.tagName()=="apply" && s.childNodes().item(0).toElement().tagName()=="plus"){
 		ispoly=true;
 		for(unsigned int i=1;i<s.childNodes().length() && ispoly; i++){
 			if(Monomial::isMono(s.childNodes().item(i).toElement())){
 				m.setValue(s.childNodes().item(i).toElement());
 				*this += m;
+			} else if(Scalar::isScalar(s.childNodes().item(i).toElement())){
+				m.setValue(s.childNodes().item(i).toElement());
+				*this += m;
 			} else {
 				ispoly=false;
 			}
+			m_var=m.var;
 		}
 	} else if(Monomial::isMono(s)) {
 		m.setValue(s);
@@ -178,7 +182,6 @@ Polynomial Polynomial::operator*=(Polynomial &a){
 	for(QValueList<Monomial>::iterator it = a.poly.begin(); it != a.poly.end(); ++it) {
 		Monomial m=(*it);
 		p+= *this*m;
-		(*it).print("It's meeeeee");
 	}
 	*this = p;
 	return *this;
@@ -222,16 +225,20 @@ Polynomial Polynomial::operator/=( Polynomial &a){
 	return *this;
 }
 
-Polynomial Polynomial::pow(Polynomial exp){
-
+Polynomial Polynomial::pow(const Scalar &exp){
+	Polynomial p = *this;
+	for(int i=exp.value(); i>0; i--){
+		*this *= p;
+	}
+	return *this;
 }
 
-Polynomial Polynomial::operator++(){return *this+=Monomial(1.,0.);}
+Polynomial Polynomial::operator++(){return *this+=Monomial(1.,0., m_var);}
 // Polynomial Polynomial::operator--(){return *this-=Monomial(1.,0.);}
-Polynomial Polynomial::operator++(int){return *this+=Monomial(1.,0.);}
+Polynomial Polynomial::operator++(int){return *this+=Monomial(1.,0., m_var);}
 // Polynomial Polynomial::operator--(int){return *this-=Monomial(1.,0.);}
 
-Scalar Polynomial::degree(){
+Scalar Polynomial::degree() {
 	Scalar max=0.0;
 	for(QValueList<Monomial>::iterator it = poly.begin(); it != poly.end(); ++it) {
 		if((*it).exp>max)
@@ -239,6 +246,17 @@ Scalar Polynomial::degree(){
 	}
 	return max;
 }
+
+Scalar Polynomial::member(const Scalar &exp) {
+		for(QValueList<Monomial>::iterator it = poly.begin(); it != poly.end(); ++it) {
+		if((*it).exp==exp)
+			return (*it).m;
+	}
+	return Scalar(0.);
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -294,7 +312,10 @@ bool Monomial::setValue(const QDomElement& s){ //We don't allow x^(1/2) as a mon
 QDomElement Monomial::value(QDomDocument d){
 	QDomElement e;
 	
-	if(m.value()==1. && exp.value()==1.0){
+	if(exp.value()==0.0){
+		e.appendChild(exp.value(d));
+		qDebug("bonks");
+	} else if(m.value()==1. && exp.value()==1.0){
 		e=d.createElement("ci");
 		e.appendChild(d.createTextNode(var));
 	} else if(m.value()!=1. && exp.value() == 1.0){
@@ -333,6 +354,22 @@ QDomElement Monomial::value(QDomDocument d){
 		e.appendChild(k);
 	}
 	return e;
-	
-	
 }
+
+
+void Polynomial::print(QString append="") {
+	qDebug("%s%s", append.ascii(), str().ascii());
+}
+
+QString Polynomial::str() {
+	QString res=QString("");
+	QValueList<Monomial>::iterator it = poly.begin();
+	res += (*it).str();
+	++it;
+	
+	for(; it != poly.end(); ++it) {
+		res += "+"+(*it).str();
+	}
+	return res;
+}
+

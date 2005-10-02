@@ -95,7 +95,7 @@ QDomElement Analitza::evalua(QDomNode n){
 		e = n.toElement();
 		if(vars.isvar(e))
 			nombres.append(vars.value(e.text()));
-		else if (Scalar::isScalar(e) || Polynomial::isPoly(e) || isNum(e.tagName()))
+		else if (Polynomial::isPoly(e) || Scalar::isScalar(e) || isNum(e.tagName()))
 			nombres.append(e);
 		else if (e.tagName() == "declare"){
 			j = e.firstChild(); //Segons l'estandar, es <ci>
@@ -151,14 +151,27 @@ QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int m
 		a.setValue(res);
 		b.setValue(oper);
 		e= calc(op, a,b,a, minus);
+		a.print("Resultat: ");
 	} else if(Polynomial::isPoly(res) && Polynomial::isPoly(oper)){
 		Polynomial a=Polynomial(), b=Polynomial();
 		a.setValue(res);
 		b.setValue(oper);
 		e= calc(op, a,b,a, minus);
-// 		qDebug("Polyssss op:%s res:%s", op.ascii(), e.text().ascii());
+		qDebug("Polyssss op:%s res:%s", op.ascii(), e.text().ascii());
+		a.print("Resultat: ");
 // 		qDebug("*******************");
-// 		treubug::print_dom(e);
+// 		treubug::print_dom(a.value(doc));
+// 		qDebug("*******************");
+	} else if(Polynomial::isPoly(res) && Scalar::isScalar(oper)){
+		Polynomial a=Polynomial();
+		Scalar b=Scalar();
+		a.setValue(res);
+		b.setValue(oper);
+		e= calc(op, a,b,a, minus);
+		qDebug("Polyssss<op>Scalar op:%s res:%s", op.ascii(), e.text().ascii());
+		a.print("Resultat: ");
+// 		qDebug("*******************");
+// 		treubug::print_dom(a.value(doc));
 // 		qDebug("*******************");
 	}
 	
@@ -240,14 +253,14 @@ template <class T, class V, class W> QDomElement Analitza::calc(QString op, T a,
 		c=a.floor();
 	} else if(op=="ceiling" ){
 		c=a.ceil();
-	} else if(op=="min" ){
-		c= a < b? a : b;
+	} /*else if(op=="min" ){
+		c= (a < b)? a : b;
 	} else if(op=="max" ){
-		c= a > b? a : b;
-	} else if(op=="gt" ){
-		c= a > b;
+		c= (a > b)? a : b;
+	}*/ else if(op=="gt" ){
+		c= (a > b);
 	} else if(op=="lt" ){
-		c= a < b;
+		c= (a < b);
 	} else if(op=="geq" ){
 		c= a>= b;
 	} else if(op=="leq" ){
@@ -271,7 +284,6 @@ template <class T, class V, class W> QDomElement Analitza::calc(QString op, T a,
 	} else {
 		if(op!="") err += i18n("The operator %1 hasn't been implemented").arg(op);
 	}
-	
 	return c.value(doc);
 }
 
