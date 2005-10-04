@@ -145,6 +145,14 @@ bool Analitza::isNum(QString s){
 
 QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int minus=0){
 	QDomElement e;
+	
+	//////////////////////
+	/*qDebug("----operant----%s", op.ascii());
+	treubug::print_dom(res);
+	treubug::print_dom(oper);
+	qDebug("++++operant++++%s", op.ascii());*/
+	/////////////////////
+	
 	if(Scalar::isScalar(res) && Scalar::isScalar(oper)) {
 		Scalar a=Scalar(), b=Scalar();
 // 		qDebug("Scalarssss");

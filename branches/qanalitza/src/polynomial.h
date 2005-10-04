@@ -18,11 +18,11 @@ public:
 	Monomial(Scalar val=Scalar(1.0), Scalar exp=Scalar(1.0), QString v="") : m(val), exp(exp), var(v)  {}
 	bool setValue(const QDomElement &);
 	static bool isMono(const QDomElement& theValue);
-	Monomial operator+ (const Monomial &a) const { return Monomial(m+a.m, exp, var); } //both exp must be equal 
-	Monomial operator+=(const Monomial &a) { m+=a.m; return *this; }
+	Monomial operator+ (const Monomial &a) const { return Monomial(m+a.m, exp, var); } //both exp must be equal
+	Monomial operator+=(const Monomial &a){ m+=a.m; return *this; }
 	Monomial operator* (const Monomial &a) const { return Monomial(m*a.m, exp+a.exp, var); }
 	Monomial operator*=(const Monomial &a) { m*=a.m; exp+=a.exp; return *this; };
-	Monomial operator- (const Monomial &a) const { return Monomial(m-a.m, exp, var); } //both exp must be equal 
+	Monomial operator- (const Monomial &a) const { return Monomial(m-a.m, exp, var); } //both exp must be equal
 	Monomial operator- () const { return Monomial(-m, exp, var); }
 	Monomial operator-=(const Monomial &a) { m-=a.m; return *this; };
 	Monomial operator/ (const Monomial &a) const { return Monomial(m/a.m, exp-a.exp, var); }
@@ -129,7 +129,7 @@ public:
 	Polynomial root(Polynomial &exp){ m_err=i18n("Can't calculate Polynomial's %1 root %2").arg((*this).str()).arg(exp.str()); return *this; } //not implemented
 	Polynomial root(Scalar &exp) { m_err=i18n("Can't calculate Polynomial's %1 root %2").arg((*this).str()).arg(exp.str()); return *this; } //not implemented
 // 	Polynomial pow(double exp){ m_err=i18n("Can't calculate Polynomial's %1 power").arg(a.str()); return *this; } //not implemented
-	Polynomial pow(const Polynomial &exp){ m_err=i18n("Can't calculate Polynomial's %1 power").arg((*this).str()); return *this; } //not implemented
+	Polynomial pow( Polynomial &exp){ m_err=i18n("Can't calculate Polynomial's %1 power %2").arg((*this).str().arg(exp.str())); return *this; } //not implemented
 	Polynomial pow(const Scalar &exp);
 	
 	Polynomial factorial(){ m_err=i18n("Can't calculate Polynomial's %1 %s").arg((*this).str()); return *this; }  //not implemented
