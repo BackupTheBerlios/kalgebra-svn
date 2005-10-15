@@ -59,16 +59,6 @@ typedef enum {
 	tVal
 } tokEnum;
 
-// tokEnum tok;
-// QString tokval;
-// 
-// QValueStack<char> opr;
-// QValueStack<QString> val;
-// QValueStack<QString> func;
-// 
-// int valTop, oprTop;
-// bool firsttok;
-
 struct TOKEN {
 	QString val;
 	tokEnum tipus;
@@ -94,7 +84,7 @@ private:
 	int valTop, oprTop;
 	bool firsttok;
 	tokEnum prevtok;
-	bool antnum;
+	tokEnum antnum;
 
 // 	actEnum parseTbl[tMaxOp][tMaxOp];
 	

@@ -70,7 +70,6 @@ TOKEN QExp::pillatoken(QString &a){
 			ret.val += a[i]; a[i]=' ';
 		}
 		if(a[i]=='('){
-// 			a[i]=' ';
 			ret.tipus=tFunc;
 		} else {
 			ret.val = QString::QString("<ci>%1</ci>").arg(ret.val);
@@ -82,13 +81,16 @@ TOKEN QExp::pillatoken(QString &a){
 	} else if(a[0]=='+')
 		ret.tipus = tAdd;
 	else if(a[0]=='-')
-		ret.tipus = antnum ? tSub : tUmi;
-	else if(a[0]=='*')
-		ret.tipus = tMul;
+		ret.tipus = (antnum == tVal || antnum==tRpr) ? tSub : tUmi;
 	else if(a[0]=='/')
 		ret.tipus = tDiv;
 	else if(a[0]=='^')
 		ret.tipus = tPow;
+	else if(a[0]=='*' && a[1] == '*') {
+		ret.tipus = tPow;
+		a[1] =' ';
+	} else if(a[0]=='*')
+		ret.tipus = tMul;
 	else if(a[0]=='(')
 		ret.tipus = tLpr;
 	else if(a[0]==')')
@@ -97,13 +99,9 @@ TOKEN QExp::pillatoken(QString &a){
 		ret.tipus = tComa;
 	else
 		err += i18n(QString::QString("Unknown token %1\n").arg(a[0]));
-	//
-	//	ret.tipus = tFunc;
-// 	if(ret.tipus==tMaxOp){
-//		err += i18n("Unknown token: '%1'\n").args(a[i]);
-// 	}
+	
 	a[0]=' ';
-	antnum = ret.tipus==tVal? true:false;
+	antnum = ret.tipus;
 	return ret;
 }
 
@@ -200,7 +198,7 @@ int QExp::parse(){
 	oprTop=0; valTop=-1;
 	opr.push(tEof);
 	firsttok = true;
-	antnum =false;
+	antnum= tEof;
 	
 	if(getTok()) return 1;
 	while(err==""){
