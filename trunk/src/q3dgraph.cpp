@@ -1,11 +1,7 @@
 #include "q3dgraph.h"
-#define G_POINTS 0
-#define G_LINES 1
-#define G_SOLID 2
 
 Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name){
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
-// 	func3d.setTextMML("<math><apply><plus /><apply><sin /><ci>x</ci></apply><apply><sin /><ci>y</ci></apply></apply></math>"); tefunc=true;
 	tefunc=false;
 	trans=false;
 	graus[0] = 90.0;
@@ -15,17 +11,16 @@ Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name){
 	default_step = 0.2f;
 	default_size = 8.0f;
 	zoom = 1.0f;
-// 	step = 0.2f;
-// 	mida = 8.0f;
-	punts=0; //If I don't put this, the soft crashes, and I don't want this
-	
+	punts=0; //If I don't put this, the program crashes
+	keyspressed=0;
 	method = G_SOLID;
 	this->setFocusPolicy(QWidget::WheelFocus);
+// 	setMouseTracking(true);
 }
 
 
 Q3DGraph::~Q3DGraph(){
-	if(punts==NULL)
+	if(punts!=NULL)
 		delete [] punts;
 }
 
@@ -64,45 +59,52 @@ void Q3DGraph::resizeGL( int width, int height ) {
 	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,1000.0f);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
 
 void Q3DGraph::mousePressEvent(QMouseEvent *e){
-	if(e->button() == Qt::MidButton)
-		press = e->pos();
+	if(e->button() == Qt::LeftButton){
+		press = e->pos(); keyspressed |= LCLICK;
+	}
 }
 
 void Q3DGraph::mouseReleaseEvent(QMouseEvent *e){
-	if(e->button() == Qt::MidButton){
+	if(e->button() == Qt::LeftButton)
+		keyspressed &= ~LCLICK;
+}
+
+void Q3DGraph::mouseMoveEvent(QMouseEvent *e){
+	if(keyspressed & LCLICK){
 		QPoint rel = e->pos() - press;
 		graus[0] += rel.y();
 		graus[2] += -rel.x();
 		graus[1] += 0.0;
 		glRotatef(100.0f, graus[0], graus[1], graus[2]);
 		this->repaint();
+		
+		press = e->pos();
 	}
 }
 
 void Q3DGraph::dibuixa_eixos(){
-	glColor3f(0.7, 0.7, 0.7);
-	this->renderText(0.0, 0.0, 0.0, i18n("center"));
-	this->renderText(10.0, 0.0, 0.0, "X");
-	this->renderText(0.0, 0.0,-10.0, "Y");
-	this->renderText(0.0, 10.0, 0.0, "Z");
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3f(0.8, 0.8, 0.4);
+	this->renderText(11.0, 0.0, 0.0, "X");
+	this->renderText(0.0, 0.0,-11.0, "Y");
+	this->renderText(0.0, 11.0, 0.0, "Z");
+	
 	glBegin(GL_LINES);
-		glColor3f(1.0, 0.0, 0.0);
-			glVertex3d(-10.0, 0.0, 0.0);
-			glVertex3d( 10.0, 0.0, 0.0);
-		glColor3f(0.0, 1.0, 0.0);
-			glVertex3d( 0.0, 10.0, 0.0);
-			glVertex3d( 0.0,-10.0, 0.0);
-		glColor3f(0.0, 0.0, 1.0);
-			glVertex3d( 0.0, 0.0, 10.0);
-			glVertex3d( 0.0, 0.0,-10.0);
+		glColor3f(1.0f, 0.0f, 0.0f);
+			glVertex3f(-10.0f, 0.0f, 0.0f);
+			glVertex3f( 10.0f, 0.0f, 0.0f);
+		glColor3f(0.0f, 1.0f, 0.0f);
+			glVertex3f( 0.0f, 10.0f, 0.0f);
+			glVertex3f( 0.0f,-10.0f, 0.0f);
+		glColor3f(0.0f, 0.0f, 1.0f);
+			glVertex3f( 0.0f, 0.0f, 10.0f);
+			glVertex3f( 0.0f, 0.0f,-10.0f);
 	glEnd();
 }
 
@@ -110,12 +112,27 @@ void Q3DGraph::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	
+	if(keyspressed & KEYUP)		graus[0]-=3.f;
+	if(keyspressed & KEYDOWN)	graus[0]+=3.f;
+	if(keyspressed & KEYAVPAG)	graus[1]+=3.f;
+	if(keyspressed & KEYREPAG)	graus[1]-=3.f;
+	if(keyspressed & KEYLEFT)	graus[2]+=3.f;
+	if(keyspressed & KEYRIGHT)	graus[2]-=3.f;
+	if(keyspressed & KEYW)		z/=1.1f;
+	if(keyspressed & KEYS)		z= z!=0. ? z*1.1f : .1f;
+	if(keyspressed & KEYQ)		{ zoom/=2.0f; crea(); }
+	if(keyspressed & KEYE)		{ zoom*=2.0f; crea(); }
+	
+	graus[0] = graus[0]>=360.f ? graus[0]-360.f : graus[0];
+	graus[1] = graus[1]>=360.f ? graus[1]-360.f : graus[1];
+	graus[2] = graus[2]>=360.f ? graus[2]-360.f : graus[2];
+	
+	
 	glTranslatef(0.0f, 0.0f, z);
 	glRotatef(graus[0], 1.0, 0.0, 0.0);
 	glRotatef(graus[1], 0.0, 1.0, 0.0);
 	glRotatef(graus[2], 0.0, 0.0, 2.0);
 	double mida=default_size*zoom, step=default_step*zoom;
-// 	glLineWidth(1.0);
 	dibuixa_eixos();
 	int i,j;
 	
@@ -124,7 +141,7 @@ void Q3DGraph::paintGL() {
 			glBegin(GL_POINTS);
 		} else if(method == G_LINES){
 			glBegin(GL_LINES);
-		} 
+		}
 		for(i=0; tefunc && i<(2*mida/step)-1; i++) {
 			for(j=0; tefunc && j<2*mida/step-1; j++) {
 				if(method == G_POINTS){
@@ -160,15 +177,29 @@ void Q3DGraph::paintGL() {
 		glBegin(GL_QUADS);
 		for(i=0; tefunc && i<(2*mida/step)-2; i++) {
 			for(j=0; tefunc && j<2*mida/step-2; j++) {
-				glTexCoord2f(0.0f, 1.0f); 
-				glColor4d(    i*step/mida/2,     j*step/mida/2, punts[i]  [j+1]/5, trans); glVertex3d(    i*step-mida, (j+1)*step - mida, punts[i][j+1]);
-				glTexCoord2f(0.0f, 0.0f); 
-				glColor4d(    i*step/mida/2,     j*step/mida/2, punts[i]  [j]/5,   trans); glVertex3d(    i*step-mida,     j*step - mida, punts[i][j]);
-				glTexCoord2f(1.0f, 0.0f);
-				glColor4d((i+1)*step/mida/2,     j*step/mida/2, punts[i+1][j]/5,   trans); glVertex3d((i+1)*step-mida,     j*step - mida, punts[i+1][j]);
-				glTexCoord2f(1.0f, 1.0f);
-				glColor4d((i+1)*step/mida/2, (j+1)*step/mida/2, punts[i+1][j+1]/5, trans); glVertex3d((i+1)*step-mida, (j+1)*step - mida, punts[i+1][j+1]);
+				if(abs(punts[i][j]-punts[i][j+1])>700000. || abs(punts[i][j]-punts[i+1][j])>700000.){
+// 					qDebug("assimptota %f %f", punts[i][j], punts[i][j+1]);
+				} else {
+				if(punts[i][j]>300.)
+					qDebug("%f %f %f %f", punts[i][j], punts[i+1][j], punts[i][j+1], punts[i+1][j+1]);
 				
+				glTexCoord2f(0.0f, 1.0f);
+				glColor4d(   i*step/mida/2, (j+1)*step/mida/2, punts[i][j+1]/5,  trans);
+				glVertex3d(    i*step-mida, (j+1)*step - mida, punts[i][j+1]);
+				
+				
+				glTexCoord2f(0.0f, 0.0f);
+				glColor4d(   i*step/mida/2,     j*step/mida/2, punts[i][j]/5,    trans);
+				glVertex3d(    i*step-mida,     j*step - mida, punts[i][j]);
+				
+				glTexCoord2f(1.0f, 0.0f);
+				glColor4d((i+1)*step/mida/2,    j*step/mida/2, punts[i+1][j]/5,  trans);
+				glVertex3d( (i+1)*step-mida,    j*step - mida, punts[i+1][j]);
+				
+				glTexCoord2f(1.0f, 1.0f);
+				glColor4d((i+1)*step/mida/2, (j+1)*step/mida/2, punts[i+1][j+1]/5,trans);
+				glVertex3d( (i+1)*step-mida, (j+1)*step - mida, punts[i+1][j+1]);
+				}
 			}
 		}
 		glEnd();
@@ -178,54 +209,91 @@ void Q3DGraph::paintGL() {
 }
 
 void Q3DGraph::crea() {
-// 	double act[3], ultim[3]={0.0, 0.0, 0.0};
-// 	int i, j;
 	double mida=default_size*zoom, step=default_step*zoom;
-	int i, j= (int) 2*mida/step;
+	int i, j;
+	const int k=(int) 2*mida/step;
 	
-	for(i=0; tefunc && i<(2*mida/step-1); i++) {
+	QTime t;
+	t.restart();
+	
+	for(i=0; tefunc && i<k; i++) {
 		func3d.vars.modifica("x", i*step-mida);
-		for(j=0; tefunc && j<2*mida/step-1 ; j++) {
+		for(j=0; tefunc && j<k; j++) {
 			func3d.vars.modifica("y", j*step-mida);
-			punts[i][j] = -1*func3d.Calcula().text().toDouble();
+			punts[i][j] = -1.*func3d.Calcula();
 		}
 	}
+	qDebug(".                                     Lasts: %d ms", t.elapsed() );
 }
 
 
 void Q3DGraph::keyPressEvent( QKeyEvent *e ) {
 	switch(e->key()) {
 		case Qt::Key_Up:
-			graus[0] -=10.0;
+			keyspressed |= KEYUP;
 			break;
 		case Qt::Key_Down:
-			graus[0] +=10.0;
+			keyspressed |= KEYDOWN;
 			break;
 		case Qt::Key_Left:
-			graus[2] +=10.0;
+			keyspressed |= KEYLEFT;
 			break;
 		case Qt::Key_Right:
-			graus[2] -=10.0;
+			keyspressed |= KEYRIGHT;
 			break;
 		case Qt::Key_Prior:
-			graus[1] -=10.0;
+			keyspressed |= KEYREPAG;
 			break;
 		case Qt::Key_Next:
-			graus[1] +=10.0;
+			keyspressed |= KEYAVPAG;
 			break;
 		case Qt::Key_W:
-			z+=1.0f;
+			keyspressed |= KEYW;
 			break;
 		case Qt::Key_S:
-			z-=1.0f;
+			keyspressed |= KEYS;
 			break;
 		case Qt::Key_Q: //Be careful
-			zoom/=2.0f;
-			crea();
+			keyspressed |= KEYQ;
 			break;
 		case Qt::Key_E: //Be careful
-			zoom*=2.0f;
-			crea();
+			keyspressed |= KEYE;
+			break;
+	}
+	this->repaint();
+}
+
+void Q3DGraph::keyReleaseEvent( QKeyEvent *e ){
+	switch(e->key()) {
+		case Qt::Key_Up:
+			keyspressed &= ~KEYUP;
+			break;
+		case Qt::Key_Down:
+			keyspressed &= ~KEYDOWN;
+			break;
+		case Qt::Key_Left:
+			keyspressed &= ~KEYLEFT;
+			break;
+		case Qt::Key_Right:
+			keyspressed &= ~KEYRIGHT;
+			break;
+		case Qt::Key_Prior:
+			keyspressed &= ~KEYREPAG;
+			break;
+		case Qt::Key_Next:
+			keyspressed &= ~KEYAVPAG;
+			break;
+		case Qt::Key_W:
+			keyspressed &= ~KEYW;
+			break;
+		case Qt::Key_S:
+			keyspressed &= ~KEYS;
+			break;
+		case Qt::Key_Q: //Be careful
+			keyspressed &= ~KEYQ;
+			break;
+		case Qt::Key_E: //Be careful
+			keyspressed &= ~KEYE;
 			break;
 		
 	}
@@ -257,11 +325,11 @@ int Q3DGraph::setFunc(QString Text){
 void Q3DGraph::mem(){
 	if(punts!=NULL)
 		return;
-	int i, j= (int) 2*default_size/default_step;
-	punts = new double* [j+1];
-	for(i=0; i< j; i++){
+	int j= (int) 2*default_size/default_step;
+	punts = new double* [j];
+	for(int i=0; i<j; i++)
 		punts[i] = new double[j];
-	}
+	
 }
 
 int Q3DGraph::setFuncMML(QString TextMML){

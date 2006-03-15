@@ -5,7 +5,7 @@
 #include <klocale.h>
 
 static const char description[] = I18N_NOOP("KAlgebra");
-static const char version[] = "0.3.0";
+static const char version[] = "0.4.1";
 
 static KCmdLineOptions options[] =
 {
@@ -15,7 +15,7 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char **argv)
 {
-	KAboutData about("kalgebra", I18N_NOOP("KAlgebra"), version, description, KAboutData::License_GPL_V2, "(C) 2005 Aleix Pol i Gonzalez", "http://kalgebra.sourceforge.net", 0, "aleixpol@gmail.com");
+	KAboutData about("kalgebra", I18N_NOOP("KAlgebra"), version, description, KAboutData::License_GPL_V2, "(C) 2005 - 2006 Aleix Pol i Gonzalez", "http://kalgebra.berlios.de", 0, "aleixpol@gmail.com");
 	about.addAuthor( "Aleix Pol i Gonzalez", 0, "aleixpol@gmail.com" );
 	about.setHomepage("http://kalgebra.sourceforge.net");
 	KCmdLineArgs::init(argc, argv, &about);

@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
 #include "analitza.h"
 
 Analitza::Analitza(QString path){
@@ -33,12 +34,12 @@ int Analitza::setPath(QString ar){
 	QDomElement docElem;
 	QFile file(ar);
 	if ( !file.open( IO_ReadOnly ) ){
-		err += i18n("Error while parsing: %1").arg(ar);
+		err += i18n("Error while parsing: %1<br />\n").arg(ar);
 		return -1;
 	}
 	if ( !doc.setContent( &file ) ) {
 		file.close();
-		err += i18n("Error while parsing: %1").arg(ar);
+		err += i18n("Error while parsing: %1<br/>").arg(ar);
 		return -2;
 	}
 	file.close();
@@ -50,16 +51,12 @@ int Analitza::setPath(QString ar){
 
 int Analitza::setTextMML(QString str){
 	QDomDocument doc;
-	QDomElement docElem;
 	
 	if ( !doc.setContent(str) ) {
-		err += i18n("Error while parsing: %1").arg(str);
+		err += i18n("Error while parsing: %1<br />\n").arg(str);
 		return -1;
 	}
-		
-	docElem = doc.documentElement();
-	
-	elem = docElem.firstChild();
+	elem = doc.documentElement();
 	return 0;
 }
 
@@ -67,12 +64,14 @@ int Analitza::setText(QString op){
 	QExp a(op);
 	a.parse();
 	err="";
+	
 	if(a.error() != ""){
 		err = a.error();
-		return -1;
+		return -1;	
 	}
 	mmlexp=a.mathML();
-	return setTextMML(a.mathML());
+	
+	return setTextMML(mmlexp);
 }
 
 QString Analitza::textMML(){
@@ -84,90 +83,89 @@ QString Analitza::textMML(){
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
-bool Analitza::isNum(QString s){
-// 	cout << s.as	cii() << endl;
-	if(s=="true")
-		return true;
-	else if(s=="false")
-		return true;
-	else if(s=="pi")
-		return true;
-	else if(s=="exponentiale")
-		return true;
-	else if(s=="eulergamma")
-		return true;
-	return false;
+double Analitza::Calcula(){
+// 	QDomNodeList elems = elem.toElement().elementsByTagName(QString("apply"));
+// 	return evalua(elems.item(0));
+	err="";
+	return evalua(elem.firstChild());
 }
 
-double Analitza::toNum(QDomElement val){
-	double ret=0.0;
-	bool err;
-// 	cout << "<" << val.tagName() << ">" << val.text() << "</" << val.tagName() << ">" << endl;
-	if(val.tagName()=="apply")
-		return toNum(evalua(val));
-	else if(val.tagName() == "cn"){ // a es un nombre
-		if(val.attribute("type","real") == "real"){
-			ret= val.text().stripWhiteSpace().toDouble(&err); //TODO: Base on double not implemented
-		} else if(val.attribute("type") == "e-notation"){
-			//TODO: Not implemented
-		} else if(val.attribute("type") == "integer"){
-			int aux = val.text().stripWhiteSpace().toInt(&err, val.attribute("base", "10").toInt(NULL, 10));
-			ret = (double) aux;
-		}
-		else if(val.attribute("type") == "rational"){
-			//TODO: Not implemented
-		}
-		else if(val.attribute("type") == "complex-cartesian"){
-			//TODO: Not implemented
-		}
-		else if(val.attribute("type") == "complex-polar"){
-			//TODO: Not implemented
-		}
-		else if(val.attribute("type") == "constant"){
-			if(val.text() == "&pi;"){
-				ret = 3.141592653f;
-			} else if (val.text() == "&ee;" || val.text() == "&ExponentialE;"){
-				ret = 2.718281828f;
-			}  else if (val.text() == "&ImagniaryI;"){
-				//TODO: Not implemented
-			} else if (val.text() == "&gamma;"){
-				ret = 0.5772156649f;
-			} else if (val.text() == "&infin;"){
-				//TODO: Not implemented
-			} else if (val.text() == "&NaN;"){
-				//TODO: Not implemented
-			} else if (val.text() == "&true;"){
-				ret = toNum(vars.value("true"));
-			} else if (val.text() == "&false;"){
-				ret = toNum(vars.value("false"));
-			}
-		}
-	} else if(val.tagName() == "ci") //si a es variable
-		return toNum(vars.value(val.text()));
-	else if(val.tagName()=="true")
-		ret = 1.0;
-	else if(val.tagName()=="false")
-		ret = 0.0;
-	else if(val.tagName()=="pi")
-		ret = 3.141592653f;
-	else if(val.tagName()=="exponentiale")
-		ret = 2.718281828f;
-	else if(val.tagName()=="eulergamma")
-		ret = 0.5772156649f;
-// 	printf("\n---->%f\n", ret);
+double Analitza::evalua(QDomNode n){
+	QDomNode j, n_ini=n;
+	QDomElement e;
+	QString operador;
+	QValueList<double> nombres;
+	double ret=.0;
+	int fills=0;
+	int sons=0;
+	
+	while( !n.isNull() ) {
+		e = n.toElement();
+		
+		if(e.tagName() == "apply" || e.tagName() == "lambda"){
+			j = e.firstChild();
+			nombres.append(evalua(j));
+		} else if (e.tagName() == "cn" || e.tagName() == "ci" || isNum(e.tagName())) {
+			nombres.append(toNum(e));
+		} else if (e.tagName() == "declare"){
+			j = e.firstChild(); //Should be a <ci>
+			QString s = j.toElement().text();
+			j = j.nextSibling();
+			vars.modifica(s, j.toElement());
+		} else if(isOperador(e.tagName())) {
+			operador = e.tagName();
+			sons=isOperador(operador);
+		} else if (e.tagName() != "bvar")
+			err += i18n("The operator <em>%1</em> hasn't been implemented<br />\n").arg(e.tagName());
+		if(e.tagName() == "sum" || e.tagName() == "product")
+			break;
+		fills++;
+		n = n.nextSibling();
+	}
+	
+	if(operador=="sum") ret =sum(n);
+	else if(fills-1==sons || (sons==-1 && fills>=3) || operador == "" || operador == "minus"){
+		QDomDocument a;
+		QValueList<double>::iterator it = nombres.begin();
+		ret = *it;
+		
+		if(fills>2)
+			it++;
+		for(; it != nombres.end(); ++it)
+			ret = opera(ret,*it,operador, fills<=2?1:0);
+	} else { 
+		if(sons==-1)
+			err += i18n("The <em>%1</em> operator, should have more than 1 parameter<p />").arg(operador);
+		else
+			err += i18n("Can't have %1 parameter with <em>%2</em> operator, it should have %3 parameter<p />").arg(fills-1).arg(operador).arg(sons);
+	}
 	return ret;
 }
 
-QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int minus=0){
-	double a; 
-	double b;
+double Analitza::sum(QDomNode n){
+	double ret=.0;
+	QString var=bvar(n.parentNode())[0];
+	vars.rename(var, QString("%1_").arg(var)); //We save the var value
+	double ul=toNum(uplimit(n.parentNode()).toElement());
+	double dl=toNum(downlimit(n.parentNode()).toElement());
+	
+	for(double a=dl; a<ul; a+=1.){
+		vars.modifica(var, a);
+		ret=opera(ret, evalua(first_val(n.parentNode())),"plus",1);
+	}
+	vars.remove(var);
+	vars.rename(QString("%1_").arg(var), var); //We restore the var value
+	return ret;
+}
+
+
+double Analitza::opera(double res, double oper, QString op, int minus=0){
+	double a=res, b=oper;
 	bool boolean=false;
-	
-	a = toNum(res);
-	b = toNum(oper);
-	
-// 	cout << op << " a:"<< a << " b: " << b << "<->" <<minus << endl;
 	
 	if(op == "plus"){
 		a += b;
@@ -186,8 +184,6 @@ QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int m
 		b = a;
 		for(a=1; b>1; b--)
 			a*=b;
-	} else if(op=="abs"){
-		a= floor(a);
 	} else if(op=="sin"){
 		a=sin(a);
 	} else if(op=="cos"){
@@ -237,7 +233,7 @@ QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int m
 	} else if(op=="log"){
 		a=log10(a);
 	} else if(op=="abs"){
-		a=floor(a);
+		a=a>=0. ? a : -a;
 	//} else if(op=="conjugate"){
 	//} else if(op=="arg"){
 	//} else if(op=="real"){
@@ -255,6 +251,12 @@ QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int m
 		boolean=true;
 	} else if(op=="lt" ){
 		a= a < b? 1.0 : 0.0;
+		boolean=true;
+	} else if(op=="eq" ){
+		a= a == b? 1.0 : 0.0;
+		boolean=true;
+	} else if(op=="neq" ){
+		a= a != b? 1.0 : 0.0;
 		boolean=true;
 	} else if(op=="geq" ){
 		a= a >= b? 1.0 : 0.0;
@@ -293,134 +295,171 @@ QDomElement Analitza::opera(QDomElement res, QDomElement oper, QString op, int m
 			b = residu;
 		}
 		a=(int)c/(int)a;
-	} else {
-		err += i18n("The operator %1 hasn't been implemented").arg(op);
-// 		qDebug("lol %s", op.ascii());
+	} else if(op=="root") {
+		a = (b==2.0)? sqrt(a) : pow(a, 1.0/b);
+	}else {
+		if(op!="") err += i18n("The operator <em>%1</em> hasn't been implemented<br/>").arg(op);
 	}
 	
-	QDomDocument d;
-	QString z;
-	if (boolean)
-		z =  a!=0.0 ? "<true />" : "<false />" ;
-		else
-		z = QString( "<cn> %1 </cn>" ).arg(a, 0, 'g', 16);
-	
-	d.setContent(z);
-	QDomElement ret = d.documentElement();
-	return ret;
+	return a;
 }
 
-QDomElement Analitza::evalua(QDomNode n){
-	QDomNode j ;
-	QDomElement e;
-	QString operador;
-	QValueList<QDomElement> nombres;
-	unsigned int fills = 0;
+QStringList Analitza::bvar(QDomNode el){
+	QStringList lambdas;
+	QDomNodeList lambs = el.toElement().elementsByTagName(QString("bvar"));
 	
-	while( !n.isNull() ) {
-		e = n.toElement();
-		if(e.tagName() == "apply"){
-			j = e.firstChild();
-			nombres.append( evalua(j) );
-		} else if (e.tagName() == "cn" || e.tagName() == "ci" || isNum(e.tagName()))
-			nombres.append(e);
-		else if (e.tagName() == "declare"){
-			j = e.firstChild(); //Segons l'estandar, es <ci>
-			QString s = j.toElement().text();
-			j = j.nextSibling();
-// 			vars.modifica(s, evalua(j.toElement()));
-			vars.modifica(s, j.toElement());
-		}
-		else if (isOperador(e.tagName()))
-			operador = e.tagName();
-		fills++;
-		n = n.nextSibling();
-	}
+	for(unsigned int i=0; i<lambs.count(); i++)
+		lambdas << lambs.item(i).toElement().text();
 	
-	QDomDocument a;
-	QDomElement ret;
-	QValueList<QDomElement>::iterator it;
-	
-	it = nombres.begin();
-	ret = *it;
-	if(fills>2)
-		it++;
+	return lambdas;
+}
 
-	for( ; it != nombres.end(); ++it)
-		ret = opera(ret,*it,operador, fills==2?1:0);
+QDomNode Analitza::uplimit(QDomNode el){
+	return el.toElement().elementsByTagName(QString("uplimit")).item(0).firstChild();
+}
+
+QDomNode Analitza::downlimit(QDomNode el){
+	return el.toElement().elementsByTagName(QString("downlimit")).item(0).firstChild();
+}
+
+QDomNode Analitza::first_val(QDomNode el){
+	QDomNode a=el.firstChild();
+	while(!a.isNull()){
+		if(a.toElement().tagName() == "apply" || a.toElement().tagName() == "cn"  || a.toElement().tagName() == "ci")
+			break;
+		a=a.nextSibling();
+	}
+	return a;
+}
+
+bool Analitza::isNum(QString s){
+	if(s=="true")
+		return true;
+	else if(s=="false")
+		return true;
+	else if(s=="pi")
+		return true;
+	else if(s=="exponentiale")
+		return true;
+	else if(s=="eulergamma")
+		return true;
+	return false;
+}
+
+double Analitza::toNum(QDomElement val){
+	double ret=0.0;
+	bool wrong;
 	
-	return ret ;
+	if(val.tagName()=="apply")
+		return evalua(val);
+	else if(val.tagName()=="ci") {
+		ret = toNum(vars.value(val.text(), &wrong)); //a is a var
+		if (wrong) err += i18n("The variable <em>%1</em> doesn't exist<br />\n").arg(val.text());
+	} else if(val.tagName() == "cn"){ // a is a number
+		if(val.attribute("type","real") == "real"){
+			ret= val.text().stripWhiteSpace().toDouble(&wrong); //TODO: Base on double not implemented
+		} else if(val.attribute("type") == "integer"){
+			int aux = val.text().stripWhiteSpace().toInt(&wrong, val.attribute("base", "10").toInt(NULL, 10));
+			ret = (double) aux;
+		} else if(val.attribute("type") == "e-notation")	{ /*TODO: Not implemented */ }
+		else if(val.attribute("type") == "rational")		{ /*TODO: Not implemented */ }
+		else if(val.attribute("type") == "complex-cartesian")	{ /*TODO: Not implemented */ }
+		else if(val.attribute("type") == "complex-polar")	{ /*TODO: Not implemented */ }
+		else if(val.attribute("type") == "constant"){
+			if(val.text() == "&pi;")		{ ret = 3.1415926535897932384626433; }
+			else if (val.text() == "&ee;" || val.text() == "&ExponentialE;"){ ret = exp(1.); }
+			else if (val.text() == "&true;")	{ ret = toNum(vars.value("true")); }
+			else if (val.text() == "&false;")	{ ret = toNum(vars.value("false")); }
+			else if (val.text() == "&gamma;")	{ ret = 0.5772156649; }
+			/*else if (val.text() == "&ImagniaryI;")	; //TODO: Not implemented 
+			else if (val.text() == "&infin;")	; //TODO: Not implemented  }
+			else if (val.text() == "&NaN;")		; //TODO: Not implemented  }*/
+		}
+	} else if(val.tagName()=="true")		ret = 1.0;
+	else if(val.tagName()=="false")		ret = 0.0;
+	else if(val.tagName()=="pi")		ret = 3.1415926535897932384626433;
+	else if(val.tagName()=="exponentiale")	ret = exp(1.);
+	else if(val.tagName()=="eulergamma")	ret = 0.5772156649;
+	
+	return ret;
 }
 
 int Analitza::isOperador(QString e){
 	if (		e=="plus" ||
 			e=="times" ||
-			e=="min"||
-			e=="max"||
-			e=="and"||
-			e=="or"||
-			e=="xor"||
-			e=="gcd"||
-			e=="lcm") {
+			e=="min" ||
+			e=="max" ||
+			e=="and" ||
+			e=="or"  ||
+			e=="xor" ||
+			e=="gcd" ||
+			e=="lcm" ||
+			e=="max" ||
+			e=="min") {
 		return -1;
 	} else if (	e=="quotient" ||
-			e=="power" || 
+			e=="power" ||
 			e=="minus" ||
 			e=="divide"  ||
 			e=="lt" ||
 			e=="gt" ||
+			e=="eq" ||
+			e=="neq" ||
 			e=="leq" ||
 			e=="geq" ||
-			e=="implies"  ){
+			e=="implies" ||
+			e=="root"){
 		return 2;
-	} else if (	e=="factorial" || 
-			e=="abs" || 
-			e=="sin" || 
-			e=="cos" || 
-			e=="tan" || 
-			e=="sec" || 
-			e=="csc" || 
+	} else if (	e=="factorial" ||
+			e=="abs" ||
+			e=="sin" ||
+			e=="cos" ||
+			e=="tan" ||
+			e=="sec" ||
+			e=="csc" ||
 			e=="cot" ||
-			e=="sinh" || 
-			e=="cosh" || 
-			e=="tanh" || 
-			e=="sech" || 
-			e=="csch" || 
-			e=="coth" || 
-			e=="arcsin" || 
-			e=="arccos" || 
-			e=="arctan" || 
-			e=="arccos" || 
-			e=="arccot" || 
-			e=="arcoth" || 
-			e=="arccosh" || 
-			e=="arccsc"  || 
-			e=="arccsch" || 
-			e=="arcsec"  || 
-			e=="arcsech" || 
-			e=="arcsinh" || 
-			e=="arctanh" || 
-			e=="exp" || 
-			e=="ln" || 
-			e=="log"||
+			e=="sinh" ||
+			e=="cosh" ||
+			e=="tanh" ||
+			e=="sech" ||
+			e=="csch" ||
+			e=="coth" ||
+			e=="arcsin" ||
+			e=="arccos" ||
+			e=="arctan" ||
+			e=="arccos" ||
+			e=="arccot" ||
+			e=="arcoth" ||
+			e=="arccosh" ||
+			e=="arccsc"  ||
+			e=="arccsch" ||
+			e=="arcsec"  ||
+			e=="arcsech" ||
+			e=="arcsinh" ||
+			e=="arctanh" ||
+			e=="exp" ||
+			e=="ln" ||
+			e=="log" ||
 			e=="not" ||
-			e=="factorial" || 
-			e=="minus" || 
-			e=="abs" || 
+			e=="factorial" ||
+			e=="minus" ||
+			e=="abs" ||
 			e=="conjugate" ||
-			e=="arg" || 
-			e=="real" || 
-			e=="imaginary" || 
-			e=="floor" || 
-			e=="ceiling") {
+			e=="arg" ||
+			e=="real" ||
+			e=="imaginary" ||
+			e=="floor" ||
+			e=="ceiling" ||
+			e=="sum" ||
+			e=="product") {
 		return 1;
 	}
 	
 	return false;
 }
 
-QDomElement Analitza::Calcula(){
-	return evalua(elem);
+QStringList Analitza::lambda(){
+	return bvar(elem.firstChild());
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -437,10 +476,7 @@ QDomElement Analitza::Calcula(){
 ////////////////////////////////////////////////////////////////////////
 
 QString Analitza::toString(){
-	QString ret;
-// 	QMessageBox::warning(0, "Titulo", elem.toElement().text(),"Ok", "Cancelar",0,0,1);
-	ret = QString("<math>%1</math>").arg(str(elem));
-	return ret;
+	return str(elem.firstChild());
 }
 
 QString Analitza::get_op(QDomNode n){
@@ -455,13 +491,10 @@ QString Analitza::get_op(QDomNode n){
 }
 
 unsigned int Analitza::toOpId(QDomNode n){
-// 	if(n.parentNode().toElement().tagName() == "")
-// 		return 0;
-	
 	QString e=get_op(n);
 	if(e=="")
 		return 0;
-	else if(e=="lt" || e=="gt" || e=="eq" || e=="leq" || e=="geq")
+	else if(e=="lt" || e=="gt" || e=="eq" || e=="neq" || e=="leq" || e=="geq")
 		return 1;
 	else if(e=="sin" || e=="cos" || e=="tan")
 		return 2;
@@ -475,68 +508,98 @@ unsigned int Analitza::toOpId(QDomNode n){
 		return 5;
 	else
 		return 10000;
-
 }
 
 QString Analitza::str(QDomNode n){
-	QDomNode j,k=n;
+	QDomNode j, k=n;
 	QDomElement e;
 	QString operador;
 	QValueList<QString> nombres;
 	unsigned int fills = 0;
+// 	qDebug("%s", n.toElement().text().ascii());
 	while( !n.isNull() ) {
 		e = n.toElement();
 		if(e.tagName() == "apply" || e.tagName() == ""){
 			j = e.firstChild();
-			//No fa falta que tinguem tot entre parentesi
-// 			cout << "hola :)" << endl;
-// 			cout << toOpId(k) << "<->" << toOpId(j) << endl;
-			if(toOpId(k) <= toOpId(j) || isOperador(get_op(j)) == 1)
+			if(toOpId(k) <= toOpId(j) || isOperador(get_op(j)) == 1) //It is not necessary to have everything between ()
 				nombres.append(str(j));
 			else
 				nombres.append("(" + str(j) + ")");
-		} else if (e.tagName() == "cn" ||e.tagName() == "ci") {
-			nombres.append("<mn>" + e.text() + "</mn>");
+		} else if (e.tagName() == "cn"){
+			nombres.append(QString("<span class='num'>%1</span>").arg(e.text()));
+		} else if (e.tagName() == "ci") {
+			nombres.append(QString("<span class='var'>%1</span>").arg(e.text()));
 		} else if(isNum(e.tagName())){
-			nombres.append("<mn>" + e.tagName() + "</mn>");
+			nombres.append(e.tagName());
 		} else if (isOperador(e.tagName())) {
 			operador = e.tagName();
 		} else if (e.tagName()=="declare") {
-			j = e.firstChild(); //Segons l'estandar, es <ci>
+			j = e.firstChild(); //A <ci>
 			nombres.append(j.toElement().text());
-			j = j.nextSibling(); //Valor a guardar
-			nombres.append(j.toElement().text());
+			j = j.nextSibling(); //Value to save
+			nombres.append(str(j));
 			operador = "declare";
 			fills=3;
-			
+		} else if (e.tagName()=="lambda"){
+			j = e.firstChild();
+			QStringList lambdas = bvar(j);
+			for (QStringList::Iterator it = lambdas.begin(); it != lambdas.end(); ++it){
+				nombres.append(*it);
+				j=j.nextSibling();
+			}
+			fills=3;
+			nombres.append(str(j));
+			operador = "lambda";
 		}
 		fills++;
 		n= n.nextSibling();
 	}
-	QString r="";
-	QValueList<QString>::iterator it;
 	
-	it = nombres.begin();
+	QValueList<QString>::iterator it = nombres.begin();
+	QString r= *it;
 	
-	r = *it;
 	if(fills>2)
 		it++;
+		
+	for(; it != nombres.end(); ++it)
+		r = escriuS(r,*it,operador, fills<=2?1:0);
 	
-	cout << QString::QString("aaaa--------->%1 %2\n").arg(operador).arg(fills).ascii() << endl;
-	
-	for(; it != nombres.end(); ++it){
-		cout << (*it).ascii() << endl;
-		r = escriu(r,*it,operador, fills<=2?1:0);
-	}
-	
-// 	cout << "hola" << endl;
 	return r;
 }
 
-QString Analitza::escriu(QString res, QString oper, QString op, int unari=0){
+QString Analitza::escriuS(QString res, QString oper, QString op, int unari=0){
 	res  =  res.stripWhiteSpace();
 	oper = oper.stripWhiteSpace();
-// 	qDebug("operador: %s n1: %s n2: %s\n", op, res, oper);
+	
+	QString r=res;
+	if(op == "plus"){
+		r = QString("%1<span class='op'>+</span>%2").arg(res).arg(oper);
+	}else if(op =="times"){
+		r = QString("%1<span class='op'>*</span>%2").arg(res).arg(oper);
+	}else if(op=="quotient"){
+		r = QString("%1<span class='op'>/</span>%2").arg(res).arg(oper);
+	}else if(op=="minus"){
+		r = unari ? QString("<span class='op'>-</span>%1").arg(res) : QString("%1<span class='op'>-</span>%2").arg(res).arg(oper);
+	}else if(op=="power"){
+		r = QString("%1<span class='op'>^</span>%2").arg(res).arg(oper);
+	} else if(op=="declare"){
+		r = QString("%1<span class='op'>:=</span>%2").arg(res).arg(oper);
+	} else if(op=="lambda"){
+		r = QString("%1<span class='op'>-></span>%2").arg(res).arg(oper);
+	} else if(op != "") {
+		if(unari)
+			r = QString("<span class='func'>%1</span><span class='op'>(</span>%2<span class='op'>)</span>").arg(op).arg(res);
+		else
+			r = QString("<span class='func'>%1</span><span class='op'>(</span>%2,%3<span class='op'>)</span>").arg(op).arg(res).arg(oper);
+		//qDebug("The operator: <%s /> is not implemented.", operador.latin1());
+	}
+	return r;
+}
+
+QString Analitza::escriuMMLP(QString res, QString oper, QString op, int unari=0){
+	res  =  res.stripWhiteSpace();
+	oper = oper.stripWhiteSpace();
+	
 	QString r=res;
 	if(op == "plus"){
 		r = res + "<mo>+</mo>" +oper;
@@ -548,6 +611,7 @@ QString Analitza::escriu(QString res, QString oper, QString op, int unari=0){
 		r = unari ? "<mo>-</mo>"+res : res + "<mo>-</mo>" +oper;
 	}else if(op=="power"){
 		r = res + "<mo>^</mo>" + oper;
+// 		r = "<msup><mrow>" + res + "</mrow><mrow>" + oper +"</mrow></msup>";
 	} else if(op=="eq"){
 		r = res + "<mo>=</mo>" +oper;
 	} else if(op=="geq"){
@@ -587,13 +651,13 @@ QString Analitza::escriu(QString res, QString oper, QString op, int unari=0){
 	} else if(op=="csch"){
 		r = "cosech(" + res + ")";
 	} else if(op=="coth"){
-		r = "cotgh(" + res + ")";
+		r = "coth(" + res + ")";
 	} else if(op=="arcsin"){
 		r = "arcsin(" + res + ")";
 	} else if(op=="arccos"){
 		r = "arccos(" + res + ")";
 	} else if(op=="arctan"){
-		r = "arctg(" + res + ")";
+		r = "arctan(" + res + ")";
 	} else if(op=="arccos"){
 		r = "arccos(" + res + ")";
 	} else if(op=="arccot"){
@@ -621,7 +685,7 @@ QString Analitza::escriu(QString res, QString oper, QString op, int unari=0){
 	} else if(op=="log"){
 		r = "log10(" + res + ")";
 	} else if(op=="not"){
-		r = "<mo>¬</mo>" + res;
+		r = "<mo></mo>" + res;
 	} else if(op=="and"){
 		r = res + "<mo>&Lambda;</mo>" + oper;
 	} else if(op=="or"){
@@ -634,6 +698,8 @@ QString Analitza::escriu(QString res, QString oper, QString op, int unari=0){
 		r = "lcm(" + res + ", "+ oper + ")";
 	} else if(op=="declare"){
 		r = res + "<mo>:=</mo>" + oper;
+	} else if(op=="lambda"){
+		r = res + "<mo> -> </mo>" + oper;
 	} else if(op=="implies"){
 		r = res + "<mo>=></mo>" + oper;
 	} //else if(op=="conjugate"){
@@ -645,97 +711,48 @@ QString Analitza::escriu(QString res, QString oper, QString op, int unari=0){
 // 	} else if(op=="ceiling" ){
 // 		a=ceil(a);
 // 	}
-	
 	else {
-// 		cout << "The operator: <" << op.latin1() << " /> is not implemented." << endl;
+		//qDebug("The operator: <%s /> is not implemented.", operador.latin1());
 	}
 	return r;
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////                                                   /////////////////////
-/////////////                   Classe Variables                /////////////////////
+/////////////                         Other                     /////////////////////
 /////////////                                                   /////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-Variables::Variables(){
-// 	afegeix("x", 33.0f);
-	modifica("true", 1.0f);
-	modifica("false", 0.0f);
-	modifica("pi", 3.141592653f);
-	modifica("e", 2.718281828f);
-	modifica("euler", 0.5772156649f);
-}
-
-inline void Variables::afegeix(QString id, QDomElement val){
-	modifica(id,val);
-}
-
-void Variables::treu(QString id){
-	QValueList<struct VARIABLE>::iterator it;
-	struct VARIABLE aux;
-	it = vars.begin() ;
-	for(; it != vars.end(); ++it){ 
-		aux = *it;
-		if(aux.nom == id){
-			vars.remove(it);
-			break;
-		}
-	}
-}
-
-void Variables::modifica(QString id, double new_val){
-	QString z = QString( "<cn> %1 </cn>" ).arg(new_val, 0, 'g', 16);
-	QDomDocument a;
-	QString err = "<cn>" + z + "</cn>";
-	a.setContent(err);
-	modifica(id,a.documentElement());
-}
-
-void Variables::modifica(QString id, QDomElement new_val){
-	struct VARIABLE aux;
-	
-	QValueList<struct VARIABLE>::iterator it;
-	it = vars.begin() ;
-	for(; it != vars.end(); ++it){ 
-		aux = *it;
-		if(aux.nom == id){
-			vars.remove(it);
-			break;
-		}
-	}
-	aux.nom=id;
-	aux.valor=new_val;
-	vars.append(aux);
-}
-QDomElement Variables::value(QString id){
-	struct VARIABLE aux;
-	QValueList<struct VARIABLE>::iterator it;
-	it = vars.begin() ;
-	for(; it != vars.end(); ++it){ 
-		aux = *it;
-		if(aux.nom.stripWhiteSpace() == id.stripWhiteSpace()){
-			cout << "-->" << aux.valor.toDocument().toString().ascii() << endl;
-			return aux.valor;
-		}
-	}
-	//error
-	QDomDocument a; QString err("<cn \"constant\"> &NaN </cn>");
-	a.setContent(err);
-	return a.documentElement();
-}
-
-QStringList Variables::getNoms(){
-	struct VARIABLE aux;
-	QStringList out;
-	QValueList<struct VARIABLE>::iterator it;
-	it = vars.begin() ;
-	for(; it != vars.end(); ++it){ 
-		aux = *it;
-		out << aux.nom;
+QString Analitza::treu_tags(QString in){
+	bool tag=false;
+	QString out;
+	for(unsigned int i=0; i<in.length(); i++){
+		if(in[i]=='<')
+			tag=true;
+		else if(in[i]=='>')
+			tag=false;
+		else if(!tag)
+			out += in[i];
 	}
 	return out;
+}
+
+void print_dom(QDomNode in, int ind=0){
+	QString a="";
+	if(ind >100){
+		qDebug("g0g0g0");
+		return;
+	}
+	for(int i=0; i<ind; i++)
+		a+="--------";
+	qDebug("%s%s(%s)", a.ascii(), in.toElement().tagName().ascii(), in.toElement().text().ascii());
+	if(in.childNodes().length()==1)
+		return;
+	for(unsigned int i=0 ; i<in.childNodes().length(); i++){
+		print_dom(in.childNodes().item(i), ind+1);
+	}
 }
