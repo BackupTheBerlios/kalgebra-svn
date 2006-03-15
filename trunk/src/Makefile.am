@@ -2,7 +2,8 @@
 INCLUDES = $(all_includes)
 
 # these are the headers for your project
-noinst_HEADERS = kalgebra.h function.h qdoublepoint.h kfunctionedit.h
+noinst_HEADERS = kalgebra.h function.h qdoublepoint.h kfunctionedit.h \
+	kalgebraiface.h variables.h kvaredit.h qexpressionedit.h qalgebrahighlighter.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
@@ -20,11 +21,12 @@ KDE_ICON = kalgebra
 bin_PROGRAMS = kalgebra
 
 # the application source, library search path, and link libraries
-kalgebra_SOURCES = main.cpp kalgebra.cpp analitza.cpp analitza.h q3dgraph.cpp \
-				q3dgraph.h qgraph.cpp qgraph.h qexp.cpp qexp.h function.cpp qdoublepoint.cpp \
-	kfunctionedit.cpp
+kalgebra_SOURCES = main.cpp kalgebra.cpp analitza.cpp q3dgraph.cpp \
+	variables.cpp q3dgraph.h qgraph.cpp qgraph.h qexp.cpp qexp.h function.cpp \
+	qdoublepoint.cpp kfunctionedit.cpp kalgebraiface.cpp kalgebraiface.skel \
+	kvaredit.cpp qalgebrahighlighter.cpp qexpressionedit.cpp
 kalgebra_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-kalgebra_LDADD = $(LIB_KDEUI) /usr/lib/libkhtml.so /usr/lib/libGLU.so
+kalgebra_LDADD = $(LIB_KDEUI) -lkhtml -lGLU
 
 # this is where the desktop file will go 
 shelldesktopdir   = $(kde_appsdir)/Utilities
