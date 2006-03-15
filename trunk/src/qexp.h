@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
 #ifndef QEXP_H
 #define QEXP_H
 
@@ -31,7 +32,6 @@
 @author aleix
 */
 
-
 typedef enum {
 	S,
 	R,
@@ -44,6 +44,7 @@ typedef enum {
 
 typedef enum {
 	tAssig,
+	tLambda,
 	tAdd,
 	tSub,
 	tMul,
@@ -56,18 +57,9 @@ typedef enum {
 	tRpr, //)
 	tEof,
 	tMaxOp,
-	tVal
+	tVal,
+	tVar
 } tokEnum;
-
-// tokEnum tok;
-// QString tokval;
-// 
-// QValueStack<char> opr;
-// QValueStack<QString> val;
-// QValueStack<QString> func;
-// 
-// int valTop, oprTop;
-// bool firsttok;
 
 struct TOKEN {
 	QString val;
@@ -87,22 +79,19 @@ private:
 	tokEnum tok;
 	QString tokval;
 	
-	QValueStack<char> opr;
+	QValueStack<int> opr;
 	QValueStack<QString> val;
 	QValueStack<QString> func;
 	
 	int valTop, oprTop;
 	bool firsttok;
 	tokEnum prevtok;
-	bool antnum;
-
-// 	actEnum parseTbl[tMaxOp][tMaxOp];
+	tokEnum antnum;
 	
 	TOKEN pillatoken(QString &a);
 	int getTok();
 	int shift();
 	int reduce();
-	bool isLast(QValueStack<char> opr);
 public:
 	int parse();
 	QString error();

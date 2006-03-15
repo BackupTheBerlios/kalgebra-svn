@@ -31,6 +31,7 @@
 #include <qtextstream.h>
 #include <qmessagebox.h>
 #include "qexp.h"
+#include "variables.h"
 
 /**
 @author
@@ -38,27 +39,11 @@
 
 using namespace std;
 
-struct VARIABLE{
-	QString nom;
-	QDomElement valor;
-};
-
-class Variables{
-private:
-	QValueList<struct VARIABLE> vars;
-public:
-	Variables();
-	void afegeix(QString id, QDomElement val);
-	void treu(QString id);
-	void modifica(QString id, QDomElement new_val);
-	void modifica(QString id, double new_val);
-	QDomElement value(QString id);
-	
-	QStringList getNoms();
-};
+void print_dom(QDomNode, int);
 
 class Analitza{
 public:
+	
 	Analitza(QString path);
 	Analitza();
 	~Analitza();
@@ -75,22 +60,32 @@ public:
 	static bool isNum(QString);
 	////////////////////////////////////////
 	
-	QDomElement Calcula();
+	double Calcula();
+	QStringList lambda(); //retrieve lambda vars
 	double toNum(QDomElement res);
+	static QString treu_tags(QString in);
 private:
+	QStringList bvar(QDomNode);
+	QDomNode uplimit(QDomNode);
+	QDomNode downlimit(QDomNode);
+	QDomNode first_val(QDomNode);
 	QString mmlexp;
-	QDomElement evalua(QDomNode n);
-	QDomElement opera(QDomElement, QDomElement, QString, int);
+	double evalua(QDomNode n);
+	double opera(double, double, QString, int);
 	unsigned int toOpId(QDomNode);
 	QString get_op(QDomNode);
 	////////////////////////////////////////
+	
+	//////////
+	double sum(QDomNode);
 
 public:
 	QString toString();
 	QString str(QDomNode);
 	
 private:
-	QString escriu(QString res, QString oper, QString op, int);
+	QString escriuS(QString res, QString oper, QString op, int);
+	QString escriuMMLP(QString res, QString oper, QString op, int);
 };
 
 #endif
