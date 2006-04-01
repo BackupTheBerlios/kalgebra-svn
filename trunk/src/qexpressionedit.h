@@ -2,6 +2,7 @@
 #define QEXPRESSIONEDIT_H
 
 #include <qtextedit.h>
+#include <qlabel.h>
 #include "qalgebrahighlighter.h"
 
 /**
@@ -16,6 +17,7 @@ public:
 	inline bool mode() { return m_highlight->mode(); }
 	inline void setMode(Mode en) { return m_highlight->setMode(en); }
 private:
+	QLabel *m_helptip;
 	QAlgebraHighlighter *m_highlight;
 	void removenl();
 	
@@ -23,9 +25,16 @@ private:
 	
 	int m_histPos;
 	QStringList m_history;
+	bool help;
+	
+	void helpShow(const QString& funcname);
 	
 public slots:
 	void returnP();
+	void cursorMov(int par, int pos);
+	
+signals:
+	void signalHelper(const QString&);
 };
 
 #endif

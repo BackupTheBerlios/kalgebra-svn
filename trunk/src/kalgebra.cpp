@@ -5,6 +5,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	ultim_error = true;
 	
 	this->setMinimumSize(809,500);
+	this->statusBar()->show();
 	pestanya = new KTabWidget(this, "tab Principal");
 	pestanya->setFocusPolicy(QWidget::NoFocus);
 	menu = new KMenuBar(this);
@@ -24,7 +25,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	varlist->addColumn(i18n("Name"),60);
 	varlist->addColumn(i18n("Value"),-1);
 	varlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	operacio = new QExpressionEdit(consola, 0, Expression);
+	operacio = new QExpressionEdit(consola, "petardito", Expression);
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
 	operacio->setFocus();
@@ -33,6 +34,9 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	pestanya->addTab(consola, i18n("Console"));
 	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
 	connect(operacioMML, SIGNAL(returnPressed()), this, SLOT(operaMML()));
+	
+	connect(operacio, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
+	
 	//connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
 	
 	tabOperacio = new KTabWidget(consola, "tab Entrada Consola");
@@ -296,7 +300,6 @@ void KAlgebra::slot_editat(QListViewItem *it){
 		}
 	} else {
 		grafic->setSelected("none");
-		qDebug("hummm -.-");
 	}
 }
 
@@ -331,7 +334,7 @@ void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int) {
 	delete e;
 }
 
-QString KAlgebra::treu_tags(QString in){ //Awful trick
+QString KAlgebra::treu_tags(QString in){ //This is an awful trick
 	bool tag=false;
 	QString out;
 	for(unsigned int i=0; i<in.length(); i++){
@@ -383,7 +386,7 @@ void KAlgebra::add2D(QString operation){
 
 QStringList KAlgebra::list2D(){
 	QStringList a;
-	QListViewItemIterator it(func2dlist, QListViewItemIterator::Checked );
+	QListViewItemIterator it(func2dlist, QListViewItemIterator::Checked);
 	while ( it.current() ) {
 		a << it.current()->text(0);
 		++it;
@@ -405,5 +408,9 @@ void KAlgebra::slot_togglesquares(){
 	g2d->setItemChecked(G2D_TOGGSQUARES, grafic->squares());
 }
 
+void KAlgebra::changeStatusBar(const QString& text)
+{
+	statusBar()->message(text);
+}
 
 #include "kalgebra.moc"

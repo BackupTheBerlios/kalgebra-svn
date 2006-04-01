@@ -33,6 +33,7 @@
 #include <ktabwidget.h>
 #include <dcopclient.h>
 #include <kstandarddirs.h>
+#include <kstatusbar.h>
 
 #include "kfunctionedit.h"
 #include "kvaredit.h"
@@ -142,6 +143,7 @@ public slots:
 	void slot_getpixmap();
 	void dibuixa3d();
 	void dibuixa3dMML();
+	void changeStatusBar(const QString&);
 };
 
 #endif // _KALGEBRA_H_
