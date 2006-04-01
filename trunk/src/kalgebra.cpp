@@ -275,7 +275,8 @@ void KAlgebra::slot_transparencia() {
 
 void KAlgebra::slot_getpixmap(){
 	QString path = KFileDialog::getSaveFileName( QString::null, "*.png", this );
-	grafic3d->toPixmap().save(path, "PNG");
+	if(!path.isNull())
+		grafic3d->toPixmap().save(path, "PNG");
 }
 
 void KAlgebra::slot_editat(QListViewItem *it){
