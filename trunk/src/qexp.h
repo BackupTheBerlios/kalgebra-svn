@@ -28,6 +28,8 @@
 #include <iostream>
 #include <klocale.h>
 
+#include "analitza.h"
+
 /**
 @author aleix
 */

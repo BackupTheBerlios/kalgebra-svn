@@ -155,7 +155,11 @@ int QExp::reduce(){
 	} else if(opr.top() == tAssig){ // :=
 		val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(val.pop()));
 	} else if(opr.top() == tFunc){
-		val.push(QString("<apply><%1 />%2</apply>").arg(func.pop()).arg(val.pop()));
+		QString v=func.pop();
+		if(Analitza::isOperador(v))
+			val.push(QString("<apply><%1 />%2</apply>").arg(v).arg(val.pop()));
+		else
+			val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(v).arg(val.pop()));
 	} else if(opr.top() == tLambda){ // ->
 		val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(val.pop()));
 	} else if(opr.top() == tComa){

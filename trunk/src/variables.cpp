@@ -48,7 +48,7 @@ bool Variables::modifica(QString id, int new_val){
 bool Variables::modifica(QString id, QDomElement new_val) {
 	struct VARIABLE aux;
 	bool ex=false;
-	
+		
 	QValueList<struct VARIABLE>::iterator it;
 	for(it = vars.begin(); !ex && it != vars.end(); ++it){ 
 		aux = *it;

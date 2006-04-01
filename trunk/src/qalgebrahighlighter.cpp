@@ -5,7 +5,7 @@ QAlgebraHighlighter::QAlgebraHighlighter(QTextEdit *textEdit) : QSyntaxHighlight
 
 int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfLastPara) {
 	setFormat( 0, text.length(), Qt::black);
-	if(!m_mode==Expression && !(m_mode==Autodetect && text[0]=='<'))
+	if(m_mode==MathML || (m_mode==Autodetect && text[0]=='<'))
 		return 0;
 	QString op=text.stripWhiteSpace();
 	unsigned int pos=0, len=0;

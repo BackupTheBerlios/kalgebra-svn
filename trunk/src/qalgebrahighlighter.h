@@ -6,11 +6,20 @@
 #include "qexp.h"
 
 typedef enum {
-		Disabled,
-		Expression,
-		MathML,
-		Autodetect
+	Disabled,
+	Expression,
+	MathML,
+	Autodetect
 } Mode;
+
+typedef enum { //For mathml highlighting
+	gt,
+	lt,
+	tag,
+	value
+} MMLtokEnum;
+
+
 
 class QAlgebraHighlighter : public QSyntaxHighlighter {
 	public:
@@ -20,6 +29,7 @@ class QAlgebraHighlighter : public QSyntaxHighlighter {
 		void setMode(const Mode& newMode){ m_mode=newMode; }
 	private:
 		TOKEN getToken(QString &a, unsigned int &l);
+		//TOKEN getTokenMML(QString &a, unsigned int &l);
 		bool wrong;
 		tokEnum antnum;
 		Mode m_mode;

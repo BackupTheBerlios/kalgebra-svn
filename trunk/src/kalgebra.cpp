@@ -19,16 +19,16 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	log->openURL("http://kalgebra.berlios.de");
 	log->widget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	varlist = new KListView(state);
-	varlist->setFocusPolicy(QWidget::NoFocus); //WEO!
+	varlist->setFocusPolicy(QWidget::NoFocus); //FIXME: WEO!
 	varlist->setFixedWidth(250);
 	varlist->addColumn(i18n("Name"),60);
 	varlist->addColumn(i18n("Value"),-1);
 	varlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	operacio = new QExpressionEdit(consola);
+	operacio = new QExpressionEdit(consola, 0, Expression);
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
 	operacio->setFocus();
-	operacioMML = new QExpressionEdit(consola);
+	operacioMML = new QExpressionEdit(consola, 0, MathML);
 	
 	pestanya->addTab(consola, i18n("Console"));
 	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
@@ -90,7 +90,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	tabFuncio3d = new KTabWidget(dibuix3d, "tab Entrada Grafic3D");
 	tabFuncio3d->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 	funcio3d = new QExpressionEdit(tabFuncio3d);
-	funcio3d->setText("sin(x)*sin(y)"); //La huevera, by Miquel Grau
+	funcio3d->setText("sin(x)*sin(y)"); //NOTE: La huevera, by Miquel Grau
 	funcio3dMML = new QExpressionEdit(dibuix3d);
 	funcio3dMML->setText("<math><apply><times/><apply><sin/><ci>x</ci></apply><apply><sin/><ci>y</ci></apply></apply></math>");
 	pestanya->addTab(dibuix3d, i18n("3D Graph"));

@@ -49,7 +49,7 @@ public:
 	~Analitza();
 	
 	QDomNode elem;
-	int isOperador(QString);
+	static int isOperador(QString);
 	int setPath(QString);
 	int setTextMML(QString);
 	int setText(QString);
