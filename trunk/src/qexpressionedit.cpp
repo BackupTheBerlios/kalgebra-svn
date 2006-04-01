@@ -41,7 +41,6 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 		if(m_histPos<0) m_histPos=0;
 		if(m_histPos>=m_history.count()) m_histPos=m_history.count()-1;
 		this->setText(m_history[m_histPos]);
-		qDebug("pos: %d", m_histPos);
 	} else {
 		QTextEdit::keyPressEvent(e);
 		m_history.last() = this->text();

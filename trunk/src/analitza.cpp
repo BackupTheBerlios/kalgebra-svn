@@ -354,7 +354,12 @@ double Analitza::toNum(QDomElement val){
 		return evalua(val);
 	else if(val.tagName()=="ci") {
 		ret = toNum(vars.value(val.text(), &wrong)); //a is a var
-		if (wrong) err += i18n("The variable <em>%1</em> doesn't exist<br />\n").arg(val.text());
+		if (wrong) {
+			if(val.attribute("type").isNull())
+				err += i18n("The variable <em>%1</em> doesn't exist<br />\n").arg(val.text());
+			else if(val.attribute("type") == QString("function"))
+				err += i18n("The function <em>%1</em> doesn't exist<br />\n").arg(val.text());
+		}
 	} else if(val.tagName() == "cn"){ // a is a number
 		if(val.attribute("type","real") == "real"){
 			ret= val.text().stripWhiteSpace().toDouble(&wrong); //TODO: Base on double not implemented
