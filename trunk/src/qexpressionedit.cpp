@@ -1,3 +1,4 @@
+
 #include "qexpressionedit.h"
 
 QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode) : QTextEdit(parent, name), m_histPos(0), help(true) {
@@ -60,7 +61,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 }
 
 void QExpressionEdit::cursorMov(int par, int pos) {
-	qDebug("...par:%d....pos:%d.......%c......", par, pos, this->text().at(pos-1).latin1());
+// 	qDebug("...par:%d....pos:%d.......%c......", par, pos, this->text().at(pos-1).latin1());
 	QChar last=this->text().at(pos-1);
 	if(last=='('){
 		int i;
@@ -72,21 +73,21 @@ void QExpressionEdit::cursorMov(int par, int pos) {
 		signalHelper("");
 }
 
-void QExpressionEdit::helpShow(const QString& funcname) {
+void QExpressionEdit::helpShow(const QString& funcname, int param) {
 	int op = Analitza::isOperador(funcname);
 	if(op) {
 		if(op == -1)
-			emit signalHelper(QString("%1(1, ...)").arg(funcname));
+			emit signalHelper(QString("<qt><b>%1</b>(par1, ...)</qt>").arg(funcname));
 		else {
-			QString sample = QString("%1(").arg(funcname);
+			QString sample = QString("<qt><b>%1</b>(").arg(funcname);
 			for(int i=0; i<op; ++i) {
-				sample += QString("par%1").arg(i);
+				sample += QString("par%1").arg(i+1);
 				if(i<op-1) sample+= ", ";
 			}
-			emit signalHelper(sample+")");
+			emit signalHelper(sample+")</qt>");
 		}
 	}
-	qDebug(funcname.ascii());
+// 	qDebug(funcname.ascii());
 // 	m_helptip->show();
 }
 

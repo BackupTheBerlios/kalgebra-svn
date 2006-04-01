@@ -27,7 +27,7 @@ private:
 	QStringList m_history;
 	bool help;
 	
-	void helpShow(const QString& funcname);
+	void helpShow(const QString& funcname, int param=0);
 	
 public slots:
 	void returnP();

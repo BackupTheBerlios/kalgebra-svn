@@ -4,8 +4,15 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 // 	setXMLFile("kalgebraui.rc");
 	ultim_error = true;
 	
-	this->setMinimumSize(809,500);
 	this->statusBar()->show();
+	m_status = new QLabel(0, this->statusBar());
+// 	m_status->setFrameShape(QFrame::Box);
+	m_status->setMinimumWidth(809);
+	m_status->setFixedHeight(18);
+	m_status->setAlignment(AlignTop);
+	this->statusBar()->addWidget(m_status);
+	
+	this->setMinimumSize(809,500);
 	pestanya = new KTabWidget(this, "tab Principal");
 	pestanya->setFocusPolicy(QWidget::NoFocus);
 	menu = new KMenuBar(this);
@@ -25,11 +32,11 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	varlist->addColumn(i18n("Name"),60);
 	varlist->addColumn(i18n("Value"),-1);
 	varlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	operacio = new QExpressionEdit(consola, "petardito", Expression);
+	operacio = new QExpressionEdit(consola, 0, Expression);
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
 	operacio->setFocus();
-	operacioMML = new QExpressionEdit(consola, 0, MathML);
+// 	operacioMML = new QExpressionEdit(consola, 0, MathML);
 	
 	pestanya->addTab(consola, i18n("Console"));
 	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
@@ -39,16 +46,16 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	
 	//connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
 	
-	tabOperacio = new KTabWidget(consola, "tab Entrada Consola");
-	tabOperacio->addTab(operacio, i18n("Operation"));
-	tabOperacio->addTab(operacioMML, i18n("MathML Operation"));
-	tabOperacio->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-	tabOperacio->setMaximumHeight(60);
+// 	tabOperacio = new KTabWidget(consola, "tab Entrada Consola");
+// 	tabOperacio->addTab(operacio, i18n("Operation"));
+// 	tabOperacio->addTab(operacioMML, i18n("MathML Operation"));
+// 	tabOperacio->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+// 	tabOperacio->setMaximumHeight(60);
 	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
 	menu_consola->insertItem(i18n("Save Log"), this, SLOT(saveLog()));
 	menu->insertItem(i18n("Console"), menu_consola);
-	consola->setTabOrder(operacio, tabOperacio);
+// 	consola->setTabOrder(operacio, tabOperacio);
 	//tab consola/////////////////
 	
 	//tab grafic2D/////////////////
@@ -138,7 +145,7 @@ void KAlgebra::opera(){
 }
 
 void KAlgebra::operaMML(){
-	opera_gen(operacioMML->text());
+// 	opera_gen(operacioMML->text());
 }
 
 void KAlgebra::opera_gen(QString op){
@@ -410,7 +417,8 @@ void KAlgebra::slot_togglesquares(){
 
 void KAlgebra::changeStatusBar(const QString& text)
 {
-	statusBar()->message(text);
+	m_status->setText(text);
+// 	statusBar()->message(text);
 }
 
 #include "kalgebra.moc"

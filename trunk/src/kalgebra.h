@@ -90,6 +90,7 @@ private:
 	KTabWidget *tabOperacio;
 	void opera_gen(QString);
 	QAlgebraHighlighter *m_alg_high;
+	QLabel *m_status;
 	
 	KHTMLPart *log;
 	KListView *varlist;
