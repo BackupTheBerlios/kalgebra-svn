@@ -86,7 +86,7 @@ private:
 	
 	//tab consola
 	QExpressionEdit *operacio;
-	QExpressionEdit *operacioMML;
+// 	QExpressionEdit *operacioMML;
 	KTabWidget *tabOperacio;
 	void opera_gen(QString);
 	QAlgebraHighlighter *m_alg_high;

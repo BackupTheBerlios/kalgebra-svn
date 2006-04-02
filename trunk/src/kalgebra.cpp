@@ -6,7 +6,6 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	
 	this->statusBar()->show();
 	m_status = new QLabel(0, this->statusBar());
-// 	m_status->setFrameShape(QFrame::Box);
 	m_status->setMinimumWidth(809);
 	m_status->setFixedHeight(18);
 	m_status->setAlignment(AlignTop);
@@ -18,15 +17,15 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	menu = new KMenuBar(this);
 	
 	//tab consola/////////////////
-	QVBox * consola = new QVBox (pestanya);
-	QHBox * state = new QHBox (consola);
-	state->setSpacing(2);
-	log =new KHTMLPart(state);
-	log->widget()->setFocusPolicy(QWidget::NoFocus);
+	QWidget *consola = new QWidget(this);
+	QVBoxLayout *cons_layout = new QVBoxLayout(consola);
+	QSplitter *log_split = new QSplitter(consola);
+	log =new KHTMLPart(log_split);
 	log->setOnlyLocalReferences(false);
 	log->openURL("http://kalgebra.berlios.de");
+	log->widget()->setFocusPolicy(QWidget::NoFocus);
 	log->widget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	varlist = new KListView(state);
+	varlist = new KListView(log_split);
 	varlist->setFocusPolicy(QWidget::NoFocus); //FIXME: WEO!
 	varlist->setFixedWidth(250);
 	varlist->addColumn(i18n("Name"),60);
@@ -36,49 +35,45 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
 	operacio->setFocus();
-// 	operacioMML = new QExpressionEdit(consola, 0, MathML);
 	
 	pestanya->addTab(consola, i18n("Console"));
-	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
-	connect(operacioMML, SIGNAL(returnPressed()), this, SLOT(operaMML()));
+	cons_layout->addWidget(log_split);
+	cons_layout->setSpacing(10);
+	cons_layout->addWidget(operacio);
 	
+	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
 	connect(operacio, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
 	
 	//connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
 	
-// 	tabOperacio = new KTabWidget(consola, "tab Entrada Consola");
-// 	tabOperacio->addTab(operacio, i18n("Operation"));
-// 	tabOperacio->addTab(operacioMML, i18n("MathML Operation"));
-// 	tabOperacio->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-// 	tabOperacio->setMaximumHeight(60);
-	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
 	menu_consola->insertItem(i18n("Save Log"), this, SLOT(saveLog()));
 	menu->insertItem(i18n("Console"), menu_consola);
-// 	consola->setTabOrder(operacio, tabOperacio);
 	//tab consola/////////////////
 	
 	//tab grafic2D/////////////////
-	QVBox *dibuix = new QVBox (pestanya);
-	QHBox *hgraf2d = new QHBox (dibuix);
-	hgraf2d->setSpacing(2);
+	QSplitter *hgraf2d = new QSplitter(this);
+	
 	grafic = new QGraph(hgraf2d);
-	QVBox *funcs2d = new QVBox (hgraf2d);
-	funcs2d->setMaximumWidth(250);
-	func2dlist = new KListView(funcs2d);
+	QWidget *graphtab = new QWidget(hgraf2d);
+	QVBoxLayout *funcs2d = new QVBoxLayout(graphtab);
+	graphtab->setMaximumWidth(250);
+	func2dlist = new KListView(graphtab);
 	func2dlist->addColumn(i18n("Function"));
 	func2dlist->addColumn(i18n("Color"));
-	func2dlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	func2dlist->setFixedWidth(250);
-	KPushButton *afegeix = new KPushButton(i18n("Add function"), funcs2d);
-	pestanya->addTab(dibuix, i18n("2D Graph"));
+	func2dlist->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	KPushButton *addfunc = new KPushButton(i18n("Add function"), graphtab);
 	
-// 	connect(func2dlist, SIGNAL(itemRenamed ( QListViewItem *) ), this, SLOT(slot_editat(QListViewItem *)));
+	
+	funcs2d->addWidget(func2dlist);
+	funcs2d->addWidget(addfunc);
+	pestanya->addTab(hgraf2d, i18n("2D Graph"));
+	
 	connect(func2dlist, SIGNAL(clicked( QListViewItem *) ), this, SLOT(slot_editat(QListViewItem*)));
 	connect(func2dlist, SIGNAL(spacePressed( QListViewItem *) ), this, SLOT(slot_editat(QListViewItem*)));
 	connect(func2dlist, SIGNAL(selectionChanged( QListViewItem *) ), this, SLOT(slot_editat(QListViewItem*)));
 	connect(func2dlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_func(QListViewItem*, const QPoint&, int )));
-	connect(afegeix, SIGNAL(clicked()), this, SLOT(new_func()));
+	connect(addfunc, SIGNAL(clicked()), this, SLOT(new_func()));
 	
 	res = new KPopupMenu(this);
 		res->insertItem(i18n("Poor"), this, SLOT(set_res_low()),0,G2D_RES_LOW);
@@ -177,7 +172,7 @@ void KAlgebra::opera_gen(QString op){
 			err_no = a.setTextMML(op);
 		else {
 			err_no = a.setText(op);
-			operacioMML->setText(a.textMML());
+// 			operacioMML->setText(a.textMML());
 		}
 		
 		if(err_no==0)
