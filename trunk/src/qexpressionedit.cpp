@@ -25,6 +25,18 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode
 
 QExpressionEdit::~QExpressionEdit() {}
 
+bool QExpressionEdit::isMathML()
+{
+	switch(m_highlight->mode()) {
+		case MathML:
+			return true;
+		case Expression:
+			return false;
+		default:
+			return this->text().stripWhiteSpace()[0]=='<';
+	}
+}
+
 void QExpressionEdit::returnP() {
 	removenl();
 	m_history.last() = this->text();

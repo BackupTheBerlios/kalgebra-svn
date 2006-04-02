@@ -16,6 +16,8 @@ public:
 	~QExpressionEdit();
 	inline bool mode() { return m_highlight->mode(); }
 	inline void setMode(Mode en) { return m_highlight->setMode(en); }
+	
+	bool isMathML();
 private:
 	QLabel *m_helptip;
 	QAlgebraHighlighter *m_highlight;

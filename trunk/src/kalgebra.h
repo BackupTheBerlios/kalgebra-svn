@@ -34,6 +34,7 @@
 #include <dcopclient.h>
 #include <kstandarddirs.h>
 #include <kstatusbar.h>
+#include <kaction.h>
 
 #include "kfunctionedit.h"
 #include "kvaredit.h"
@@ -82,11 +83,9 @@ public:
 
 private:
 	QTabWidget *pestanya;
-	KMenuBar *menu;
 	
 	//tab consola
 	QExpressionEdit *operacio;
-// 	QExpressionEdit *operacioMML;
 	KTabWidget *tabOperacio;
 	void opera_gen(QString);
 	QAlgebraHighlighter *m_alg_high;
@@ -109,7 +108,6 @@ private:
 	
 	//tab grafic3D
 	QExpressionEdit *funcio3d;
-	QExpressionEdit *funcio3dMML;
 	Q3DGraph *grafic3d;
 	KTabWidget *tabFuncio3d;
 	bool transparencia;
@@ -120,7 +118,6 @@ private:
 public slots:
 	//Console
 	void opera();
-	void operaMML();
 	void saveLog();
 	void edit_var(QListViewItem *item, const QPoint &p,int);
 	
@@ -132,7 +129,6 @@ public slots:
 	void slot_editat(QListViewItem *);
 	void new_func();
 	void imatge2d();
-	void dibuixaMML();
 	void edit_func(QListViewItem *item, const QPoint &p,int);
 	void slot_togglesquares();
 	
@@ -143,7 +139,6 @@ public slots:
 	void slot_transparencia();
 	void slot_getpixmap();
 	void dibuixa3d();
-	void dibuixa3dMML();
 	void changeStatusBar(const QString&);
 };
 

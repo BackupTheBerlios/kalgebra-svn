@@ -44,8 +44,10 @@ KFunctionEdit::KFunctionEdit(QWidget *parent, const char *name, bool modal, WFla
 KFunctionEdit::~KFunctionEdit(){}
 
 void KFunctionEdit::edit(bool){	//Let's see if the exp is correct
-	Analitza a; int err_num;
-	if(m_func->text()[0]=='<') {
+	Analitza a;
+	int err_num;
+	
+	if(m_func->isMathML()) {
 		err_num= a.setTextMML(m_func->text());
 		m_func->setEnabled(false);
 	} else {

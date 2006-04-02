@@ -2,7 +2,6 @@
 
 QAlgebraHighlighter::QAlgebraHighlighter(QTextEdit *textEdit) : QSyntaxHighlighter(textEdit), m_mode(Autodetect){}
 
-
 int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfLastPara) {
 	setFormat( 0, text.length(), Qt::black);
 	if(m_mode==MathML || (m_mode==Autodetect && text[0]=='<'))

@@ -2,19 +2,18 @@
 
 KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" ) {
 // 	setXMLFile("kalgebraui.rc");
-	ultim_error = true;
+	this->setMinimumSize(809,500);
 	
-	this->statusBar()->show();
 	m_status = new QLabel(0, this->statusBar());
 	m_status->setMinimumWidth(809);
 	m_status->setFixedHeight(18);
 	m_status->setAlignment(AlignTop);
 	this->statusBar()->addWidget(m_status);
+	this->statusBar()->show();
 	
-	this->setMinimumSize(809,500);
 	pestanya = new KTabWidget(this, "tab Principal");
 	pestanya->setFocusPolicy(QWidget::NoFocus);
-	menu = new KMenuBar(this);
+//	pestanya->setTabPosition(QTabWidget::Bottom); //I wonder how, I wonder why...
 	
 	//tab consola/////////////////
 	QWidget *consola = new QWidget(this);
@@ -38,7 +37,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	
 	pestanya->addTab(consola, i18n("Console"));
 	cons_layout->addWidget(log_split);
-	cons_layout->setSpacing(10);
+	cons_layout->setSpacing(5);
 	cons_layout->addWidget(operacio);
 	
 	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
@@ -48,7 +47,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
 	menu_consola->insertItem(i18n("Save Log"), this, SLOT(saveLog()));
-	menu->insertItem(i18n("Console"), menu_consola);
+	this->menuBar()->insertItem(i18n("Console"), menu_consola);
 	//tab consola/////////////////
 	
 	//tab grafic2D/////////////////
@@ -63,7 +62,6 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	func2dlist->addColumn(i18n("Color"));
 	func2dlist->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	KPushButton *addfunc = new KPushButton(i18n("Add function"), graphtab);
-	
 	
 	funcs2d->addWidget(func2dlist);
 	funcs2d->addWidget(addfunc);
@@ -86,26 +84,22 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 		g2d->insertItem(i18n("Save Picture"), this, SLOT(imatge2d()));
 		g2d->insertItem(i18n("Toggle Squares"), this, SLOT(slot_togglesquares()),0,G2D_TOGGSQUARES);
 		g2d->insertItem(i18n("Precision"), res);
-	menu->insertItem(i18n("&Graph"), g2d);
+	this->menuBar()->insertItem(i18n("&Graph"), g2d);
 	//tab grafic2D/////////////////
 	
 	//tab grafic3D/////////////////
-	QVBox *dibuix3d = new QVBox (pestanya);
+	QWidget *dibuix3d=new QWidget(this);
+	QVBoxLayout *layout3d = new QVBoxLayout(dibuix3d);
 	grafic3d = new Q3DGraph(dibuix3d);
 	
-	tabFuncio3d = new KTabWidget(dibuix3d, "tab Entrada Grafic3D");
-	tabFuncio3d->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-	funcio3d = new QExpressionEdit(tabFuncio3d);
+	funcio3d = new QExpressionEdit(dibuix3d,0, Autodetect);
 	funcio3d->setText("sin(x)*sin(y)"); //NOTE: La huevera, by Miquel Grau
-	funcio3dMML = new QExpressionEdit(dibuix3d);
-	funcio3dMML->setText("<math><apply><times/><apply><sin/><ci>x</ci></apply><apply><sin/><ci>y</ci></apply></apply></math>");
 	pestanya->addTab(dibuix3d, i18n("3D Graph"));
 	connect(funcio3d, SIGNAL( returnPressed() ), this, SLOT(dibuixa3d()) );
-	connect(funcio3dMML, SIGNAL( returnPressed() ), this, SLOT(dibuixa3dMML()) );
 	
-	tabFuncio3d->addTab(funcio3d, "f(x,y) function");
-	tabFuncio3d->addTab(funcio3dMML, "MathML f(x,y) function");
-	tabFuncio3d->setFixedHeight(60);
+	layout3d->setSpacing(5);
+	layout3d->addWidget(grafic3d);
+	layout3d->addWidget(funcio3d);
 	
 	//menu3d
 	transparencia=false;
@@ -119,12 +113,14 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 		g3d->insertItem(i18n("Save Picture"), this, SLOT(slot_getpixmap()));
 		g3d->insertItem(i18n("Transparency"), this, SLOT(slot_transparencia()),0,G3D_TRANS);
 		g3d->insertItem(i18n("Graph Type"), tipus3d);
-	menu->insertItem(i18n("G&raph 3D"), g3d);
+	
+	this->menuBar()->insertItem(i18n("G&raph 3D"), g3d);
 	//tab grafic3D/////////////////
 	
 	KPopupMenu *help = helpMenu();
-	menuBar()->insertItem( i18n("&Help"), help );
+	this->menuBar()->insertItem( i18n("&Help"), help );
 	
+	ultim_error = true;
 	setCentralWidget( pestanya );
 	update_varlist();
 }
@@ -132,15 +128,14 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 KAlgebra::~KAlgebra(){}
 
 void KAlgebra::dibuixa3d(){
-	grafic3d->setFunc(funcio3d->text());
+	if(funcio3d->isMathML())
+		grafic3d->setFuncMML(funcio3d->text());
+	else
+		grafic3d->setFunc(funcio3d->text());
 }
 
 void KAlgebra::opera(){
 	opera_gen(operacio->text());
-}
-
-void KAlgebra::operaMML(){
-// 	opera_gen(operacioMML->text());
 }
 
 void KAlgebra::opera_gen(QString op){
@@ -236,14 +231,6 @@ void KAlgebra::update_varlist(){
 		QListViewItem *klvi = new QListViewItem( varlist, *it, treu_tags(a.str(a.vars.value(*it))).stripWhiteSpace());
 		varlist->insertItem(klvi);
 	}
-}
-
-void KAlgebra::dibuixaMML(){
-// 	grafic->setFuncMML(funcioMML->text());
-}
-
-void KAlgebra::dibuixa3dMML(){
-	grafic3d->setFuncMML(funcio3dMML->text());
 }
 
 void KAlgebra::imatge2d(){
