@@ -46,7 +46,6 @@ void QExpressionEdit::returnP() {
 
 void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 	bool ch;
-	int pos, par;
 	switch(e->key()){
 		case Qt::Key_Up:
 			m_histPos++;
@@ -75,10 +74,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 	QString paraula=tit, p;
 	int nparams=0;
-	bool word;
-	int cat=0;
-	
-	qDebug("%d, %d, ... %d", act, cur, exp.length());
+	int cat=1;
 	
 	for(; act<cur || act<exp.length(); ++act){
 		if(exp.at(act).isLetter()) {
@@ -94,7 +90,6 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 				
 				if(param_rec != -1){
 					param = param_rec;
-					qDebug("########%s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 					return p;
 				}
 				
@@ -110,11 +105,10 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 			cat++;
 		} else if(exp.at(act) == ')') {
 			cat--;
-			if(cat > 0) {
+			if(cat <= 0) {
 				param=-1;
 				return QString::null;
-			} else
-				qDebug("cat: %s", paraula.ascii());
+			}
 		}
 	}
 	param=nparams;
