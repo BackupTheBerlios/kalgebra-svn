@@ -78,7 +78,7 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 	bool word;
 	int cat=0;
 	
-// 	qDebug("in: %s", exp.mid(act, cur-act).ascii());
+	qDebug("%d, %d, ... %d", act, cur, exp.length());
 	
 	for(; act<cur || act<exp.length(); ++act){
 		if(exp.at(act).isLetter()) {
@@ -88,8 +88,8 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 			
 			if(exp[act]=='(' && act<cur) {//This is a function
 				int param_rec=0;
-				act++;
 				
+				act++;
 				p=findP(exp, act, cur, param_rec, paraula);
 				
 				if(param_rec != -1){
@@ -110,49 +110,41 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 			cat++;
 		} else if(exp.at(act) == ')') {
 			cat--;
-// 			if(cat <= 0) {
+			if(cat > 0) {
 				param=-1;
 				return QString::null;
-// 			} else
+			} else
 				qDebug("cat: %s", paraula.ascii());
 		}
 	}
 	param=nparams;
-	qDebug("out: %d -- %d", param, cur-act);
+// 	qDebug("out: %d -- %d", param, cur-act);
 	
-	qDebug("####out####%s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
+// 	qDebug("####out####%s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 	return tit;
 }
 
 void QExpressionEdit::cursorMov(int par, int pos) {
-// 	qDebug("...par:%d....pos:%d.......%c......", par, pos, this->text().at(pos-1).latin1());
 	int nparam=0, p=0;
-	QString func = findP(this->text(), p, pos, nparam, "a");
-// 	qDebug("------------>%s", func.ascii());
-// 	qDebug("param: %d\n", nparam);
+	QString func = findP(this->text().mid(0,pos), p, pos, nparam, "");
 	helpShow(func, nparam);
-	
-	#if 0
-	QChar last=this->text().at(pos-1);
-	if(last=='('){
-		int i;
-// 		qDebug("in");
-		for(i=pos-2; i>0 && this->text()[i].isLetter(); --i);
-		helpShow(this->text().mid(i, pos-i-1));
-		
-// 		qDebug("out: %s", this->text().mid(i, pos-i).ascii());
-	} else if(last==')')
-		signalHelper("");
-	#endif
 }
 
 void QExpressionEdit::helpShow(const QString& funcname, int param) {
 	int op = Analitza::isOperador(funcname);
 	if(op) {
-		if(op == -1)
-			emit signalHelper(QString("<qt><b>%1</b>(par1, ...)</qt>").arg(funcname));
-		else {
+		if(op == -1) {
 			QString sample = QString("<qt><b>%1</b>(").arg(funcname);
+			for(int i=0; i<param; ++i) {
+				if(i+1==param)
+					sample += QString("<em text='green'>par%1</em>").arg(i+1);
+				else
+					sample += QString("par%1").arg(i+1);
+				sample+= ", ";
+			}
+			emit signalHelper(sample+"...)</qt>");
+		} else {
+			QString sample = (param < op) ? QString("<qt><b>%1</b>(").arg(funcname) : QString("<qt text='red'><b>%1</b>(").arg(funcname);
 			for(int i=0; i<op; ++i) {
 				if(i==param)
 					sample += QString("<em>par%1</em>").arg(i+1);
