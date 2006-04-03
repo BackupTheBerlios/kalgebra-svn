@@ -72,17 +72,64 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 	
 }
 
+QString findP(const QString& exp, int &act, int cur, int &param){
+	QString paraula, p;
+	param=0;
+	int nparams=0;
+	bool word;
+	
+	for(; act<cur || act<exp.length() ; ++act){ //get word
+		qDebug("<<<<<>>>>>>>>>>><<<<<<<>>>>>><%s", paraula.ascii());
+		if(exp.at(act).isLetter()) {
+			for(; exp[act].isLetter(); act++)
+				paraula += exp[act];
+			
+			if(exp[act]=='(' && act<cur){//This is a function
+				int param_rec=0;
+				p=findP(exp, act, cur, param_rec);
+// 				qDebug("xxxxxxxxxx: %s, act: %d, cur: %d", p.ascii(), act, cur);
+				
+				if(!p.isNull()) {
+					param = param_rec;
+					return p;
+				}
+			} else { //This was a var
+				paraula=QString::null;
+				
+			}
+		} else if(exp.at(act) == ',') {
+			nparams++;
+		} else if(exp.at(act) == ')') {
+			nparams = 0;
+			return QString::null;
+		} else
+			paraula=QString::null;
+	}
+	qDebug(";;;;;;;;;%d", nparams);
+	param=nparams;
+	return paraula;
+}
+
 void QExpressionEdit::cursorMov(int par, int pos) {
 // 	qDebug("...par:%d....pos:%d.......%c......", par, pos, this->text().at(pos-1).latin1());
+	int nparam=0, p=0;
+	QString func = findP(this->text(), p, pos, nparam);
+	qDebug("------------>%s", func.ascii());
+	qDebug("param: %d\n\n\n", nparam);
+	helpShow(func, nparam);
+	
+	#if 0
 	QChar last=this->text().at(pos-1);
 	if(last=='('){
 		int i;
 // 		qDebug("in");
 		for(i=pos-2; i>0 && this->text()[i].isLetter(); --i);
 		helpShow(this->text().mid(i, pos-i-1));
+		
 // 		qDebug("out: %s", this->text().mid(i, pos-i).ascii());
 	} else if(last==')')
 		signalHelper("");
+	#endif
 }
 
 void QExpressionEdit::helpShow(const QString& funcname, int param) {
@@ -93,11 +140,16 @@ void QExpressionEdit::helpShow(const QString& funcname, int param) {
 		else {
 			QString sample = QString("<qt><b>%1</b>(").arg(funcname);
 			for(int i=0; i<op; ++i) {
-				sample += QString("par%1").arg(i+1);
+				if(i==param)
+					sample += QString("<em>par%1</em>").arg(i+1);
+				else
+					sample += QString("par%1").arg(i+1);
 				if(i<op-1) sample+= ", ";
 			}
 			emit signalHelper(sample+")</qt>");
 		}
+	} else {
+		emit signalHelper(QString::null);
 	}
 // 	qDebug(funcname.ascii());
 // 	m_helptip->show();

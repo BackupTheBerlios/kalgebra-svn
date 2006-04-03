@@ -35,6 +35,8 @@
 #include <kstandarddirs.h>
 #include <kstatusbar.h>
 #include <kaction.h>
+#include <kactionclasses.h>
+#include <kstdaccel.h>
 
 #include "kfunctionedit.h"
 #include "kvaredit.h"

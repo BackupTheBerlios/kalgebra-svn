@@ -30,7 +30,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	varlist->addColumn(i18n("Name"),60);
 	varlist->addColumn(i18n("Value"),-1);
 	varlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	operacio = new QExpressionEdit(consola, 0, Expression);
+	operacio = new QExpressionEdit(consola, 0, Autodetect);
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
 	operacio->setFocus();
@@ -46,7 +46,9 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	//connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
 	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
-	menu_consola->insertItem(i18n("Save Log"), this, SLOT(saveLog()));
+	KAction *actSaveLog = new KAction(i18n("Save Log"), "savelog", KStdAccel::shortcut(KStdAccel::Save), this, SLOT(saveLog()), actionCollection(), "save");
+	actSaveLog->plug(menu_consola);
+	
 	this->menuBar()->insertItem(i18n("Console"), menu_consola);
 	//tab consola/////////////////
 	
@@ -103,6 +105,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	
 	//menu3d
 	transparencia=false;
+	
 	tipus3d = new KPopupMenu(this);
 		tipus3d->insertItem(i18n("Dots"), this, SLOT(slot_3dpoints()),0,G3D_TYPE_DOTTED);
 		tipus3d->insertItem(i18n("Lines"), this, SLOT(slot_3dlines()),0,G3D_TYPE_LINES);
