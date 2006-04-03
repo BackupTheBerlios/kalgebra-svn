@@ -72,50 +72,64 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 	
 }
 
-QString findP(const QString& exp, int &act, int cur, int &param){
-	QString paraula, p;
-	param=0;
+QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
+	QString paraula=tit, p;
 	int nparams=0;
 	bool word;
+	int cat=0;
 	
-	for(; act<cur || act<exp.length() ; ++act){ //get word
-		qDebug("<<<<<>>>>>>>>>>><<<<<<<>>>>>><%s", paraula.ascii());
+// 	qDebug("in: %s", exp.mid(act, cur-act).ascii());
+	
+	for(; act<cur || act<exp.length(); ++act){
 		if(exp.at(act).isLetter()) {
+			paraula=QString::null;
 			for(; exp[act].isLetter(); act++)
 				paraula += exp[act];
 			
-			if(exp[act]=='(' && act<cur){//This is a function
+			if(exp[act]=='(' && act<cur) {//This is a function
 				int param_rec=0;
-				p=findP(exp, act, cur, param_rec);
-// 				qDebug("xxxxxxxxxx: %s, act: %d, cur: %d", p.ascii(), act, cur);
+				act++;
 				
-				if(!p.isNull()) {
+				p=findP(exp, act, cur, param_rec, paraula);
+				
+				if(param_rec != -1){
 					param = param_rec;
+					qDebug("########%s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 					return p;
 				}
+				
+// 				if(p.isNull())
+// 					p=paraula;
+				cat++;
 			} else { //This was a var
 				paraula=QString::null;
-				
 			}
 		} else if(exp.at(act) == ',') {
 			nparams++;
+		} else if(exp.at(act) == '(') {
+			cat++;
 		} else if(exp.at(act) == ')') {
-			nparams = 0;
-			return QString::null;
-		} else
-			paraula=QString::null;
+			cat--;
+// 			if(cat <= 0) {
+				param=-1;
+				return QString::null;
+// 			} else
+				qDebug("cat: %s", paraula.ascii());
+		}
 	}
-	qDebug(";;;;;;;;;%d", nparams);
 	param=nparams;
-	return paraula;
+	qDebug("out: %d -- %d", param, cur-act);
+	
+	qDebug("####out####%s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
+	return tit;
 }
 
 void QExpressionEdit::cursorMov(int par, int pos) {
 // 	qDebug("...par:%d....pos:%d.......%c......", par, pos, this->text().at(pos-1).latin1());
 	int nparam=0, p=0;
-	QString func = findP(this->text(), p, pos, nparam);
-	qDebug("------------>%s", func.ascii());
-	qDebug("param: %d\n\n\n", nparam);
+	QString func = findP(this->text(), p, pos, nparam, "a");
+// 	qDebug("------------>%s", func.ascii());
+// 	qDebug("param: %d\n", nparam);
 	helpShow(func, nparam);
 	
 	#if 0
