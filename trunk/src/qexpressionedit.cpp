@@ -74,7 +74,9 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 	QString paraula=tit, p;
 	int nparams=0;
-	int cat=1;
+	int cat=0;
+	
+	qDebug("####in####%s", tit.ascii());
 	
 	for(; act<cur || act<exp.length(); ++act){
 		if(exp.at(act).isLetter()) {
@@ -90,7 +92,10 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 				
 				if(param_rec != -1){
 					param = param_rec;
+					qDebug("****out2***<%s> %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 					return p;
+				} else {
+					qDebug("bonga bonga %s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 				}
 				
 // 				if(p.isNull())
@@ -105,22 +110,23 @@ QString findP(const QString& exp, int &act, int cur, int &param, QString tit){
 			cat++;
 		} else if(exp.at(act) == ')') {
 			cat--;
-			if(cat <= 0) {
+// 			if(cat <= 0) {
 				param=-1;
 				return QString::null;
-			}
+// 			}
 		}
 	}
 	param=nparams;
 // 	qDebug("out: %d -- %d", param, cur-act);
 	
-// 	qDebug("####out####%s %s %s", p.ascii(), paraula.ascii(), tit.ascii());
+	qDebug("####out####%s %s <%s>", p.ascii(), paraula.ascii(), tit.ascii());
 	return tit;
 }
 
 void QExpressionEdit::cursorMov(int par, int pos) {
 	int nparam=0, p=0;
-	QString func = findP(this->text().mid(0,pos), p, pos, nparam, "");
+	QString func = findP(this->text().mid(0,pos), p, pos, nparam, "times");
+	qDebug("\n---");
 	helpShow(func, nparam);
 }
 
