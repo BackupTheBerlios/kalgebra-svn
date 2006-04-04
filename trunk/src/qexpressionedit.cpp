@@ -75,6 +75,7 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 	QString paraula=tit, p;
 	int nparams=0;
 	int cat=0;
+	if(!tit.isNull()) cat=1;
 	
 // 	qDebug("####in####%s", tit.ascii());
 	
@@ -83,6 +84,7 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 			paraula=QString::null;
 			for(; exp[act].isLetter(); act++)
 				paraula += exp[act];
+			
 			
 			if(exp[act]=='(' && act<cur) {//This is a function
 				int param_rec=0;
@@ -95,23 +97,27 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 // 					qDebug("****out2***<%s> %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 					return p;
 				}
-				
-				cat++;
-			} else if(act>=cur) { //This was a var or an unfinnished func name
+			}/* else if(act>=cur) { //This was a var or an unfinnished func name
 				param = -2; //If it returns -2 means it is the final var
 				return paraula;
-			}
+			}*/
+			act--;
 		} else if(exp.at(act) == ',') {
 			nparams++;
 		} else if(exp.at(act) == '(') {
 			cat++;
 		} else if(exp.at(act) == ')') {
 			cat--;
-// 			if(cat <= 0) {
+			qDebug("cat: %d", cat);
+			if(cat == 0) {
 				param=-1; //Means this is a useless func
 				return QString::null;
-// 			}
+			} else if(cat <0){
+				param=-3;
+				return QString::null;
+			}
 		}
+// 		qDebug("word: %s", exp.mid(act, exp.length()-act).ascii());
 	}
 	param=nparams;
 // 	qDebug("out: %d -- %d", param, cur-act);
@@ -136,15 +142,7 @@ void QExpressionEdit::helpShow(const QString& funcname, int param) {
 	int op = Analitza::isOperador(funcname);
 	if(op) {
 		if(op == -1) {
-			QString sample = QString("<qt><b>%1</b>(").arg(funcname);
-			for(int i=0; i<param; ++i) {
-				if(i+1==param)
-					sample += QString("<em text='green'>par%1</em>").arg(i+1);
-				else
-					sample += QString("par%1").arg(i+1);
-				sample+= ", ";
-			}
-			emit signalHelper(sample+"...)</qt>");
+			emit signalHelper(QString("<qt><b>%1</b>(..., par%2, ...)").arg(funcname).arg(param+1));
 		} else {
 			QString sample = (param < op) ? QString("<qt><b>%1</b>(").arg(funcname) : QString("<qt text='red'><b>%1</b>(").arg(funcname);
 			for(int i=0; i<op; ++i) {
@@ -158,7 +156,9 @@ void QExpressionEdit::helpShow(const QString& funcname, int param) {
 		}
 	} else if (param==-2){ //in case it is a var or an unfinnished func name... Dunno what to do here yet...
 // 		emit signalHelper("hola: " + funcname);
-	} else
+	} else if (param==-3)
+		emit signalHelper("catalan error");
+	else
 		emit signalHelper("");
 // 	qDebug(funcname.ascii());
 // 	m_helptip->show();
