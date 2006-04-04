@@ -18,6 +18,7 @@ public:
 	inline void setMode(Mode en) { return m_highlight->setMode(en); }
 	
 	bool isMathML();
+	QString editingWord(int pos, int &param);
 private:
 	QLabel *m_helptip;
 	QAlgebraHighlighter *m_highlight;
@@ -30,6 +31,8 @@ private:
 	bool help;
 	
 	void helpShow(const QString& funcname, int param=0);
+	
+	static QString findPrec(const QString& exp, int &act, int cur, int &param, QString tit);
 	
 public slots:
 	void returnP();
