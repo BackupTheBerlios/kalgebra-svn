@@ -47,8 +47,12 @@ TOKEN QAlgebraHighlighter::getToken(QString &a, unsigned int &l){
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
 		ret.val += a[0];
-		for(i=1; a[i].isLetter(); i++)	a[i]=' ';
-		if(a[i]=='(')
+		for(i=1; a[i].isLetter(); i++){
+			ret.val += a[i];
+			a[i]=' ';
+		}
+		
+		if(a[i]=='(' && Analitza::isOperador(ret.val))
 			ret.tipus=tFunc;
 		else 
 			ret.tipus= tVar;

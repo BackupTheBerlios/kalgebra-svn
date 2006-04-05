@@ -97,18 +97,20 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 // 					qDebug("****out2***<%s> %s %s", p.ascii(), paraula.ascii(), tit.ascii());
 					return p;
 				}
-			}/* else if(act>=cur) { //This was a var or an unfinnished func name
+			} else act--;
+			
+			/* else if(act>=cur) { //This was a var or an unfinnished func name
 				param = -2; //If it returns -2 means it is the final var
 				return paraula;
 			}*/
-			act--;
+			
 		} else if(exp.at(act) == ',') {
 			nparams++;
 		} else if(exp.at(act) == '(') {
 			cat++;
 		} else if(exp.at(act) == ')') {
 			cat--;
-			qDebug("cat: %d", cat);
+// 			qDebug("cat: %d", cat);
 			if(cat == 0) {
 				param=-1; //Means this is a useless func
 				return QString::null;
@@ -142,12 +144,12 @@ void QExpressionEdit::helpShow(const QString& funcname, int param) {
 	int op = Analitza::isOperador(funcname);
 	if(op) {
 		if(op == -1) {
-			emit signalHelper(QString("<qt><b>%1</b>(..., par%2, ...)").arg(funcname).arg(param+1));
+			emit signalHelper(QString("<qt><em>%1</em>(..., <b>par%2</b>, ...)").arg(funcname).arg(param+1));
 		} else {
-			QString sample = (param < op) ? QString("<qt><b>%1</b>(").arg(funcname) : QString("<qt text='red'><b>%1</b>(").arg(funcname);
+			QString sample = (param < op) ? QString("<qt><em>%1</em>(").arg(funcname) : QString("<qt text='red'><em>%1</em>(").arg(funcname);
 			for(int i=0; i<op; ++i) {
 				if(i==param)
-					sample += QString("<em>par%1</em>").arg(i+1);
+					sample += QString("<b>par%1</b>").arg(i+1);
 				else
 					sample += QString("par%1").arg(i+1);
 				if(i<op-1) sample+= ", ";
