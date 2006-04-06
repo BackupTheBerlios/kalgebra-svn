@@ -23,7 +23,7 @@ public:
 	KFunctionEdit(QWidget *parent = 0, const char *name = 0, bool modal = FALSE, WFlags f = 0 );
 	~KFunctionEdit();
 	inline QString text() { return m_func->text(); }
-	inline void setText(const QString &newText) { m_func->setText(newText); }
+	void setText(const QString &newText);
 	inline QColor color(){ return m_color->color(); }
 	inline void setColor(const QColor &newColor) { m_color->setColor(newColor); }
 	inline bool isCorrect(){ return m_correct; }

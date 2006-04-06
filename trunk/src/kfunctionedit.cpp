@@ -43,6 +43,11 @@ KFunctionEdit::KFunctionEdit(QWidget *parent, const char *name, bool modal, WFla
 
 KFunctionEdit::~KFunctionEdit(){}
 
+void KFunctionEdit::setText(const QString &newText) {
+	m_func->setText(newText);
+	m_func->setModified(true);
+}
+
 void KFunctionEdit::edit(bool){	//Let's see if the exp is correct
 	Analitza a;
 	int err_num;

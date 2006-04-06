@@ -68,7 +68,7 @@ void QGraph::dibuixa_eixos(QPainter *finestra){
 	//EO dibuixa eixos viewport
 	//write coords
 	finestra->drawText(QPoint(3+this->width()/2, 10                ), QString("%1").arg(viewport.bottom()));//Botom coords
-	finestra->drawText(QPoint(3+this->width()/2, this->height()-5  ), QString("%1").arg(viewport.top()));//Top coords
+	finestra->drawText(QPoint(3+this->width()/2, this->height()-5  ), QString("%1").arg(viewport.top()));	//Top coords
 	finestra->drawText(QPoint(8                , this->height()/2-5), QString("%1").arg(viewport.left()));	//Left coords
 	finestra->drawText(QPoint(this->width()-30 , this->height()/2-5), QString("%1").arg(viewport.right()));	//Right coords
 	//EO write coords
@@ -305,7 +305,8 @@ void QGraph::pintafunc(QPaintDevice *qpd){
 			for(/*register int*/ j=0; j<i;j++){
 				if(!nan){
 					act=toWidget((*it).points[j].x(), (*it).points[j].y(), &nan);
-					// qDebug("%4d -- %4d", act.y(), act.x());//y->2
+// 					qDebug("%4d -- %4d", act.y(), act.x());//y->2
+					
 					if(act.x()!=ultim.x() && act.x() > 0 && (act.y() > 0 || (act.y()==0 && !outside)) && act.x() < this->width() && act.y() <= this->height()){
 						finestra.drawLine(ultim, act);
 						outside=false;
