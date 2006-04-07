@@ -1,0 +1,224 @@
+# Portuguese translation of KAlgebra.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the KAlgebra package.
+# Sara Carvalho <carvalho.sara@gmail.com>, 2005.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: KAlgebra 20051115\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-02-02 04:49+0100\n"
+"PO-Revision-Date: 2006-01-04 17:34-0000\n"
+"Last-Translator: Sara Carvalho <carvalho.sara@gmail.com>\n"
+"Language-Team: Sara Carvalho <carvalho.sara@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: analitza.cpp:37 analitza.cpp:56
+msgid "Error while parsing: %1<br />\n"
+msgstr "Erro durante análise: %1<br/>\n"
+
+#: analitza.cpp:42
+msgid "Error while parsing: %1<br/>"
+msgstr "Erro durante análise: %1<br/>"
+
+#: analitza.cpp:123
+msgid "The operator <em>%1</em> hasn't been implemented<br />\n"
+msgstr "O operador <em>%1</em> não foi implementado<br />\n"
+
+#: analitza.cpp:142
+msgid "The <em>%1</em> operator, should have more than 1 parameter<p />"
+msgstr "O operador <em>%1</em> deve ter mais do que 1 parâmetro <p/>"
+
+#: analitza.cpp:144
+msgid ""
+"Can't have %1 parameter with <em>%2</em> operator, it should have %3 "
+"parameter<p />"
+msgstr ""
+"Não pode ter o parâmetro %1 com o operador <em>%2</em>. Deve ter o parâmetro "
+"%3<p/>"
+
+#: analitza.cpp:301
+msgid "The operator <em>%1</em> hasn't been implemented<br/>"
+msgstr "O operador <em>%1</em> não foi implementado<br />"
+
+#: analitza.cpp:357
+msgid "The variable <em>%1</em> doesn't exist<br />\n"
+msgstr "A variável <em>%1</em> não existe<br/>\n"
+
+#: function.cpp:43
+msgid "Don't know how to represent f(%1)"
+msgstr "Não sei como representar f(%1)"
+
+#: function.cpp:45
+msgid "Too much lambda for a 2D Graph"
+msgstr "Demasiado lambda para um Gráfico 2D"
+
+#: kalgebra.cpp:24
+msgid "Name"
+msgstr "Nome"
+
+#: kalgebra.cpp:25
+msgid "Value"
+msgstr "Valor"
+
+#: kalgebra.cpp:33 kalgebra.cpp:46
+msgid "Console"
+msgstr "Consola"
+
+#: kalgebra.cpp:39
+msgid "Operation"
+msgstr "Operação"
+
+#: kalgebra.cpp:40
+msgid "MathML Operation"
+msgstr "Operação MathML"
+
+#: kalgebra.cpp:45
+msgid "Save Log"
+msgstr "Gravar Registo"
+
+#: kalgebra.cpp:58
+msgid "Function"
+msgstr "Função"
+
+#: kalgebra.cpp:59
+msgid "Color"
+msgstr "Cor"
+
+#: kalgebra.cpp:62
+msgid "Add function"
+msgstr "Adicionar Função"
+
+#: kalgebra.cpp:63
+msgid "2D Graph"
+msgstr "Gráfico 2D"
+
+#: kalgebra.cpp:73
+msgid "Poor"
+msgstr "Pobre"
+
+#: kalgebra.cpp:74
+msgid "Standard"
+msgstr "Padrão"
+
+#: kalgebra.cpp:75
+msgid "Fine"
+msgstr "Refinado"
+
+#: kalgebra.cpp:76
+msgid "Very Fine"
+msgstr "Muito Refinado"
+
+#: kalgebra.cpp:80 kalgebra.cpp:113
+msgid "Save Picture"
+msgstr "Gravar imagem"
+
+#: kalgebra.cpp:81
+msgid "Toggle Squares"
+msgstr "(Des)Activar Grelha"
+
+#: kalgebra.cpp:82
+msgid "Precision"
+msgstr "Precisão"
+
+#: kalgebra.cpp:83
+msgid "&Graph"
+msgstr "&Gráfico"
+
+#: kalgebra.cpp:96
+msgid "3D Graph"
+msgstr "Gráfico 3D"
+
+#: kalgebra.cpp:107
+msgid "Dots"
+msgstr "Pontos"
+
+#: kalgebra.cpp:108
+msgid "Lines"
+msgstr "Linhas"
+
+#: kalgebra.cpp:109
+msgid "Solid"
+msgstr "Sólido"
+
+#: kalgebra.cpp:114
+msgid "Transparency"
+msgstr "Transparência"
+
+#: kalgebra.cpp:115
+msgid "Graph Type"
+msgstr "Tipo de Gráfico"
+
+#: kalgebra.cpp:116
+msgid "G&raph 3D"
+msgstr "G&ráfico 3D"
+
+#: kalgebra.cpp:120
+msgid "&Help"
+msgstr "Ajuda"
+
+#: kalgebra.cpp:244
+msgid ""
+"*.svg|SVG Image (*.svg)\n"
+"*.png|PNG Image (*.png)"
+msgstr ""
+"*.svg|SVG Imagem (*.svg)\n"
+"*.png|PNG Imagem (*.png)"
+
+#: kfunctionedit.cpp:3 kvaredit.cpp:3
+msgid "Add/Edit a function"
+msgstr "Adicionar/Editar uma função"
+
+#: kfunctionedit.cpp:59
+msgid "<qt text='#090'><b>f(%1)=%2</b></qt>"
+msgstr "<qt text='#090'><b>f(%1)=%2</b></qt>"
+
+#: kfunctionedit.cpp:62
+msgid "<qt text='#090'><b>f(x)=%1</b></qt>"
+msgstr "<qt text='#090'><b>f(x)=%1</b></qt>"
+
+#: kfunctionedit.cpp:70
+msgid "<qt text='red'><b>WRONG</b></qt>"
+msgstr "<qt text='red'><b>ERRADO</b></qt>"
+
+#: main.cpp:7 main.cpp:18
+msgid "KAlgebra"
+msgstr "KAlgebra"
+
+#: qexp.cpp:194
+msgid "Missing right paranthesis<br />\n"
+msgstr "Falta parentesis direito<br />\n"
+
+#: qexp.cpp:197
+msgid "Missing operator< p/>\n"
+msgstr "Fata operador< p/>\n"
+
+#: qexp.cpp:200
+msgid "Unbalanced right parenthesis<br />\n"
+msgstr "Parentesis direito incorrecto<br />\n"
+
+#: qexp.cpp:203
+msgid "Error<br />\n"
+msgstr "Erro<br />\n"
+
+#: rc.cpp:3
+#, no-c-format
+msgid "C&ustom"
+msgstr "&Personalizado"
+
+#: _translatorinfo.cpp:1
+msgid ""
+"_: NAME OF TRANSLATORS\n"
+"Your names"
+msgstr "Sara Carvalho"
+
+#: _translatorinfo.cpp:3
+msgid ""
+"_: EMAIL OF TRANSLATORS\n"
+"Your emails"
+msgstr "carvalho.sara@gmail.com"
+
+#~ msgid "<qt text='#090'>f(x)=<b>%1</b></qt>"
+#~ msgstr "<qt text='#090'>f(x)=<b>%1</b></qt>"

@@ -1,175 +1,176 @@
-# translation of es.po to
+# translation of fr.po to
+# translation of fr-kalgebra.po to
 # translation of kalgebra.po to
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 #
 # Aleix Pol Gonzàlez <aleixpol@gmail.com>, 2005, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: es\n"
+"Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-02-02 04:49+0100\n"
-"PO-Revision-Date: 2006-02-02 05:08+0100\n"
-"Last-Translator: Aleix Pol Gonzàlez <aleixpol@gmail.com>\n"
-"Language-Team:  <kde-i18n-ca@kde.org>\n"
+"PO-Revision-Date: 2006-02-02 20:57+0100\n"
+"Last-Translator: animatrix\n"
+"Language-Team:  <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.1\n"
+"X-Generator: KBabel 1.11\n"
 
 #: analitza.cpp:37 analitza.cpp:56
 msgid "Error while parsing: %1<br />\n"
-msgstr "Error mientras se leía: %1<br />\n"
+msgstr "Erreur lors de l'analyse (parsing): %1<br />\n"
 
 #: analitza.cpp:42
 msgid "Error while parsing: %1<br/>"
-msgstr "Error mientras se leía: %1<br />"
+msgstr "Erreur lors de l'analyse (parsing): %1<br />"
 
 #: analitza.cpp:123
 msgid "The operator <em>%1</em> hasn't been implemented<br />\n"
-msgstr "El operador  %1 no ha sido implementado<br />\n"
+msgstr "L'opération <em>%1</em> n'a pas été mise en application<br />\n"
 
 #: analitza.cpp:142
 msgid "The <em>%1</em> operator, should have more than 1 parameter<p />"
-msgstr "El operador <em>%1</em> debería tener un parámetro<p/>"
+msgstr "L'opération <em>%1</em> devrait avoir plus d'un parametre.\t"
 
 #: analitza.cpp:144
 msgid ""
 "Can't have %1 parameter with <em>%2</em> operator, it should have %3 "
 "parameter<p />"
-msgstr "El operador <em>%2</em> no puede tener %1 parámetro, debería tener %3<p />"
+msgstr "Kalgebra ne peut avoir le paramètre %1 avec l'opération <em>%2</em>. Il devrait y avoir %3 paramètres<p />"
 
 #: analitza.cpp:301
 msgid "The operator <em>%1</em> hasn't been implemented<br/>"
-msgstr "El operador <em>%1</em> no ha sido implementado<br />"
+msgstr "L'opération %1 n'a pas été mise en application<br />"
 
 #: analitza.cpp:357
 msgid "The variable <em>%1</em> doesn't exist<br />\n"
-msgstr "La variable <em>%1</em> no existe<br/>\n"
+msgstr "La variable %1 n'existe pas<br />\n"
 
 #: function.cpp:43
 msgid "Don't know how to represent f(%1)"
-msgstr "No se puede representar f(%1)"
+msgstr "Kalgebra ne sait comment réprésenter f(%1)"
 
 #: function.cpp:45
 msgid "Too much lambda for a 2D Graph"
-msgstr "Demasiadas lambda para un gráfico 2D"
+msgstr "Trop de paramètres pour un graphique 2D"
 
 #: kalgebra.cpp:24
 msgid "Name"
-msgstr "Nombre"
+msgstr "Nom"
 
 #: kalgebra.cpp:25
 msgid "Value"
-msgstr "Valor"
+msgstr "Valeur"
 
 #: kalgebra.cpp:33 kalgebra.cpp:46
 msgid "Console"
-msgstr "Consola"
+msgstr "Console"
 
 #: kalgebra.cpp:39
 msgid "Operation"
-msgstr "Operación"
+msgstr "Opération"
 
 #: kalgebra.cpp:40
 msgid "MathML Operation"
-msgstr "Operación en MathML"
+msgstr "MathML Opération"
 
 #: kalgebra.cpp:45
 msgid "Save Log"
-msgstr "Guardar historial"
+msgstr "Enregister les logs"
 
 #: kalgebra.cpp:58
 msgid "Function"
-msgstr "Función"
+msgstr "Fonction"
 
 #: kalgebra.cpp:59
 msgid "Color"
-msgstr "Color"
+msgstr "Couleur"
 
 #: kalgebra.cpp:62
 msgid "Add function"
-msgstr "Añadir función"
+msgstr "Ajouter une fonction"
 
 #: kalgebra.cpp:63
 msgid "2D Graph"
-msgstr "Gráfico 2D"
+msgstr "Graphique 2D"
 
 #: kalgebra.cpp:73
 msgid "Poor"
-msgstr "Pobre"
+msgstr "Pauvre"
 
 #: kalgebra.cpp:74
 msgid "Standard"
-msgstr "Estándar"
+msgstr "Standard"
 
 #: kalgebra.cpp:75
 msgid "Fine"
-msgstr "Buena"
+msgstr "Fin"
 
 #: kalgebra.cpp:76
 msgid "Very Fine"
-msgstr "Muy buena"
+msgstr "Très fin"
 
 #: kalgebra.cpp:80 kalgebra.cpp:113
 msgid "Save Picture"
-msgstr "Guardar imagen"
+msgstr "Enregistrer l'image"
 
 #: kalgebra.cpp:81
 msgid "Toggle Squares"
-msgstr "(Des)Activar cuadrados"
+msgstr "Quadrillage"
 
 #: kalgebra.cpp:82
 msgid "Precision"
-msgstr "Precisión"
+msgstr "Précision"
 
 #: kalgebra.cpp:83
 msgid "&Graph"
-msgstr "&Gráfico"
+msgstr "&Graphique"
 
 #: kalgebra.cpp:96
 msgid "3D Graph"
-msgstr "Gráfico 3D"
+msgstr "Graphique 3D"
 
 #: kalgebra.cpp:107
 msgid "Dots"
-msgstr "Puntos"
+msgstr "Points"
 
 #: kalgebra.cpp:108
 msgid "Lines"
-msgstr "Líneas"
+msgstr "Lignes"
 
 #: kalgebra.cpp:109
 msgid "Solid"
-msgstr "Sólido"
+msgstr "Solide"
 
 #: kalgebra.cpp:114
 msgid "Transparency"
-msgstr "(Des)Activar transparencias"
+msgstr "Transparent"
 
 #: kalgebra.cpp:115
 msgid "Graph Type"
-msgstr "Tipo de gráfico"
+msgstr "Tye de Graphique"
 
 #: kalgebra.cpp:116
 msgid "G&raph 3D"
-msgstr "G&ráfico 3D"
+msgstr "G&raphique 3D"
 
 #: kalgebra.cpp:120
 msgid "&Help"
-msgstr "Ayuda"
+msgstr "Aide"
 
 #: kalgebra.cpp:244
 msgid ""
 "*.svg|SVG Image (*.svg)\n"
 "*.png|PNG Image (*.png)"
 msgstr ""
-"*.svg|ImagenSVG (*.svg)\n"
-"*.png|Imagen PNG (*.png)"
+"*.svg|Image SVG (*.svg)\n"
+"*.png|Image PNG (*.png)"
 
 #: kfunctionedit.cpp:3 kvaredit.cpp:3
 msgid "Add/Edit a function"
-msgstr "Añadir/Editar función"
+msgstr "Ajouter/Modifier une fonction"
 
 #: kfunctionedit.cpp:59
 msgid "<qt text='#090'><b>f(%1)=%2</b></qt>"
@@ -181,7 +182,7 @@ msgstr "<qt text='#090'><b>f(x)=%1</b></qt>"
 
 #: kfunctionedit.cpp:70
 msgid "<qt text='red'><b>WRONG</b></qt>"
-msgstr "<qt text='red'><b>WRONG</b></qt>"
+msgstr "<qt text='red'><b>INCORRECTE</b></qt>"
 
 #: main.cpp:7 main.cpp:18
 msgid "KAlgebra"
@@ -189,34 +190,38 @@ msgstr "KAlgebra"
 
 #: qexp.cpp:194
 msgid "Missing right paranthesis<br />\n"
-msgstr "Falta un paréntesis derecho<br />\n"
+msgstr "Paranthèses absentes<br />\n"
 
 #: qexp.cpp:197
 msgid "Missing operator< p/>\n"
-msgstr "Falta un operador<p />\n"
+msgstr "Opérateur absent<p />\n"
 
 #: qexp.cpp:200
 msgid "Unbalanced right parenthesis<br />\n"
-msgstr "Paréntesis derecho incorrecto<br />\n"
+msgstr "Parenthèse non-équilibrée.<br />\n"
 
 #: qexp.cpp:203
 msgid "Error<br />\n"
-msgstr "Error<br />\n"
+msgstr "Erreur<br />\n"
 
 #: rc.cpp:3
 #, no-c-format
 msgid "C&ustom"
-msgstr "&Personalizado"
+msgstr "Personnalisé"
 
 #: _translatorinfo.cpp:1
 msgid ""
 "_: NAME OF TRANSLATORS\n"
 "Your names"
-msgstr "Aleix Pol i Gonzàlez"
+msgstr ""
+"_: NAME OF TRANSLATORS\n"
+"Edouard Marquez"
 
 #: _translatorinfo.cpp:3
 msgid ""
 "_: EMAIL OF TRANSLATORS\n"
 "Your emails"
-msgstr "aleixpol@gmail.com"
+msgstr ""
+"_: EMAIL OF TRANSLATORS\n"
+"animatrix30@gmail.com"
 
