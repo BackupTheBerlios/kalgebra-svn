@@ -118,6 +118,7 @@ double Analitza::evalua(QDomNode n){
 			QString s = j.toElement().text();
 			j = j.nextSibling();
 			vars.modifica(s, j.toElement());
+			//ret = evalua(j);
 		} else if(isOperador(e.tagName())) {
 			operador = e.tagName();
 			sons=isOperador(operador);

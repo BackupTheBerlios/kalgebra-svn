@@ -38,15 +38,19 @@ bool QExpressionEdit::isMathML()
 }
 
 void QExpressionEdit::returnP() {
-	removenl();
+	//removenl();
 	m_history.last() = this->text();
 	m_history.append("");
 	m_histPos=m_history.count()-1;
 }
 
 void QExpressionEdit::keyPressEvent(QKeyEvent * e){
-	bool ch;
+	bool ch=false;
 	switch(e->key()){
+		case Qt::Key_Enter:
+		case Qt::Key_Tab:
+			QWidget::keyPressEvent(e);
+			break;
 		case Qt::Key_Up:
 			m_histPos++;
 			ch=true;
@@ -56,7 +60,8 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 			ch=true;
 			break;
 		default:
-			ch=false;
+			QTextEdit::keyPressEvent(e);
+			m_history.last() = this->text();
 			break;
 	}
 	
@@ -64,9 +69,6 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 		if(m_histPos<0) m_histPos=0;
 		if(m_histPos>=m_history.count()) m_histPos=m_history.count()-1;
 		this->setText(m_history[m_histPos]);
-	} else {
-		QTextEdit::keyPressEvent(e);
-		m_history.last() = this->text();
 	}
 	
 }
