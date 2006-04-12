@@ -749,18 +749,21 @@ QString Analitza::treu_tags(QString in){
 }
 
 void print_dom(QDomNode in, int ind){
-	QString a="";
+	QString a("");
+	
 	if(ind >100){
 		qDebug("...");
 		return;
 	}
 	
 	for(int i=0; i<ind; i++)
-		a+="------";
+		a.append("------");
+	
 	qDebug("%s%s(%s)", a.ascii(), in.toElement().tagName().ascii(), in.toElement().text().ascii());
-	if(in.childNodes().length()==1)
-		return;
+// 	if(in.childNodes().length()==0)
+// 		return;
 	for(unsigned int i=0 ; i<in.childNodes().length(); i++){
-		print_dom(in.childNodes().item(i), ind+1);
+		if(in.childNodes().item(i).nodeType()==QDomNode::ElementNode)
+			print_dom(in.childNodes().item(i), ind+1);
 	}
 }
