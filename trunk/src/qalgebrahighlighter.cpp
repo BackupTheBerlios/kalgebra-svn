@@ -30,20 +30,20 @@ TOKEN QAlgebraHighlighter::getToken(QString &a, unsigned int &l){
 	int i=0;
 	l=a.length();
 	a = a.stripWhiteSpace();
-// 	printf("%s\n", a.ascii());
+	
 	TOKEN ret;
 	ret.tipus = tMaxOp;
 	if(a==""){
 		ret.tipus = tEof;
 		l=1;
 	}
-	else if(a[0].isDigit()) {//es un numero
+	else if(a[0].isDigit() || (a[0]=='.' && a[1].isDigit())) {//es un numero
 		ret.val += a[0];
 		a[0]=' ';
 		for(i=1; a[i].isDigit() || a[i]=='.'; i++){
 			a[i]=' ';
 		}
-		if(a[i] == '(' || a[i].isLetter()) a = " *" +a;
+		if(a[i] == '(' || a[i].isLetter()) a.prepend(" *");
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
 		ret.val += a[0];

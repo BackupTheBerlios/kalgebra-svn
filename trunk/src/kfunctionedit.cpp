@@ -82,6 +82,7 @@ void KFunctionEdit::edit(bool){	//Let's see if the exp is correct
 		m_graph->editFunction(0, function(m_func->text(), m_color->color(), true));
 		m_correct=true;
 	}
+	
 	m_func->setModified(false);
 	this->enableButtonOK(m_correct);
 }

@@ -54,15 +54,26 @@ TOKEN QExp::pillatoken(QString &a){
 	ret.tipus = tMaxOp;
 	if(a=="")
 		ret.tipus = tEof;
-	else if(a[0].isDigit()) {//es un numero
+	else if(a[0].isDigit() || (a[0]=='.' && a[1].isDigit())) {//es un numero
+		int coma=0;
+		if(a[0]=='.') {
+			ret.val += '0';
+			coma++;
+		}
 		ret.val += a[0];
 		a[0]=' ';
 		for(i=1; a[i].isDigit() || a[i]=='.'; i++){
+			coma = (a[i]=='.')? coma+1 : coma;
 			ret.val += a[i];
 			a[i]=' ';
 		}
 		if(a[i] == '(' || a[i].isLetter())
 			a = " *" +a;
+		
+		if(coma>1){
+			err += i18n("Too much comma in %1<br />\n").arg(ret.val);
+		}
+		
 		ret.val = QString::QString("<cn>%1</cn>").arg(ret.val);
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
@@ -102,7 +113,7 @@ TOKEN QExp::pillatoken(QString &a){
 	else if(a[0]==',')
 		ret.tipus = tComa;
 	else
-		err += i18n(QString::QString("Unknown token %1<br />\n").arg(a[0]));
+		err += i18n("Unknown token %1<br />\n").arg(a[0]);
 	
 	a[0]=' ';
 	antnum = ret.tipus;

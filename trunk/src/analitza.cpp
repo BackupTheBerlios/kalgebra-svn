@@ -29,6 +29,8 @@ Analitza::Analitza(){QLocale::setDefault(QLocale::C); err=""; }
 
 Analitza::~Analitza(){}
 
+void Analitza::setVars(Variables v){ vars=v; }
+
 int Analitza::setPath(QString ar){
 	QDomDocument doc;
 	QDomElement docElem;
@@ -726,7 +728,7 @@ QString Analitza::escriuMMLP(QString res, QString oper, QString op, int unari=0)
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////                                                   /////////////////////
-/////////////                         Other                     /////////////////////
+/////////////                  Other (static)                   /////////////////////
 /////////////                                                   /////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -746,14 +748,15 @@ QString Analitza::treu_tags(QString in){
 	return out;
 }
 
-void print_dom(QDomNode in, int ind=0){
+void print_dom(QDomNode in, int ind){
 	QString a="";
 	if(ind >100){
-		qDebug("g0g0g0");
+		qDebug("...");
 		return;
 	}
+	
 	for(int i=0; i<ind; i++)
-		a+="--------";
+		a+="------";
 	qDebug("%s%s(%s)", a.ascii(), in.toElement().tagName().ascii(), in.toElement().text().ascii());
 	if(in.childNodes().length()==1)
 		return;

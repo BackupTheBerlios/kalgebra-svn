@@ -34,12 +34,12 @@
 #include "variables.h"
 
 /**
-@author
+@author Aleix Pol i Gonzalez
 */
 
 using namespace std;
 
-void print_dom(QDomNode, int);
+void print_dom(QDomNode, int ind=0);
 
 class Analitza{
 public:
@@ -57,9 +57,9 @@ public:
 	
 	Variables vars;
 	QString err;
-	static bool isNum(QString);
-	////////////////////////////////////////
 	
+	void setVars(Variables v);
+	static bool isNum(QString);
 	double Calcula();
 	QStringList lambda(); //retrieve lambda vars
 	double toNum(QDomElement res);

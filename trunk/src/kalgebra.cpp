@@ -1,6 +1,6 @@
 #include "kalgebra.h"
 
-KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" ) {
+KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") {
 // 	setXMLFile("kalgebraui.rc");
 	this->setMinimumSize(809,500);
 	
@@ -43,7 +43,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow( 0, "KAlgebra" 
 	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
 	connect(operacio, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
 	
-	//connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
+	connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
 	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
 	KAction *actSaveLog = new KAction(i18n("Save Log"), "savelog", KStdAccel::shortcut(KStdAccel::Save), this, SLOT(saveLog()), actionCollection(), "save");
@@ -149,7 +149,7 @@ void KAlgebra::opera_gen(QString op){
 		QTextStream stream(&file);
 		stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
 		stream << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n<head>\n\t<title> :) </title>\n";
-		stream << "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"http://math.nist.gov/~BMiller/mathml-css/style/mathml.css\" />\n";
+		//stream << "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"http://math.nist.gov/~BMiller/mathml-css/style/mathml.css\" />\n";
 		stream << "<style type=\"text/css\">\n";
 		stream << "\t.error { border-style: solid; border-width: 1px; border-color: #ff3b21; background-color: #ffe9c4; padding:7px; }\n";
 		stream << "\t.last  { border-style: solid; border-width: 1px; border-color: #2020ff; background-color: #e0e0ff; padding:7px; }\n";
@@ -177,6 +177,7 @@ void KAlgebra::opera_gen(QString op){
 			b = a.Calcula();
 		
 // 		kdDebug() << a.err << "::::::::::" << err_no << endl;
+		print_dom(a.elem);
 		
 		if(a.err.ascii()[0] != '\0'){
 			hist = QString("<p class=\"error\"> ERROR: %1 </p>%2").arg(a.err).arg(hist);
@@ -199,7 +200,7 @@ void KAlgebra::opera_gen(QString op){
 		file.close();
 	}
 	operacio->setText("");
-	log->setUserStyleSheet(KURL("http://math.nist.gov/~BMiller/mathml-css/style/mathml.css"));
+	//log->setUserStyleSheet(KURL("http://math.nist.gov/~BMiller/mathml-css/style/mathml.css"));
 	log->openURL("/tmp/kalgebra_log.xml");
 	update_varlist();
 }
@@ -341,13 +342,12 @@ QString KAlgebra::treu_tags(QString in){ //This is an awful trick
 }
 
 void KAlgebra::edit_var(QListViewItem *item, const QPoint &,int){
-	KVarEdit *e = new KVarEdit(this) ;
-	e->setVar(item->text(0));
-	e->setExpression(item->text(1));
+	KVarEdit *e = new KVarEdit(item->text(0), item->text(1), &a.vars, this) ;
 	if(e->exec() == QDialog::Accepted ) { //Si s'ha acceptat
-		//Kiko Posa el teu codi aqui
+		a.vars.modifica(item->text(0), e->val());
 	}
 	delete e;
+	update_varlist();
 }
 
 
