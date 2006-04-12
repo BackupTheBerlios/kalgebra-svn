@@ -760,8 +760,7 @@ void print_dom(QDomNode in, int ind){
 		a.append("------");
 	
 	qDebug("%s%s(%s)", a.ascii(), in.toElement().tagName().ascii(), in.toElement().text().ascii());
-// 	if(in.childNodes().length()==0)
-// 		return;
+	
 	for(unsigned int i=0 ; i<in.childNodes().length(); i++){
 		if(in.childNodes().item(i).nodeType()==QDomNode::ElementNode)
 			print_dom(in.childNodes().item(i), ind+1);

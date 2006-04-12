@@ -177,7 +177,7 @@ void KAlgebra::opera_gen(QString op){
 			b = a.Calcula();
 		
 // 		kdDebug() << a.err << "::::::::::" << err_no << endl;
-		print_dom(a.elem);
+		//print_dom(a.elem);
 		
 		if(a.err.ascii()[0] != '\0'){
 			hist = QString("<p class=\"error\"> ERROR: %1 </p>%2").arg(a.err).arg(hist);

@@ -62,7 +62,7 @@ QDomElement KVarEdit::val() {
 		ret.appendChild(doc.createTextNode(QString("%1").arg(a.Calcula(), 0, 'g', 16)));
 	} else {
 		print_dom(a.elem);
-		ret = a.elem.toElement();
+		ret = a.elem.firstChild().toElement();
 	}
 	return ret;
 }
