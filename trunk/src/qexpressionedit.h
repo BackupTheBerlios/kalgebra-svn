@@ -4,6 +4,8 @@
 #include <qtextedit.h>
 #include <qlabel.h>
 #include "qalgebrahighlighter.h"
+#include "analitza.h"
+#include "qexp.h"
 
 /**
 	@author Aleix Pol i Gonzalez <aleixpol@gmail.com>
@@ -15,7 +17,7 @@ public:
 	QExpressionEdit(QWidget *parent = 0, const char *name = 0, Mode ini=Autodetect);
 	~QExpressionEdit();
 	inline bool mode() { return m_highlight->mode(); }
-	inline void setMode(Mode en) { return m_highlight->setMode(en); }
+	void setMode(Mode en);
 	
 	bool isMathML();
 	QString editingWord(int pos, int &param);
@@ -31,7 +33,6 @@ private:
 	bool help;
 	
 	void helpShow(const QString& funcname, int param=0);
-	
 	static QString findPrec(const QString& exp, int &act, int cur, int &param, QString tit);
 	
 public slots:

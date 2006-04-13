@@ -26,7 +26,7 @@ class QAlgebraHighlighter : public QSyntaxHighlighter {
 		QAlgebraHighlighter(QTextEdit *textEdit);
 		int highlightParagraph(const QString &text, int endStateOfLastPara);
 		Mode mode() { return m_mode; }
-		void setMode(const Mode& newMode){ m_mode=newMode; }
+		void setMode(const Mode& newMode){ m_mode=newMode; rehighlight(); }
 	private:
 		TOKEN getToken(QString &a, unsigned int &l);
 		//TOKEN getTokenMML(QString &a, unsigned int &l);

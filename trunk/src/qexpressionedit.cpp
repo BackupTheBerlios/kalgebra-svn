@@ -1,21 +1,23 @@
 
 #include "qexpressionedit.h"
 
-QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode) : QTextEdit(parent, name), m_histPos(0), help(true) {
+QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode) : QTextEdit(parent, name), m_histPos(0), help(true)
+{
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	this->setMargin(2);
 	this->setFixedHeight(QFontMetrics(this->currentFont()).height()+12);
 	this->setVScrollBarMode(QScrollView::AlwaysOff);
 	this->setHScrollBarMode(QScrollView::AlwaysOff);
+	this->setTabChangesFocus(true);
 	
 	m_history.append("");
 	
-	m_helptip = new QLabel("", this);
+	/*m_helptip = new QLabel("", this);
 	m_helptip->setFrameShape(QFrame::Box);
 	m_helptip->setPaletteBackgroundColor(QColor(255,230,255));
 	m_helptip->setAlignment(AlignAuto | AlignVCenter | AlignHCenter);
 	m_helptip->setGeometry(QRect(this->mapFromGlobal(QPoint(0,0)), QPoint(160, 23)));
-	m_helptip->hide();
+	m_helptip->hide();*/
 	
 	m_highlight= new QAlgebraHighlighter(this);
 	setMode(inimode);
@@ -37,20 +39,44 @@ bool QExpressionEdit::isMathML()
 	}
 }
 
-void QExpressionEdit::returnP() {
-	//removenl();
+void QExpressionEdit::setMode(Mode en)
+{
+	if(isMathML() && en==Expression) { //We convert it into MathML
+		Analitza a;
+		a.setTextMML(this->text());
+		
+		this->setText(Analitza::treu_tags(a.toString()));
+	} else if(!isMathML() && en==MathML) {
+		QExp e(this->text());
+		e.parse();
+		//if(a.error() != "") {...}
+		
+		this->setText(e.mathML());
+	}
+	m_highlight->setMode(en);
+}
+
+void QExpressionEdit::returnP()
+{
+	removenl();
 	m_history.last() = this->text();
 	m_history.append("");
 	m_histPos=m_history.count()-1;
 }
 
-void QExpressionEdit::keyPressEvent(QKeyEvent * e){
+void QExpressionEdit::keyPressEvent(QKeyEvent * e)
+{
 	bool ch=false;
+	
+	if(e->key()==Qt::Key_Backtab){
+		qDebug("HelloMouse");
+		setMode(isMathML() ? Expression : MathML);
+	}
+	
 	switch(e->key()){
+		/*case Qt::Key_Return:
 		case Qt::Key_Enter:
-		case Qt::Key_Tab:
-			QWidget::keyPressEvent(e);
-			break;
+			returnP();*/
 		case Qt::Key_Up:
 			m_histPos++;
 			ch=true;
@@ -73,7 +99,8 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e){
 	
 }
 
-QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &param, QString tit){
+QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &param, QString tit)
+{
 	QString paraula=tit, p;
 	int nparams=0;
 	int cat=0;
@@ -124,25 +151,28 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 // 		qDebug("word: %s", exp.mid(act, exp.length()-act).ascii());
 	}
 	param=nparams;
-// 	qDebug("out: %d -- %d", param, cur-act);
 	
+// 	qDebug("out: %d -- %d", param, cur-act);
 // 	qDebug("####out####%s %s <%s>", p.ascii(), paraula.ascii(), tit.ascii());
 	return tit;
 }
 
-QString QExpressionEdit::editingWord(int pos, int &param){ //simplification use only
+QString QExpressionEdit::editingWord(int pos, int &param)
+{ //simplification use only
 	int p=0;
 	param=0;
 	return findPrec(this->text().mid(0,pos), p, pos, param, "");
 }
 
-void QExpressionEdit::cursorMov(int par, int pos) {
+void QExpressionEdit::cursorMov(int par, int pos)
+{
 	int param;
 	QString s = editingWord(pos, param);
 	helpShow(s, param);
 }
 
-void QExpressionEdit::helpShow(const QString& funcname, int param) {
+void QExpressionEdit::helpShow(const QString& funcname, int param)
+{
 	int op = Analitza::isOperador(funcname);
 	if(op) {
 		if(op == -1) {
@@ -168,7 +198,8 @@ void QExpressionEdit::helpShow(const QString& funcname, int param) {
 // 	m_helptip->show();
 }
 
-void QExpressionEdit::removenl() {
+void QExpressionEdit::removenl()
+{
 	this->setText(this->text().stripWhiteSpace().remove('\n'));
 }
 
