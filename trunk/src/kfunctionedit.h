@@ -38,7 +38,7 @@ private:
 	
 private slots:
 	void edit(bool);
-	void ok(){ accept();};
+	void ok();
 };
 
 #endif

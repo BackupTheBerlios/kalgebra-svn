@@ -2,7 +2,6 @@
 #define QALGEBRAHIGHLIGHTER_H
 
 #include <qsyntaxhighlighter.h>
-#include <qtextedit.h>
 #include "qexp.h"
 
 typedef enum {

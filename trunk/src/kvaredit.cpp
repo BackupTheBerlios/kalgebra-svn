@@ -13,6 +13,7 @@ KVarEdit::KVarEdit(QString var, QString exp, Variables *v, QWidget *parent, cons
 	m_exp = new QExpressionEdit(page);
 	topLayout->addWidget(m_exp);
 	connect(m_exp, SIGNAL(modificationChanged( bool )), this, SLOT(edit(bool)));
+	connect(m_exp, SIGNAL(returnPressed()), this, SLOT(ok()));
 	
 	m_valid = new QLabel(page);
 	topLayout->addWidget(m_valid);
@@ -33,8 +34,6 @@ KVarEdit::KVarEdit(QString var, QString exp, Variables *v, QWidget *parent, cons
 	setVar(var);
 	setExpression(exp);
 	
-	setCaption(i18n("Edit '%1' value").arg(var));
-	
 	vars=v;
 	edit(true);
 }
@@ -43,9 +42,7 @@ KVarEdit::~KVarEdit(){}
 
 void KVarEdit::setExpression(QString newExp)	{ m_exp->setText(newExp); }
 
-void KVarEdit::setVar(QString newVar)		{ qDebug("Kiko desperta: %s", newVar.ascii()); }
-
-//bool KVarEdit::saveCalc()			{ return m_opt_calc->isChecked(); }
+void KVarEdit::setVar(QString newVar)		{ setCaption(i18n("Edit '%1' value").arg(newVar)); }
 
 QDomElement KVarEdit::val() {
 	Analitza a;
@@ -106,6 +103,11 @@ void KVarEdit::edit(bool){
 	
 	m_exp->setModified(false);
 	this->enableButtonOK(m_correct);
+}
+
+void KVarEdit::ok(){
+	if(m_correct)
+		accept();
 }
 
 #include "kvaredit.moc"

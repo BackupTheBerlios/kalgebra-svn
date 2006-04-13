@@ -1,27 +1,67 @@
 #include "qalgebrahighlighter.h"
+#include "qexpressionedit.h"
 
 QAlgebraHighlighter::QAlgebraHighlighter(QTextEdit *textEdit) : QSyntaxHighlighter(textEdit), m_mode(Autodetect){}
 
 int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfLastPara) {
-	setFormat( 0, text.length(), Qt::black);
-	if(m_mode==MathML || (m_mode==Autodetect && text[0]=='<'))
-		return 0;
-	QString op=text.stripWhiteSpace();
-	unsigned int pos=0, len=0;
-	wrong=true;
-	TOKEN t;
-	t=getToken(op, len);
-	pos=0;
-	while(pos < text.length()-1 || t.tipus!=tEof){
-		if(t.tipus==tVal)	setFormat( pos, len, QColor(0,0,200));
-		else if(t.tipus==tFunc)	setFormat( pos, len, QColor(0,50,0));
-		else if(t.tipus==tVar)	setFormat( pos, len, QColor(100,0,0));
-		else		setFormat( pos, len, QFont(this->textEdit()->currentFont().family(),
-					this->textEdit()->currentFont().pointSize(),
-					QFont::DemiBold, false));
+	setFormat(0, text.length(), Qt::black);
 	
-		pos += len;
-		t=getToken(op, len);
+	if(QExpressionEdit::isMathML(text)) {
+		QString lasttag;
+		for(unsigned int i=0; i<text.length(); i++){
+			if(text[i]=='<') { //We enter in a tag
+				lasttag=QString();
+				unsigned int j;
+				for(j=i+1; j<text.length() && text[j]!='>'; j++){
+					lasttag.append(text[j]);
+				}
+				
+				setFormat(i, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
+				setFormat(j, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
+				if(lasttag.startsWith("/")){
+					setFormat(i+1, j-i-1, QColor(100,0,0));
+					setFormat(i+1, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
+				} else if(lasttag.endsWith("/")) {
+					setFormat(i+1, j-i-1, QColor(0,200,200));
+					setFormat(j-1, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
+				} else
+					setFormat(i+1, j-i-1, QColor(150,0,0));
+				i=j;
+			}
+			else if(lasttag=="cn")
+				setFormat(i, 1, QColor(0,0,200));
+			else if(lasttag=="ci")
+				setFormat(i, 1, QColor(100,0,0));
+		}
+	} else {
+		wrong=true;
+		unsigned int pos=0, len=0;
+		QString op=text.stripWhiteSpace();
+		
+		TOKEN t=getToken(op, len);
+		for(pos=0; pos<text.length() && text[pos].isSpace(); pos++);
+		
+		while(pos < text.length()-1 && t.tipus!=tEof){
+			switch(t.tipus){
+				case tVal:
+					setFormat( pos, len, QColor(0,0,200));
+					break;
+				case tFunc:
+					setFormat( pos, len, QColor(0,50,0));
+					break;
+				case tVar:
+					setFormat( pos, len, QColor(100,0,0));
+					break;
+				default:
+					setFormat(pos, len, QFont(this->textEdit()->currentFont().family(),
+						this->textEdit()->currentFont().pointSize(),
+						QFont::DemiBold, false));
+					break;
+			}
+			pos += len;
+			t=getToken(op, len);
+		}
+
 	}
 	return endStateOfLastPara;
 }
@@ -43,7 +83,6 @@ TOKEN QAlgebraHighlighter::getToken(QString &a, unsigned int &l){
 		for(i=1; a[i].isDigit() || a[i]=='.'; i++){
 			a[i]=' ';
 		}
-		if(a[i] == '(' || a[i].isLetter()) a.prepend(" *");
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
 		ret.val += a[0];

@@ -20,6 +20,7 @@ public:
 	void setMode(Mode en);
 	
 	bool isMathML();
+	static bool isMathML(QString exp);
 	QString editingWord(int pos, int &param);
 private:
 	QLabel *m_helptip;

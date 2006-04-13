@@ -35,8 +35,12 @@ bool QExpressionEdit::isMathML()
 		case Expression:
 			return false;
 		default:
-			return this->text().stripWhiteSpace()[0]=='<';
+			return isMathML(this->text());
 	}
+}
+
+bool QExpressionEdit::isMathML(QString exp){
+	return exp.stripWhiteSpace()[0]=='<';
 }
 
 void QExpressionEdit::setMode(Mode en)
@@ -69,7 +73,6 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 	bool ch=false;
 	
 	if(e->key()==Qt::Key_Backtab){
-		qDebug("HelloMouse");
 		setMode(isMathML() ? Expression : MathML);
 	}
 	

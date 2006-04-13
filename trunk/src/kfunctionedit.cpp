@@ -87,4 +87,9 @@ void KFunctionEdit::edit(bool){	//Let's see if the exp is correct
 	this->enableButtonOK(m_correct);
 }
 
+void KFunctionEdit::ok(){
+	if(m_correct)
+		accept();
+}
+
 #include "kfunctionedit.moc"

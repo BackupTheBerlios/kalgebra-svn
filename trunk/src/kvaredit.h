@@ -39,6 +39,7 @@ private:
 	QString m_var;
 private slots:
 	void edit(bool);
+	void ok();
 };
 
 #endif
