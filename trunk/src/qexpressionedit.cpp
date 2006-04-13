@@ -63,9 +63,11 @@ void QExpressionEdit::setMode(Mode en)
 void QExpressionEdit::returnP()
 {
 	removenl();
-	m_history.last() = this->text();
-	m_history.append("");
-	m_histPos=m_history.count()-1;
+	if(!this->text().isEmpty()) {
+		m_history.last() = this->text();
+		m_history.append("");
+		m_histPos=m_history.count()-1;
+	}
 }
 
 void QExpressionEdit::keyPressEvent(QKeyEvent * e)

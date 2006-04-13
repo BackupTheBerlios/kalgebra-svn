@@ -138,7 +138,8 @@ void KAlgebra::dibuixa3d(){
 }
 
 void KAlgebra::opera(){
-	opera_gen(operacio->text());
+	if(!operacio->text().isEmpty())
+		opera_gen(operacio->text());
 }
 
 void KAlgebra::opera_gen(QString op){
