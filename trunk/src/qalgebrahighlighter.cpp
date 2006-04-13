@@ -22,8 +22,12 @@ int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfL
 					setFormat(i+1, j-i-1, QColor(100,0,0));
 					setFormat(i+1, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
 				} else if(lasttag.endsWith("/")) {
-					setFormat(i+1, j-i-1, QColor(0,200,200));
-					setFormat(j-1, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
+					if(Analitza::isOperador(lasttag.left(lasttag.length()-1).stripWhiteSpace())) {
+						setFormat(i+1, j-i-1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false), QColor(0,50,0));
+					} else {
+						setFormat(i+1, j-i-1, QColor(0,50,0));
+						setFormat(j-1, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
+					}
 				} else
 					setFormat(i+1, j-i-1, QColor(150,0,0));
 				i=j;
