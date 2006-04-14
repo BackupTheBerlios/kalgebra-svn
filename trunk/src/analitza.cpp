@@ -183,7 +183,7 @@ double Analitza::opera(double res, double oper, QString op, int minus=0){
 	}else if(op=="rem"){
 		a = (int)a % (int)b;
 	}else if(op=="quotient"){
-		a = (int)a / (int)b;
+		a = floor(a / b);
 	}else if(op=="factorof"){
 		a = (((int)a % (int)b)==0) ? 1.0 : 0.0;
 		boolean = true;
@@ -261,6 +261,9 @@ double Analitza::opera(double res, double oper, QString op, int minus=0){
 		boolean=true;
 	} else if(op=="eq" ){
 		a= a == b? 1.0 : 0.0;
+		boolean=true;
+	} else if(op=="approx" ){
+		a= abs(a-b)<0.001? 1.0 : 0.0;
 		boolean=true;
 	} else if(op=="neq" ){
 		a= a != b? 1.0 : 0.0;
@@ -422,6 +425,7 @@ int Analitza::isOperador(QString e){
 			e=="leq" ||
 			e=="geq" ||
 			e=="implies" ||
+			e=="approx" ||
 			e=="root"){
 		return 2;
 	} else if (	e=="factorial" ||
@@ -590,7 +594,7 @@ QString Analitza::escriuS(QString res, QString oper, QString op, int unari=0){
 		r = QString("%1<span class='op'>+</span>%2").arg(res).arg(oper);
 	}else if(op =="times"){
 		r = QString("%1<span class='op'>*</span>%2").arg(res).arg(oper);
-	}else if(op=="quotient"){
+	}else if(op=="divide"){
 		r = QString("%1<span class='op'>/</span>%2").arg(res).arg(oper);
 	}else if(op=="minus"){
 		r = unari ? QString("<span class='op'>-</span>%1").arg(res) : QString("%1<span class='op'>-</span>%2").arg(res).arg(oper);
@@ -621,6 +625,8 @@ QString Analitza::escriuMMLP(QString res, QString oper, QString op, int unari=0)
 		r = res + "<mo>*</mo>" +oper;
 	}else if(op=="divide"){
 		r = res + "<mo>/</mo>" +oper;
+	}else if(op=="quotient"){
+		r = "floor("res + "<mo>/</mo>" +oper")";
 	}else if(op=="minus"){
 		r = unari ? "<mo>-</mo>"+res : res + "<mo>-</mo>" +oper;
 	}else if(op=="power"){

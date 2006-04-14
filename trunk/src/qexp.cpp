@@ -160,6 +160,9 @@ int QExp::reduce(){
 		case tUmi:
 			val.push(QString("<apply><minus />%1</apply>").arg(val.pop()));
 			break;
+		case tSub:
+			val.push(QString("<apply><minus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			break;
 		case tMul:
 			val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(val.pop()));
 			break;
