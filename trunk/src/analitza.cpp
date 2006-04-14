@@ -175,14 +175,18 @@ double Analitza::opera(double res, double oper, QString op, int minus=0){
 	}else if(op =="times"){
 		a *= b;
 	}else if(op=="divide"){
-		a = (((int)a % (int)b)==0) ? 1.0 : 0.0;
-		boolean = true;
+		a /=b;
 	}else if(op=="minus"){
 		a = minus ? -a : a-b;
 	}else if(op=="power"){
 		a = pow(a, b);
+	}else if(op=="rem"){
+		a = (int)a % (int)b;
 	}else if(op=="quotient"){
-		a /= b;
+		a = (int)a / (int)b;
+	}else if(op=="factorof"){
+		a = (((int)a % (int)b)==0) ? 1.0 : 0.0;
+		boolean = true;
 	}else if(op=="factorial"){
 		b = a;
 		for(a=1; b>1; b--)
@@ -409,6 +413,8 @@ int Analitza::isOperador(QString e){
 			e=="power" ||
 			e=="minus" ||
 			e=="divide"  ||
+			e=="rem" ||
+			e=="factorof" ||
 			e=="lt" ||
 			e=="gt" ||
 			e=="eq" ||

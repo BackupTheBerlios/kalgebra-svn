@@ -164,7 +164,7 @@ int QExp::reduce(){
 			val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(val.pop()));
 			break;
 		case tDiv:
-			val.push(QString("<apply><quotient />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<apply><divide />%1%2</apply>").arg(val.pop()).arg(val.pop()));
 			break;
 		case tPow:
 			val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(val.pop()));
