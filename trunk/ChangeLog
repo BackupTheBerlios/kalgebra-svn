@@ -6,7 +6,8 @@
 * GUI a bit remade, no more MathML or expression tab, everything goes into ExpressionEdit, can change with shift+TAB
 * Variable edition dialog added. Useless but looks nice :)
 * divide operators fixed (divide, quotient, rem, factorof)
-
+* approx added
+* Expression to MathML compiler optimized. Some operators treated as n-ary instead of binary
 
 
 
