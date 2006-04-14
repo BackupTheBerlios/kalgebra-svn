@@ -27,9 +27,9 @@ const actEnum parseTbl[tMaxOp][tMaxOp] = {
 //	 :=   ->  +   -   *   /   ^   M   f   ,   (   )   $
 	{ R,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//:=
 	{ R,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-> Lambda
-	{ R,  R,  R,  R,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//+
-	{ R,  R,  R,  R,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-
-	{ R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	//*
+	{ R,  R,  K,  R,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//+
+	{ R,  R,  R,  K,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-
+	{ R,  R,  R,  R,  K,  R,  S,  S,  S,  R,  S,  R,  R },	//*
 	{ R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	///
 	{ R,  R,  R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  R },	//^
 	{ R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	//UnaryMinus
@@ -150,35 +150,35 @@ int QExp::shift(){
 }
 
 int QExp::reduce(){
-	QString a="";
-// 	cout << opr.top() << endl;
-	if(opr.top() == tAdd){ val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tSub){
+	tokEnum oper = (tokEnum) opr.top();
+	opr.pop();
+	
+	if(oper == tAdd){
+		val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+	} else if(oper == tSub){
 		val.push(QString("<apply><minus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tUmi){
+	} else if(oper == tUmi){
 		val.push(QString("<apply><minus />%1</apply>").arg(val.pop()));
-	} else if(opr.top() == tMul){
+	} else if(oper == tMul){
 		val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tDiv){
+	} else if(oper == tDiv){
 		val.push(QString("<apply><quotient />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tPow){
+	} else if(oper == tPow){
 		val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tAssig){ // :=
+	} else if(oper == tAssig){ // :=
 		val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tFunc){
-		QString v=func.pop();
-		if(Analitza::isOperador(v))
-			val.push(QString("<apply><%1 />%2</apply>").arg(v).arg(val.pop()));
+	} else if(oper == tFunc){
+		if(Analitza::isOperador(func.top()))
+			val.push(QString("<apply><%1 />%2</apply>").arg(func.pop()).arg(val.pop()));
 		else
-			val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(v).arg(val.pop()));
-	} else if(opr.top() == tLambda){ // ->
+			val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(val.pop()));
+	} else if(oper == tLambda){ // ->
 		val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tComa){
+	} else if(oper == tComa){
 		val.push(QString("%1%2").arg(val.pop()).arg(val.pop()));
-	} else if(opr.top() == tRpr){
+	} else if(oper == tRpr){
 		opr.pop();
 	}
-	opr.pop();
 	return 0;
 }
 
@@ -195,6 +195,10 @@ int QExp::parse(){
 		}
 // 		printf("acc=%d stk=%d, tok=%d\n", parseTbl[opr.top()][tok], opr.top(), tok);
 		switch(parseTbl[opr.top()][tok]){
+			case K:
+				val.push(QString("%1%2").arg(val.pop()).arg(val.pop()));
+				opr.pop();
+				break;
 			case R:
 				if(reduce()) return 1;
 				break;
@@ -203,7 +207,7 @@ int QExp::parse(){
 				break;
 			case A:
 				mml = "<math>" + val.pop() + "</math>";
-				cout << val.top().ascii() << endl;
+// 				cout << val.top().ascii() << endl;
 				return 0;
 			case E1:
 				err += i18n("Missing right paranthesis<br />\n");

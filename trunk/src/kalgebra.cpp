@@ -97,7 +97,8 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	funcio3d = new QExpressionEdit(dibuix3d,0, Autodetect);
 	funcio3d->setText("sin(x)*sin(y)"); //NOTE: La huevera, by Miquel Grau
 	pestanya->addTab(dibuix3d, i18n("3D Graph"));
-	connect(funcio3d, SIGNAL( returnPressed() ), this, SLOT(dibuixa3d()) );
+	connect(funcio3d, SIGNAL(returnPressed()), this, SLOT(dibuixa3d()) );
+	connect(funcio3d, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
 	
 	layout3d->setSpacing(5);
 	layout3d->addWidget(grafic3d);

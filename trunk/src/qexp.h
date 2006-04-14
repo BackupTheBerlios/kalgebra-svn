@@ -42,6 +42,7 @@ typedef enum {
 	E2,
 	E3,
 	E,
+	K
 } actEnum;
 
 typedef enum {
