@@ -153,31 +153,40 @@ int QExp::reduce(){
 	tokEnum oper = (tokEnum) opr.top();
 	opr.pop();
 	
-	if(oper == tAdd){
-		val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tSub){
-		val.push(QString("<apply><minus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tUmi){
-		val.push(QString("<apply><minus />%1</apply>").arg(val.pop()));
-	} else if(oper == tMul){
-		val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tDiv){
-		val.push(QString("<apply><quotient />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tPow){
-		val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tAssig){ // :=
-		val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tFunc){
-		if(Analitza::isOperador(func.top()))
-			val.push(QString("<apply><%1 />%2</apply>").arg(func.pop()).arg(val.pop()));
-		else
-			val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(val.pop()));
-	} else if(oper == tLambda){ // ->
-		val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tComa){
-		val.push(QString("%1%2").arg(val.pop()).arg(val.pop()));
-	} else if(oper == tRpr){
-		opr.pop();
+	switch(oper) {
+		case tAdd:
+			val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			break;
+		case tUmi:
+			val.push(QString("<apply><minus />%1</apply>").arg(val.pop()));
+			break;
+		case tMul:
+			val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			break;
+		case tDiv:
+			val.push(QString("<apply><quotient />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			break;
+		case tPow:
+			val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			break;
+		case tAssig: // :=
+			val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(val.pop()));
+			break;
+		case tFunc:
+			if(Analitza::isOperador(func.top()))
+				val.push(QString("<apply><%1 />%2</apply>").arg(func.pop()).arg(val.pop()));
+			else
+				val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(val.pop()));
+			break;
+		case tLambda: // ->
+			val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(val.pop()));
+			break;
+		case tComa:
+			val.push(QString("%1%2").arg(val.pop()).arg(val.pop()));
+			break;
+		case tRpr:
+			opr.pop();
+			break;
 	}
 	return 0;
 }
