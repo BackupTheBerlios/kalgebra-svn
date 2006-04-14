@@ -1,0 +1,12 @@
+* ExpressionEdit improved in many ways:
+	- History added
+	- Highlighting for MathML added
+	- Toggling between MathML-mode and Expression-mode enabled
+	- Can tell if we are writing into a function so we can help the user a bit (for the moment)
+* GUI a bit remade, no more MathML or expression tab, everything goes into ExpressionEdit, can change with shift+TAB
+* Variable edition dialog added. Useless but looks nice :)
+* divide operators fixed (divide, quotient, rem, factorof)
+
+
+
+
