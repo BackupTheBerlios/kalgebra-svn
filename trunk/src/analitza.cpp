@@ -175,7 +175,7 @@ double Analitza::opera(double res, double oper, QString op, int minus=0){
 	}else if(op =="times"){
 		a *= b;
 	}else if(op=="divide"){
-		//a = ((a % b)==0) ? 1.0 : 0.0;
+		a = (((int)a % (int)b)==0) ? 1.0 : 0.0;
 		boolean = true;
 	}else if(op=="minus"){
 		a = minus ? -a : a-b;
