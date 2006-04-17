@@ -87,12 +87,12 @@ private:
 	QTabWidget *pestanya;
 	
 	//tab consola
+	QWidget *consola;
 	QExpressionEdit *operacio;
 	KTabWidget *tabOperacio;
 	void opera_gen(QString);
 	QAlgebraHighlighter *m_alg_high;
 	QLabel *m_status;
-	
 	KHTMLPart *log;
 	KListView *varlist;
 	QString hist;
@@ -101,7 +101,9 @@ private:
 	void update_varlist();
 	
 	//tab grafic2D
+	QSplitter *hgraf2d;
 	QGraph *grafic;
+	KPushButton *addfunc;
 	KTabWidget *tabFuncio2d;
 	KListView *func2dlist;
 	KPopupMenu *res;
@@ -109,6 +111,7 @@ private:
 	void g2d_res_check(int);
 	
 	//tab grafic3D
+	QWidget *dibuix3d;
 	QExpressionEdit *funcio3d;
 	Q3DGraph *grafic3d;
 	KTabWidget *tabFuncio3d;
@@ -118,6 +121,8 @@ private:
 	void g3d_type_check(int);
 	
 public slots:
+	void tabChanges(QWidget *newWid);
+	
 	//Console
 	void opera();
 	void saveLog();

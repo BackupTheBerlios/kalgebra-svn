@@ -17,8 +17,8 @@ bool Variables::remove(QString id){
 	bool ex=false;
 	QValueList<struct VARIABLE>::iterator it;
 	struct VARIABLE aux;
-	it = vars.begin() ;
-	for(; it != vars.end(); ++it){ 
+	
+	for(it = vars.begin(); it != vars.end(); ++it){ 
 		aux = *it;
 		if(aux.nom == id){
 			vars.remove(it);
@@ -29,7 +29,8 @@ bool Variables::remove(QString id){
 	return ex;
 }
 
-bool Variables::modifica(QString id, double new_val){
+bool Variables::modifica(QString id, double new_val)
+{
 	QDomDocument a;
 	QDomElement e=a.createElement("cn");
 	e.appendChild(a.createTextNode(QString("%1").arg(new_val, 0, 'g', 16)));
@@ -37,7 +38,8 @@ bool Variables::modifica(QString id, double new_val){
 	return modifica(id,e);
 }
 
-bool Variables::modifica(QString id, int new_val){
+bool Variables::modifica(QString id, int new_val)
+{
 	QDomDocument a;
 	QDomElement e=a.createElement("cn");
 	e.appendChild(a.createTextNode(QString("%1").arg(new_val)));
@@ -45,34 +47,48 @@ bool Variables::modifica(QString id, int new_val){
 	return modifica(id,e);
 }
 
-bool Variables::modifica(QString id, QDomElement new_val) {
-	struct VARIABLE aux;
+bool Variables::modifica(QString id, QDomElement new_val)
+{
 	bool ex=false;
 		
 	QValueList<struct VARIABLE>::iterator it;
-	for(it = vars.begin(); !ex && it != vars.end(); ++it){ 
-		aux = *it;
-		if(aux.nom == id){
+	for(it = vars.begin(); !ex && it != vars.end(); ++it) {
+		if((*it).nom == id){
 			(*it).valor=new_val;
 			ex=true;
 		}
 	}
 	if(!ex){
-		aux.nom=id;
-		aux.valor=new_val;
-		vars.append(aux);
+		(*it).nom=id;
+		(*it).valor=new_val;
+		vars.prepend(*it);
 	}
 	return ex;
 }
+
+
+QDomElement* Variables::find(QString id)
+{
+	QDomElement* ret=NULL;
+	bool ex=false;
+		
+	QValueList<struct VARIABLE>::iterator it;
+	for(it = vars.begin(); !ex && it != vars.end(); ++it){ 
+		if((*it).nom == id){
+			ret=&(*it).valor;
+			ex=true;
+		}
+	}
+	return ret;
+}
+
 QDomElement Variables::value(QString id, bool *ex){
-	struct VARIABLE aux;
 	QValueList<struct VARIABLE>::iterator it;
 	
 	for(it = vars.begin(); it != vars.end(); ++it){
-		aux = *it;
-		if(aux.nom.stripWhiteSpace() == id.stripWhiteSpace()){
+		if((*it).nom.stripWhiteSpace() == id.stripWhiteSpace()){
 			if(ex!=NULL) *ex=false;
-			return aux.valor;
+			return (*it).valor;
 		}
 	}
 	//error
@@ -99,7 +115,7 @@ bool Variables::isvar(QDomElement e){
 		QStringList out;
 		QValueList<struct VARIABLE>::iterator it;
 		for(it = vars.begin(); it != vars.end(); ++it){ 
-			if((*it).nom=="")
+			if((*it).nom==e.text())
 				return true;
 		}
 	}

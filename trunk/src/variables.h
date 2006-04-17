@@ -23,6 +23,7 @@ class Variables{
 		bool modifica(QString id, double new_val);
 		bool modifica(QString id, int new_val);
 		bool rename(QString id, QString newId);
+		QDomElement* find(QString var);
 		QDomElement value(QString id, bool *ex=NULL);
 		QStringList getNoms();
 		bool isvar(QDomElement e);

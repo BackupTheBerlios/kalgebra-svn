@@ -212,14 +212,19 @@ void Q3DGraph::crea() {
 	double mida=default_size*zoom, step=default_step*zoom;
 	int i, j;
 	const int k=(int) 2*mida/step;
+	QDomElement *x, *y;
 	
 	QTime t;
 	t.restart();
+	func3d.vars.modifica("x", 0);
+	func3d.vars.modifica("y", 0);
+	x=func3d.vars.find("x");
+	y=func3d.vars.find("y");
 	
 	for(i=0; tefunc && i<k; i++) {
-		func3d.vars.modifica("x", i*step-mida);
+		*x= Analitza::toCn(i*step-mida);
 		for(j=0; tefunc && j<k; j++) {
-			func3d.vars.modifica("y", j*step-mida);
+			*y= Analitza::toCn(j*step-mida);
 			punts[i][j] = -1.*func3d.Calcula();
 		}
 	}

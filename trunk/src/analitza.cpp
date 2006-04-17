@@ -626,7 +626,7 @@ QString Analitza::escriuMMLP(QString res, QString oper, QString op, int unari=0)
 	}else if(op=="divide"){
 		r = res + "<mo>/</mo>" +oper;
 	}else if(op=="quotient"){
-		r = "floor("res + "<mo>/</mo>" +oper")";
+		r = "floor("+res + "<mo>/</mo>" +oper+")";
 	}else if(op=="minus"){
 		r = unari ? "<mo>-</mo>"+res : res + "<mo>-</mo>" +oper;
 	}else if(op=="power"){
@@ -778,4 +778,13 @@ void print_dom(QDomNode in, int ind){
 		if(in.childNodes().item(i).nodeType()==QDomNode::ElementNode)
 			print_dom(in.childNodes().item(i), ind+1);
 	}
+}
+
+QDomElement Analitza::toCn(double new_val)
+{
+	QDomDocument a;
+	QDomElement e=a.createElement("cn");
+	e.appendChild(a.createTextNode(QString("%1").arg(new_val, 0, 'g', 16)));
+
+	return e;
 }

@@ -50,20 +50,21 @@ public:
 	
 	QDomNode elem;
 	static int isOperador(QString);
-	int setPath(QString);
-	int setTextMML(QString);
-	int setText(QString);
+	int setPath(QString path);
+	int setTextMML(QString exp);
+	int setText(QString exp);
 	QString textMML();
 	
-	Variables vars;
-	QString err;
-	
 	void setVars(Variables v);
-	static bool isNum(QString);
 	double Calcula();
 	QStringList lambda(); //retrieve lambda vars
 	double toNum(QDomElement res);
+	static bool isNum(QString);
 	static QString treu_tags(QString in);
+	static QDomElement toCn(double);
+	
+	Variables vars;
+	QString err;
 private:
 	QStringList bvar(QDomNode);
 	QDomNode uplimit(QDomNode);
@@ -76,7 +77,6 @@ private:
 	QString get_op(QDomNode);
 	////////////////////////////////////////
 	
-	//////////
 	double sum(QDomNode);
 
 public:

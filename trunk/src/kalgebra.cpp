@@ -14,9 +14,10 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	pestanya = new KTabWidget(this, "tab Principal");
 	pestanya->setFocusPolicy(QWidget::NoFocus);
 //	pestanya->setTabPosition(QTabWidget::Bottom); //I wonder how, I wonder why...
+	connect(pestanya, SIGNAL(currentChanged(QWidget*)), this, SLOT(tabChanges(QWidget*)));
 	
 	//tab consola/////////////////
-	QWidget *consola = new QWidget(this);
+	consola = new QWidget(this);
 	QVBoxLayout *cons_layout = new QVBoxLayout(consola);
 	QSplitter *log_split = new QSplitter(consola);
 	log =new KHTMLPart(log_split);
@@ -53,7 +54,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	//tab consola/////////////////
 	
 	//tab grafic2D/////////////////
-	QSplitter *hgraf2d = new QSplitter(this);
+	hgraf2d = new QSplitter(this);
 	
 	grafic = new QGraph(hgraf2d);
 	QWidget *graphtab = new QWidget(hgraf2d);
@@ -63,7 +64,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	func2dlist->addColumn(i18n("Function"));
 	func2dlist->addColumn(i18n("Color"));
 	func2dlist->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	KPushButton *addfunc = new KPushButton(i18n("Add function"), graphtab);
+	addfunc = new KPushButton(i18n("Add function"), graphtab);
 	
 	funcs2d->addWidget(func2dlist);
 	funcs2d->addWidget(addfunc);
@@ -90,7 +91,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	//tab grafic2D/////////////////
 	
 	//tab grafic3D/////////////////
-	QWidget *dibuix3d=new QWidget(this);
+	dibuix3d=new QWidget(this);
 	QVBoxLayout *layout3d = new QVBoxLayout(dibuix3d);
 	grafic3d = new Q3DGraph(dibuix3d);
 	
@@ -182,7 +183,7 @@ void KAlgebra::opera_gen(QString op){
 		//print_dom(a.elem);
 		
 		if(a.err.ascii()[0] != '\0'){
-			hist = QString("<p class=\"error\"> ERROR: %1 </p>%2").arg(a.err).arg(hist);
+			hist = QString("<p class=\"error\"> <b>ERROR:</b> %1 </p>%2").arg(a.err).arg(hist);
 			ultim_error = true;
 		} else {
 			stream << "<p class=\"last\">\n";
@@ -391,10 +392,11 @@ QStringList KAlgebra::list2D(){
 void KAlgebra::remove2D(int){} //TODO: not implemented
 
 void KAlgebra::plot3D(QString operation){
-	if(operation[0]=='<')
-		grafic3d->setFuncMML(operation);
+	qDebug("--:%s", funcio3d->text().ascii());
+	if(funcio3d->isMathML())
+		grafic3d->setFuncMML(funcio3d->text());
 	else
-		grafic3d->setFunc(operation);
+		grafic3d->setFunc(funcio3d->text());
 }
 
 void KAlgebra::slot_togglesquares(){
@@ -406,6 +408,20 @@ void KAlgebra::changeStatusBar(const QString& text)
 {
 	m_status->setText(text);
 // 	statusBar()->message(text);
+}
+
+void KAlgebra::tabChanges(QWidget *newWid)
+{
+	if(newWid==consola) {
+		operacio->setFocus();
+		operacio->setCursorPosition(0,operacio->text().length());
+	} else if(newWid==hgraf2d)
+		addfunc->setFocus();
+	else if(newWid==dibuix3d) {
+		funcio3d->setFocus();
+		funcio3d->setCursorPosition(0,funcio3d->text().length());
+	} else
+		qDebug("the new x-files");
 }
 
 #include "kalgebra.moc"

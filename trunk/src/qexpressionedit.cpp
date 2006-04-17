@@ -1,4 +1,4 @@
-
+#include <kdebug.h>
 #include "qexpressionedit.h"
 
 QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode) : QTextEdit(parent, name), m_histPos(0), help(true)
@@ -9,6 +9,7 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode
 	this->setVScrollBarMode(QScrollView::AlwaysOff);
 	this->setHScrollBarMode(QScrollView::AlwaysOff);
 	this->setTabChangesFocus(true);
+	this->setTextFormat(Qt::PlainText);
 	
 	m_history.append("");
 	
@@ -39,7 +40,8 @@ bool QExpressionEdit::isMathML()
 	}
 }
 
-bool QExpressionEdit::isMathML(QString exp){
+bool QExpressionEdit::isMathML(QString exp)
+{
 	return exp.stripWhiteSpace()[0]=='<';
 }
 
@@ -76,6 +78,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 	
 	if(e->key()==Qt::Key_Backtab){
 		setMode(isMathML() ? Expression : MathML);
+		return;
 	}
 	
 	switch(e->key()){
@@ -169,7 +172,7 @@ QString QExpressionEdit::editingWord(int pos, int &param)
 	return findPrec(this->text().mid(0,pos), p, pos, param, "");
 }
 
-void QExpressionEdit::cursorMov(int par, int pos)
+void QExpressionEdit::cursorMov(int, int pos)
 {
 	int param;
 	QString s = editingWord(pos, param);
@@ -205,7 +208,7 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 
 void QExpressionEdit::removenl()
 {
-	this->setText(this->text().stripWhiteSpace().remove('\n'));
+	this->setText(this->text().remove('\n'));
 }
 
 
