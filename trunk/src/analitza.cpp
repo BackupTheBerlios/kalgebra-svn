@@ -25,7 +25,9 @@ Analitza::Analitza(QString path){
 	Analitza();
 }
 
-Analitza::Analitza(){QLocale::setDefault(QLocale::C); err=""; }
+Analitza::Analitza(){
+	QLocale::setDefault(QLocale::C); err="";
+}
 
 Analitza::~Analitza(){}
 
@@ -80,6 +82,19 @@ QString Analitza::textMML(){
 	return mmlexp;
 }
 
+bool Analitza::simplify()
+{
+	QDomNode a=elem.firstChild();
+	qDebug("******************");
+	print_dom(a);
+	qDebug("******************");
+	QDomNode b= simp(a);
+	qDebug("..................");
+	print_dom(b);
+	qDebug("..................");
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -89,7 +104,42 @@ QString Analitza::textMML(){
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-double Analitza::Calcula(){
+bool hasVars(QDomNode n) {
+	bool r=false;
+	if(n.toElement().tagName()=="ci")
+		r = true;
+	else if(!n.hasChildNodes())
+		r = false;
+	else {
+		QDomNodeList nl=n.childNodes();
+		for(unsigned int i=0; i<nl.length(); i++) {
+			if(nl.item(i).isElement())
+				r |= hasVars(nl.item(i));
+		}
+	}
+	return r;
+}
+
+QDomNode Analitza::simp(QDomNode n){
+	bool s=true;
+	QDomNode k;
+	
+	if(!hasVars(n))
+		return toCn(evalua(n));
+	
+	
+	QDomNodeList nl=n.childNodes();
+	for(unsigned int i=0; i<nl.length(); i++) {
+		k=nl.item(i);
+		if(k.isElement() && k.hasChildNodes()){
+			if(n.replaceChild(simp(k), k).isNull())
+				qDebug("mec mec");
+		}
+	}
+	return n;
+}
+
+double Analitza::Calcula() {
 // 	QDomNodeList elems = elem.toElement().elementsByTagName(QString("apply"));
 // 	return evalua(elems.item(0));
 	err="";
@@ -741,7 +791,7 @@ QString Analitza::escriuMMLP(QString res, QString oper, QString op, int unari=0)
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////                                                   /////////////////////
-/////////////                  Other (static)                   /////////////////////
+/////////////              Random static functions              /////////////////////
 /////////////                                                   /////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -770,9 +820,12 @@ void print_dom(QDomNode in, int ind){
 	}
 	
 	for(int i=0; i<ind; i++)
-		a.append("------");
+		a.append("------|");
 	
-	qDebug("%s%s(%s)", a.ascii(), in.toElement().tagName().ascii(), in.toElement().text().ascii());
+	if(in.hasChildNodes())
+		qDebug("%s%s(%s)-- %d", a.ascii(), in.toElement().tagName().ascii(), in.toElement().text().ascii(), in.childNodes().length());
+	else
+		qDebug("%s%s", a.ascii(), in.toElement().tagName().ascii());
 	
 	for(unsigned int i=0 ; i<in.childNodes().length(); i++){
 		if(in.childNodes().item(i).nodeType()==QDomNode::ElementNode)

@@ -79,6 +79,14 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 	if(e->key()==Qt::Key_Backtab){
 		setMode(isMathML() ? Expression : MathML);
 		return;
+	} else if(e->key()==Qt::Key_F2){
+		Analitza a;
+		if(isMathML())
+			a.setTextMML(text());
+		else
+			a.setText(text());
+		a.simplify();
+		return;
 	}
 	
 	switch(e->key()){

@@ -54,6 +54,7 @@ public:
 	int setTextMML(QString exp);
 	int setText(QString exp);
 	QString textMML();
+	bool simplify();
 	
 	void setVars(Variables v);
 	double Calcula();
@@ -75,6 +76,8 @@ private:
 	double opera(double, double, QString, int);
 	unsigned int toOpId(QDomNode);
 	QString get_op(QDomNode);
+	
+	QDomNode simp(QDomNode);
 	////////////////////////////////////////
 	
 	double sum(QDomNode);
