@@ -18,6 +18,8 @@ public:
 	~QExpressionEdit();
 	inline bool mode() { return m_highlight->mode(); }
 	void setMode(Mode en);
+	void setAutocomplete(bool a);
+	bool autocomplete();
 	
 	bool isMathML();
 	static bool isMathML(QString exp);
@@ -32,10 +34,10 @@ private:
 	int m_histPos;
 	QStringList m_history;
 	bool help;
+	bool m_auto;
 	
 	void helpShow(const QString& funcname, int param=0);
 	static QString findPrec(const QString& exp, int &act, int cur, int &param, QString tit);
-	
 public slots:
 	void returnP();
 	void cursorMov(int par, int pos);

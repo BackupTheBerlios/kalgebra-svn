@@ -24,6 +24,7 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode
 	setMode(inimode);
 	connect(this, SIGNAL(returnPressed()), this, SLOT(returnP()));
 	connect(this, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorMov(int, int)));
+	m_auto=true;
 }
 
 QExpressionEdit::~QExpressionEdit() {}
@@ -101,6 +102,11 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 			m_histPos--;
 			ch=true;
 			break;
+		case Qt::Key_Minus: case Qt::Key_Plus: case Qt::Key_Asterisk: case Qt::Key_Slash:
+			if(this->text().length() == this->selectedText().length() && m_auto){
+				this->setText("ans");
+				this->setCursorPosition(0, 3);
+			}
 		default:
 			QTextEdit::keyPressEvent(e);
 			m_history.last() = this->text();
@@ -213,6 +219,9 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 // 	qDebug(funcname.ascii());
 // 	m_helptip->show();
 }
+
+void QExpressionEdit::setAutocomplete(bool a) { m_auto = a; }
+bool QExpressionEdit::autocomplete() { return m_auto; }
 
 void QExpressionEdit::removenl()
 {

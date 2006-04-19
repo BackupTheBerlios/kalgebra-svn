@@ -182,28 +182,27 @@ void KAlgebra::opera_gen(QString op){
 // 		kdDebug() << a.err << "::::::::::" << err_no << endl;
 		//print_dom(a.elem);
 		
-		if(a.err.ascii()[0] != '\0'){
+		if(!a.err.isEmpty()){
 			hist = QString("<p class=\"error\"> <b>ERROR:</b> %1 </p>%2").arg(a.err).arg(hist);
 			ultim_error = true;
 		} else {
 			stream << "<p class=\"last\">\n";
 			
 			if(a.elem.firstChild().toElement().tagName()=="declare" || a.elem.firstChild().toElement().tagName()=="lambda"){
-				hist = a.toString() + hist;
+				hist.prepend(a.toString());
 			} else {
-				hist = a.toString() + QString(" <span class='sep'>=</span> %1</p>\n").arg(b, 0, 'g', 12) + hist;
+				hist.prepend(QString("%1 <span class='sep'>=</span> <span class='num'>%1</span></p>\n").arg(a.toString()).arg(b, 0, 'g', 12));
 				a.vars.modifica("ans", b);
 			}
 			
 			ultim_error = false;
 		}
 		
-		stream << hist;
-		stream << "</body></html>\n";
+		stream << hist << "</body></html>\n";
 		file.close();
 	}
 	operacio->setText("");
-	//log->setUserStyleSheet(KURL("http://math.nist.gov/~BMiller/mathml-css/style/mathml.css"));
+	
 	log->openURL("/tmp/kalgebra_log.xml");
 	update_varlist();
 }
@@ -392,7 +391,6 @@ QStringList KAlgebra::list2D(){
 void KAlgebra::remove2D(int){} //TODO: not implemented
 
 void KAlgebra::plot3D(QString operation){
-	qDebug("--:%s", funcio3d->text().ascii());
 	if(funcio3d->isMathML())
 		grafic3d->setFuncMML(funcio3d->text());
 	else
