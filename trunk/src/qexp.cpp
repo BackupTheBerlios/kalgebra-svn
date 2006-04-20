@@ -159,34 +159,34 @@ int QExp::reduce(){
 			val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
 		case tUmi:
-			val.push(QString("<apply><minus />%1</apply>").arg(val.pop()));
+			val.push(QString("<apply><minus />%1</apply>").arg(aux));
 			break;
 		case tSub:
-			val.push(QString("<apply><minus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<apply><minus />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
 		case tMul:
-			val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<apply><times />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
 		case tDiv:
-			val.push(QString("<apply><divide />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<apply><divide />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
 		case tPow:
-			val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
 		case tAssig: // :=
-			val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(aux));
 			break;
 		case tFunc:
 			if(Analitza::isOperador(func.top()))
-				val.push(QString("<apply><%1 />%2</apply>").arg(func.pop()).arg(val.pop()));
+				val.push(QString("<apply><%1 />%2</apply>").arg(func.pop()).arg(aux));
 			else
-				val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(val.pop()));
+				val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(aux));
 			break;
 		case tLambda: // ->
-			val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(aux));
 			break;
 		case tComa:
-			val.push(QString("%1%2").arg(aux).arg(val.pop()));
+			val.push(QString("%1%2").arg(val.pop()).arg(aux));
 			break;
 		case tRpr:
 			opr.pop();
@@ -208,7 +208,7 @@ int QExp::parse(){
 			if(shift()) return 1;
 			continue;
 		}
-		QString a;
+		QString a; //For PPC too
 // 		printf("acc=%d stk=%d, tok=%d\n", parseTbl[opr.top()][tok], opr.top(), tok);
 		switch(parseTbl[opr.top()][tok]){
 			case K:
@@ -223,7 +223,7 @@ int QExp::parse(){
 				if(shift()) return 1;
 				break;
 			case A:
-				mml = "<math>" + val.pop() + "</math>";
+				mml = QString("<math>%1</math>").arg(val.pop());
 // 				cout << val.top().ascii() << endl;
 				return 0;
 			case E1:
