@@ -152,10 +152,11 @@ int QExp::shift(){
 int QExp::reduce(){
 	tokEnum oper = (tokEnum) opr.top();
 	opr.pop();
+	QString aux = val.pop();
 	
 	switch(oper) {
 		case tAdd:
-			val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(val.pop()));
+			val.push(QString("<apply><plus />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
 		case tUmi:
 			val.push(QString("<apply><minus />%1</apply>").arg(val.pop()));
@@ -185,10 +186,12 @@ int QExp::reduce(){
 			val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(val.pop()));
 			break;
 		case tComa:
-			val.push(QString("%1%2").arg(val.pop()).arg(val.pop()));
+			val.push(QString("%1%2").arg(aux).arg(val.pop()));
 			break;
 		case tRpr:
 			opr.pop();
+		default:
+			val.push(aux);
 			break;
 	}
 	return 0;
@@ -200,15 +203,17 @@ int QExp::parse(){
 	antnum= tEof;
 	
 	if(getTok()) return 1;
-	while(err==""){
+	while(err.isEmpty()){
 		if(tok==tVal){
 			if(shift()) return 1;
 			continue;
 		}
+		QString a;
 // 		printf("acc=%d stk=%d, tok=%d\n", parseTbl[opr.top()][tok], opr.top(), tok);
 		switch(parseTbl[opr.top()][tok]){
 			case K:
-				val.push(QString("%1%2").arg(val.pop()).arg(val.pop()));
+				a=val.pop();
+				val.push(QString("%1%2").arg(val.pop()).arg(a));
 				opr.pop();
 				break;
 			case R:
