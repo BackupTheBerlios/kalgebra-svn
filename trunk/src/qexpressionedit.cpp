@@ -21,6 +21,7 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode
 	m_helptip->hide();*/
 	
 	m_highlight= new QAlgebraHighlighter(this);
+	
 	setMode(inimode);
 	connect(this, SIGNAL(returnPressed()), this, SLOT(returnP()));
 	connect(this, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorMov(int, int)));

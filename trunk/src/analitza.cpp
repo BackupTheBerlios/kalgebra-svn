@@ -184,6 +184,7 @@ double Analitza::evalua(QDomNode n){
 	else if(fills-1==sons || (sons==-1 && fills>=3) || operador == "" || operador == "minus"){
 		QDomDocument a;
 		QValueList<double>::iterator it = nombres.begin();
+		
 		ret = *it;
 		
 		if(fills>2)
