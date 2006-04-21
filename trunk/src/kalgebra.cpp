@@ -165,7 +165,7 @@ void KAlgebra::opera_gen(QString op){
 		stream << "</style>\n</head>\n<body>\n";
 		
 		if(!ultim_error)
-			hist = "<p class=\"before\">" + hist;
+			hist.prepend("<p class=\"before\">");
 		
 		int err_no=0;
 		
@@ -183,12 +183,12 @@ void KAlgebra::opera_gen(QString op){
 		//print_dom(a.elem);
 		
 		if(!a.err.isEmpty()){
-			hist = QString("<p class=\"error\"> <b>ERROR:</b> %1 </p>%2").arg(a.err).arg(hist);
+			hist.prepend(QString("<p class=\"error\"> <b>ERROR:</b> %1 </p>").arg(a.err));
 			ultim_error = true;
 		} else {
 			stream << "<p class=\"last\">\n";
 			
-			if(a.elem.firstChild().toElement().tagName()=="declare" || a.elem.firstChild().toElement().tagName()=="lambda"){
+			if(a.elem.firstChild().toElement().tagName()=="declare" || a.elem.firstChild().toElement().tagName()=="lambda") {
 				hist.prepend(a.toString());
 			} else {
 				hist.prepend(QString("%1 <span class='sep'>=</span> <span class='num'>%1</span></p>\n").arg(a.toString()).arg(b, 0, 'g', 12));
