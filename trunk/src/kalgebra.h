@@ -64,7 +64,7 @@
 	/**
 	* @short KAlgebra Main Window
 	* @author ,,, <aleixpol@gmail.com>
-	* @version 0.4.1
+	* @version 0.5
 	*/
 
 class KAlgebra : public KMainWindow, virtual public KAlgebraIface
@@ -76,13 +76,16 @@ public:
 	static QString treu_tags(QString in);
 	
 	//DCOP implementations
-	void calculate(QString operation);
+	void operate(QString operation);
+	QString calculate(QString operation);
 	void plot2D(QString operation);
 	void add2D(QString operation);
 	QStringList list2D();
 	void remove2D(int n);
 	void plot3D(QString operation);
-
+	void save2D(QString path);
+	void save3D(QString path);
+	
 private:
 	QTabWidget *pestanya;
 	

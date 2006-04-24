@@ -22,6 +22,8 @@ int main(int argc, char **argv)
 	KCmdLineArgs::addCmdLineOptions( options );
 	KApplication app;
 	KAlgebra *mainWin = 0;
+	
+	app.dcopClient()->registerAs(app.name(), false);
 		
 	if (app.isRestored()) {
 		RESTORE(KAlgebra);

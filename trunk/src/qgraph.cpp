@@ -470,16 +470,21 @@ void QGraph::resizeEvent(QResizeEvent *){
 	pintafunc(NULL);
 }
 
+void QGraph::clear()
+{
+	funclist.clear();
+	pintafunc(NULL);
+}
+
 //////////////////////////////////////////////////////////////
 bool QGraph::toImage(QString path){
-	if(path != "" && path.endsWith(".svg")) {
+	if(!path.isEmpty() && path.endsWith(".svg")) {
 		QPicture pic;
 		QPainter  p;
-// 		rang_x=(double) this->width()/((double)viewport.width()-1);
-// 		rang_y=(double) this->height()/((double)viewport.height()-1);
+		
 		pintafunc(&pic);
 		pic.save(path, "svg");
-	} else if(path != "" && path.endsWith(".png")) {
+	} else if(!path.isEmpty() && path.endsWith(".png")) {
 		front.save(path, "PNG");
 	} else
 		return false;

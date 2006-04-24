@@ -80,6 +80,7 @@ private:
 public:
 	void setViewPort(QRect);
 	void setResolution(int res);
+	void clear();
 	inline static int round(double val){ return (val-floor(val)>=0.5) ? (int) floor(val)+1 : (int) floor(val); }
 };
 

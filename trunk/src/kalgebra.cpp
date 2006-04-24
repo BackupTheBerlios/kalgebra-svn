@@ -274,7 +274,7 @@ void KAlgebra::slot_transparencia() {
 
 void KAlgebra::slot_getpixmap(){
 	QString path = KFileDialog::getSaveFileName( QString::null, "*.png", this );
-	if(!path.isNull())
+	if(!path.isEmpty())
 		grafic3d->toPixmap().save(path, "PNG");
 }
 
@@ -352,51 +352,6 @@ void KAlgebra::edit_var(QListViewItem *item, const QPoint &,int){
 	update_varlist();
 }
 
-
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-//////////////    DCOP interfaces     ////////////////////
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-
-void KAlgebra::calculate(QString operation){
-	opera_gen(operation);
-}
-
-void KAlgebra::plot2D(QString operation){
-	func2dlist->clear();
-	add2D(operation);
-}
-
-void KAlgebra::add2D(QString operation){
-	QPixmap p(15,15);
-	p.fill(QColor(Qt::green));
-	QCheckListItem *klvi = new QCheckListItem(func2dlist, operation, QCheckListItem::CheckBox);
-	klvi->setPixmap(1, p);
-	klvi->setState(QCheckListItem::On);
-	func2dlist->insertItem(klvi);
-	grafic->addFunction(function(operation, QColor(Qt::green), false));
-}
-
-QStringList KAlgebra::list2D(){
-	QStringList a;
-	QListViewItemIterator it(func2dlist, QListViewItemIterator::Checked);
-	while ( it.current() ) {
-		a << it.current()->text(0);
-		++it;
-	}
-	return a;
-}
-
-void KAlgebra::remove2D(int){} //TODO: not implemented
-
-void KAlgebra::plot3D(QString operation){
-	if(funcio3d->isMathML())
-		grafic3d->setFuncMML(funcio3d->text());
-	else
-		grafic3d->setFunc(funcio3d->text());
-}
-
 void KAlgebra::slot_togglesquares(){
 	grafic->setSquares(!grafic->squares());
 	g2d->setItemChecked(G2D_TOGGSQUARES, grafic->squares());
@@ -420,6 +375,84 @@ void KAlgebra::tabChanges(QWidget *newWid)
 		funcio3d->setCursorPosition(0,funcio3d->text().length());
 	} else
 		qDebug("the new x-files");
+}
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////    DCOP interfaces     ////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+void KAlgebra::operate(QString operation){
+	opera_gen(operation);
+}
+
+void KAlgebra::plot2D(QString operation){
+	func2dlist->clear();
+	grafic->clear();
+	add2D(operation);
+}
+
+void KAlgebra::add2D(QString operation){
+	QPixmap p(15,15);
+	p.fill(QColor(0,150,0));
+	QCheckListItem *klvi = new QCheckListItem(func2dlist, operation, QCheckListItem::CheckBox);
+	klvi->setPixmap(1, p);
+	klvi->setState(QCheckListItem::On);
+	func2dlist->insertItem(klvi);
+	func2dlist->setSelected(klvi, true);
+	grafic->setSelected(operation);
+	grafic->addFunction(function(operation, QColor(0,150,0), false));
+}
+
+QStringList KAlgebra::list2D(){
+	QStringList a;
+	QListViewItemIterator it(func2dlist, QListViewItemIterator::Checked);
+	while ( it.current() ) {
+		a << it.current()->text(0);
+		++it;
+	}
+	return a;
+}
+
+void KAlgebra::remove2D(int){} //TODO: not implemented
+
+void KAlgebra::plot3D(QString operation)
+{
+	if(funcio3d->isMathML())
+		grafic3d->setFuncMML(funcio3d->text());
+	else
+		grafic3d->setFunc(funcio3d->text());
+}
+
+void KAlgebra::save2D(QString path)
+{
+	if(!path.isEmpty())
+		grafic->toImage(path);
+}
+
+QString KAlgebra::calculate(QString op) //This could be a nice example about how does it all work
+{
+	Analitza a;
+	double res;
+	if(QExpressionEdit::isMathML(op))
+		a.setTextMML(op);
+	else
+		a.setText(op);
+	
+	if(a.err.isEmpty())
+		res=a.Calcula();
+	
+	if(!a.err.isEmpty())
+		return i18n("Error: %1").arg(Analitza::treu_tags(a.err));
+	else
+		return QString("%1").arg(res, 0, 'g', 12);
+}
+
+void KAlgebra::save3D(QString path)
+{
+	if(!path.isEmpty())
+		grafic3d->toPixmap().save(path, "PNG");
 }
 
 #include "kalgebra.moc"
