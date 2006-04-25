@@ -1,6 +1,8 @@
 #ifndef Q3DGRAPH_H
 #define Q3DGRAPH_H
 
+#include <kurl.h>
+
 #include <qgl.h>
 #include <qtimer.h>
 #include <qimage.h>
@@ -43,6 +45,7 @@ public:
 	void dibuixa_eixos();
 	void setTraslucency(bool tr);
 	QPixmap toPixmap();
+	bool save(const KURL& url);
 private:
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);

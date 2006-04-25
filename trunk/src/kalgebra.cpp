@@ -431,6 +431,13 @@ void KAlgebra::save2D(QString path)
 		grafic->toImage(path);
 }
 
+
+void KAlgebra::save3D(KURL path)
+{
+	if(!path.isEmpty())
+		grafic3d->save(path);
+}
+
 QString KAlgebra::calculate(QString op) //This could be a nice example about how does it all work
 {
 	Analitza a;
@@ -447,12 +454,6 @@ QString KAlgebra::calculate(QString op) //This could be a nice example about how
 		return i18n("Error: %1").arg(Analitza::treu_tags(a.err));
 	else
 		return QString("%1").arg(res, 0, 'g', 12);
-}
-
-void KAlgebra::save3D(QString path)
-{
-	if(!path.isEmpty())
-		grafic3d->toPixmap().save(path, "PNG");
 }
 
 #include "kalgebra.moc"

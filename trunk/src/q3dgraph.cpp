@@ -1,5 +1,10 @@
 #include "q3dgraph.h"
 
+#include <kimageio.h>
+#include <kio/netaccess.h>
+#include <ksavefile.h>
+#include <ktempfile.h>
+
 Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name){
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 	tefunc=false;
@@ -372,5 +377,43 @@ void Q3DGraph::setTraslucency(bool tr){
 QPixmap Q3DGraph::toPixmap(){
 	return this->renderPixmap();
 }
+
+bool Q3DGraph::save(const KURL& url)
+{
+	if ( KIO::NetAccess::exists( url, false, this ) ) //The file already exist
+		return false;
+
+	QString type(KImageIO::type(url.path()));
+	if (type.isNull())
+		type = "PNG";
+
+	bool ok = false;
+
+	if(url.isLocalFile()) {
+		KSaveFile saveFile(url.path());
+		if ( saveFile.status() == 0 ) {
+			if (toPixmap().save( saveFile.file(), type.latin1() ) )
+				ok = saveFile.close();
+		}
+	} else {
+		KTempFile tmpFile;
+		tmpFile.setAutoDelete(true);
+		if(tmpFile.status()==0) {
+			if(toPixmap().save( tmpFile.file(), type.latin1())) {
+				if(tmpFile.close())
+					ok = KIO::NetAccess::upload( tmpFile.name(), url, this );
+			}
+		}
+	}
+	
+//	QApplication::restoreOverrideCursor();
+	
+	if (!ok) {
+		qDebug("Was unable to save it");
+	}
+
+	return ok;
+}
+
 
 #include "q3dgraph.moc"
