@@ -1,28 +1,29 @@
+# translation of es.po to ca_ES
 # translation of es.po to
 # translation of kalgebra.po to
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 #
 # Aleix Pol Gonzàlez <aleixpol@gmail.com>, 2005, 2006.
+# apol <aleixpol@gmail.com>, 2006.
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-04-26 18:00+0200\n"
-"PO-Revision-Date: 2006-02-02 05:08+0100\n"
-"Last-Translator: Aleix Pol Gonzàlez <aleixpol@gmail.com>\n"
-"Language-Team:  <kde-i18n-ca@kde.org>\n"
+"PO-Revision-Date: 2006-04-26 18:35+0200\n"
+"Last-Translator: apol <aleixpol@gmail.com>\n"
+"Language-Team: ca_ES <kde-i18n-ca@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.1\n"
+"X-Generator: KBabel 1.11.2\n"
 
 #: analitza.cpp:41 analitza.cpp:60
 msgid "Error while parsing: %1<br />\n"
 msgstr "Error mientras se leía: %1<br />\n"
 
 #: analitza.cpp:46
-#, fuzzy
 msgid "Error while parsing: %1<br/>\n"
 msgstr "Error mientras se leía: %1<br />\n"
 
@@ -38,22 +39,19 @@ msgstr "El operador <em>%1</em> debería tener un parámetro<p/>"
 msgid ""
 "Can't have %1 parameter with <em>%2</em> operator, it should have %3 "
 "parameter<p />"
-msgstr ""
-"El operador <em>%2</em> no puede tener %1 parámetro, debería tener %3<p />"
+msgstr "El operador <em>%2</em> no puede tener %1 parámetro, debería tener %3<p />"
 
 #: analitza.cpp:362
-#, fuzzy
 msgid "The operator <em>%1</em> hasn't been implemented<br/>"
-msgstr "El operador  %1 no ha sido implementado<br />\n"
+msgstr "El operador <em>%1</em> no ha sido implementado<br />"
 
 #: analitza.cpp:420
 msgid "The variable <em>%1</em> doesn't exist<br />\n"
 msgstr "La variable <em>%1</em> no existe<br/>\n"
 
 #: analitza.cpp:422
-#, fuzzy
 msgid "The function <em>%1</em> doesn't exist<br />\n"
-msgstr "La variable <em>%1</em> no existe<br/>\n"
+msgstr "La función <em>%1</em> no existe<br/>\n"
 
 #: function.cpp:43
 msgid "Don't know how to represent f(%1)"
@@ -88,7 +86,6 @@ msgid "Color"
 msgstr "Color"
 
 #: kalgebra.cpp:67
-#, fuzzy
 msgid "Add function"
 msgstr "Añadir/Editar función"
 
@@ -118,14 +115,13 @@ msgstr "Guardar imagen"
 
 #: kalgebra.cpp:88
 msgid "Toggle Squares"
-msgstr "(Des)Activar cuadrados"
+msgstr "(Des)Activar cuadrícula"
 
 #: kalgebra.cpp:89
 msgid "Precision"
 msgstr "Precisión"
 
 #: kalgebra.cpp:90
-#, fuzzy
 msgid "&Graph"
 msgstr "&Gráfico"
 
@@ -146,7 +142,6 @@ msgid "Solid"
 msgstr "Sólido"
 
 #: kalgebra.cpp:119
-#, fuzzy
 msgid "Transparency"
 msgstr "(Des)Activar transparencias"
 
@@ -155,7 +150,6 @@ msgid "Graph Type"
 msgstr "Tipo de gráfico"
 
 #: kalgebra.cpp:122
-#, fuzzy
 msgid "G&raph 3D"
 msgstr "G&ráfico 3D"
 
@@ -168,13 +162,12 @@ msgstr ""
 "*.png|Imagen PNG (*.png)"
 
 #: kalgebra.cpp:454
-#, fuzzy
 msgid "Error: %1"
-msgstr "Error<br />\n"
+msgstr "Error: %1"
 
 #: kfunctionedit.cpp:3
 msgid "Add/Edit a function"
-msgstr "Añadir/Editar función"
+msgstr "Añadir/Editar una función"
 
 #: kfunctionedit.cpp:66 kvaredit.cpp:86
 msgid "<qt text='#090'><b>f(%1)=%2</b></qt>"
@@ -189,24 +182,22 @@ msgid "<qt text='red'><b>WRONG</b></qt>"
 msgstr "<qt text='red'><b>WRONG</b></qt>"
 
 #: kvaredit.cpp:3
-#, fuzzy
 msgid "Add/Edit a variable"
-msgstr "Añadir/Editar función"
+msgstr "Añadir/Editar una variable"
 
 #: kvaredit.cpp:26
 msgid "Calculate the expression"
-msgstr ""
+msgstr "Calcular la expresión"
 
 #: kvaredit.cpp:27
 msgid "Save the expression"
-msgstr ""
+msgstr "Guardar la expresión"
 
 #: kvaredit.cpp:45
 msgid "Edit '%1' value"
-msgstr ""
+msgstr "Editar valor '%1'"
 
 #: kvaredit.cpp:99
-#, fuzzy
 msgid "<qt text='#090'><b>Result: %1</b></qt>"
 msgstr "<qt text='#090'><b>f(x)=%1</b></qt>"
 
@@ -216,29 +207,25 @@ msgstr "KAlgebra"
 
 #: qexp.cpp:74
 msgid "Too much comma in %1<br />\n"
-msgstr ""
+msgstr "Demasiadas comas en %1<br />\n"
 
 #: qexp.cpp:116
 msgid "Unknown token %1<br />\n"
-msgstr ""
+msgstr "Objeto %1 desconocido<br />\n"
 
 #: qexp.cpp:230
-#, fuzzy
 msgid "Missing right paranthesis<br />\n"
 msgstr "Falta un paréntesis derecho<br />\n"
 
 #: qexp.cpp:233
-#, fuzzy
 msgid "Missing operator< p/>\n"
 msgstr "Falta un operador<p />\n"
 
 #: qexp.cpp:236
-#, fuzzy
 msgid "Unbalanced right parenthesis<br />\n"
 msgstr "Paréntesis derecho incorrecto<br />\n"
 
 #: qexp.cpp:239
-#, fuzzy
 msgid "Error<br />\n"
 msgstr "Error<br />\n"
 
@@ -259,35 +246,3 @@ msgid ""
 "Your emails"
 msgstr "aleixpol@gmail.com"
 
-#, fuzzy
-#~ msgid "Error while parsing: %1<br/>"
-#~ msgstr "Error mientras se leía: %1<br />\n"
-
-#, fuzzy
-#~ msgid "Error while parsing: %1"
-#~ msgstr "Error mientras se leía: %1<br />"
-
-#, fuzzy
-#~ msgid "The operator %1 hasn't been implemented"
-#~ msgstr "El operador <em>%1</em> no ha sido implementado<br />"
-
-#~ msgid "Operation"
-#~ msgstr "Operación"
-
-#~ msgid "MathML Operation"
-#~ msgstr "Operación en MathML"
-
-#, fuzzy
-#~ msgid "f(x) function"
-#~ msgstr "Añadir función"
-
-#, fuzzy
-#~ msgid "MathML f(x) function"
-#~ msgstr "Operación en MathML"
-
-#, fuzzy
-#~ msgid "Save picture"
-#~ msgstr "Guardar imagen"
-
-#~ msgid "&Help"
-#~ msgstr "Ayuda"

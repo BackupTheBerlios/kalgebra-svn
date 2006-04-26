@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-04-26 18:00+0200\n"
-"PO-Revision-Date: 2006-04-21 18:01+0200\n"
+"PO-Revision-Date: 2006-04-26 18:31+0200\n"
 "Last-Translator: apol <aleixpol@gmail.com>\n"
 "Language-Team: ca_ES <kde-i18n-ca@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,50 +20,46 @@ msgstr ""
 "X-Generator: KBabel 1.11.2\n"
 
 #: analitza.cpp:41 analitza.cpp:60
-#, fuzzy
 msgid "Error while parsing: %1<br />\n"
-msgstr "Error mentre llegia: %1"
+msgstr "Error mentre llegia: %1<br />\n"
 
 #: analitza.cpp:46
-#, fuzzy
 msgid "Error while parsing: %1<br/>\n"
-msgstr "Error mentre llegia: %1"
+msgstr "Error mentre llegia: %1<br/>\n"
 
 #: analitza.cpp:176
-#, fuzzy
 msgid "The operator <em>%1</em> hasn't been implemented<br />\n"
-msgstr "L'operador %1 no ha estat implementat"
+msgstr "L'operador <em>%1</em> no ha estat implementat<br />\n"
 
 #: analitza.cpp:196
 msgid "The <em>%1</em> operator, should have more than 1 parameter<p />"
-msgstr ""
+msgstr "L'operador <em>%1</em>, hauria de tenir més d'un paràmetre<p />"
 
 #: analitza.cpp:198
 msgid ""
 "Can't have %1 parameter with <em>%2</em> operator, it should have %3 "
 "parameter<p />"
-msgstr ""
+msgstr "L'operador <em>%2</em> no pot tenir %1 paràmetres, hauria de tenir-ne %3<p />"
 
 #: analitza.cpp:362
-#, fuzzy
 msgid "The operator <em>%1</em> hasn't been implemented<br/>"
-msgstr "L'operador %1 no ha estat implementat"
+msgstr "L'operador <em>%1</em> no ha estat implementat"
 
 #: analitza.cpp:420
 msgid "The variable <em>%1</em> doesn't exist<br />\n"
-msgstr ""
+msgstr "La variable <em>%1</em> no existeix<br />\n"
 
 #: analitza.cpp:422
 msgid "The function <em>%1</em> doesn't exist<br />\n"
-msgstr ""
+msgstr "La funció <em>%1</em> no existeix<br />\n"
 
 #: function.cpp:43
 msgid "Don't know how to represent f(%1)"
-msgstr ""
+msgstr "No sé com representar f(%1)"
 
 #: function.cpp:45
 msgid "Too much lambda for a 2D Graph"
-msgstr ""
+msgstr "Massa lambda per un gràfic 2D"
 
 #: kalgebra.cpp:31
 msgid "Name"
@@ -79,59 +75,53 @@ msgstr "Consola"
 
 #: kalgebra.cpp:50
 msgid "Save Log"
-msgstr ""
+msgstr "Guardar historial"
 
 #: kalgebra.cpp:64
-#, fuzzy
 msgid "Function"
-msgstr "Afegeix funció"
+msgstr "Funció"
 
 #: kalgebra.cpp:65
 msgid "Color"
-msgstr ""
+msgstr "Color"
 
 #: kalgebra.cpp:67
-#, fuzzy
 msgid "Add function"
 msgstr "Afegeix funció"
 
 #: kalgebra.cpp:71
-#, fuzzy
 msgid "2D Graph"
-msgstr "Gràfic 3D"
+msgstr "Gràfic 2D"
 
 #: kalgebra.cpp:80
 msgid "Poor"
-msgstr ""
+msgstr "Pobre"
 
 #: kalgebra.cpp:81
 msgid "Standard"
-msgstr ""
+msgstr "Estàndar"
 
 #: kalgebra.cpp:82
-#, fuzzy
 msgid "Fine"
-msgstr "Línies"
+msgstr "Bona"
 
 #: kalgebra.cpp:83
 msgid "Very Fine"
-msgstr ""
+msgstr "Molt bona"
 
 #: kalgebra.cpp:87 kalgebra.cpp:118
 msgid "Save Picture"
 msgstr "Guardar imatge"
 
 #: kalgebra.cpp:88
-#, fuzzy
 msgid "Toggle Squares"
-msgstr "Transparència"
+msgstr "Alterna quadrícula"
 
 #: kalgebra.cpp:89
 msgid "Precision"
-msgstr ""
+msgstr "Precisió"
 
 #: kalgebra.cpp:90
-#, fuzzy
 msgid "&Graph"
 msgstr "&Gràfic"
 
@@ -152,7 +142,6 @@ msgid "Solid"
 msgstr "Sòlid"
 
 #: kalgebra.cpp:119
-#, fuzzy
 msgid "Transparency"
 msgstr "Transparència"
 
@@ -161,56 +150,56 @@ msgid "Graph Type"
 msgstr "Tipus de gràfic"
 
 #: kalgebra.cpp:122
-#, fuzzy
 msgid "G&raph 3D"
-msgstr "Gràfic 3D"
+msgstr "G&ràfic 3D"
 
 #: kalgebra.cpp:243
 msgid ""
 "*.svg|SVG Image (*.svg)\n"
 "*.png|PNG Image (*.png)"
 msgstr ""
+"*.svg|Imatge SVG (*.svg)\n"
+"*.png|Imatge PNG (*.png)"
 
 #: kalgebra.cpp:454
-#, fuzzy
 msgid "Error: %1"
-msgstr "Error<br />\n"
+msgstr "Error: %1"
 
 #: kfunctionedit.cpp:3
 msgid "Add/Edit a function"
-msgstr ""
+msgstr "Afegeix/Edita una funció"
 
 #: kfunctionedit.cpp:66 kvaredit.cpp:86
 msgid "<qt text='#090'><b>f(%1)=%2</b></qt>"
-msgstr ""
+msgstr "<qt text='#090'><b>f(%1)=%2</b></qt>"
 
 #: kfunctionedit.cpp:69
 msgid "<qt text='#090'><b>f(x)=%1</b></qt>"
-msgstr ""
+msgstr "<qt text='#090'><b>f(x)=%1</b></qt>"
 
 #: kfunctionedit.cpp:77 kvaredit.cpp:95
 msgid "<qt text='red'><b>WRONG</b></qt>"
-msgstr ""
+msgstr "<qt text='red'><b>INCORRECTE</b></qt>"
 
 #: kvaredit.cpp:3
 msgid "Add/Edit a variable"
-msgstr ""
+msgstr "Afegeix/Edita una variable"
 
 #: kvaredit.cpp:26
 msgid "Calculate the expression"
-msgstr ""
+msgstr "Calcula l'expressió"
 
 #: kvaredit.cpp:27
 msgid "Save the expression"
-msgstr ""
+msgstr "Guarda l'expressió"
 
 #: kvaredit.cpp:45
 msgid "Edit '%1' value"
-msgstr ""
+msgstr "Edita el valor '%1'"
 
 #: kvaredit.cpp:99
 msgid "<qt text='#090'><b>Result: %1</b></qt>"
-msgstr ""
+msgstr "<qt text='#090'><b>Resultat: %1</b></qt>"
 
 #: main.cpp:7 main.cpp:18
 msgid "KAlgebra"
@@ -218,29 +207,25 @@ msgstr "KAlgebra"
 
 #: qexp.cpp:74
 msgid "Too much comma in %1<br />\n"
-msgstr ""
+msgstr "Massa comes a %1<br />\n"
 
 #: qexp.cpp:116
 msgid "Unknown token %1<br />\n"
-msgstr ""
+msgstr "Objecte %1 desconegut<br />\n"
 
 #: qexp.cpp:230
-#, fuzzy
 msgid "Missing right paranthesis<br />\n"
-msgstr "Falta parèntesi dret\n"
+msgstr "Manca algun parèntesi dret\n"
 
 #: qexp.cpp:233
-#, fuzzy
 msgid "Missing operator< p/>\n"
-msgstr "Missing operator\n"
+msgstr "Manca operador<p />\n"
 
 #: qexp.cpp:236
-#, fuzzy
 msgid "Unbalanced right parenthesis<br />\n"
-msgstr "Unbalanced right parenthesis\n"
+msgstr "Sobra algun parèntesi dret<p />\n"
 
 #: qexp.cpp:239
-#, fuzzy
 msgid "Error<br />\n"
 msgstr "Error<br />\n"
 
@@ -265,26 +250,3 @@ msgstr ""
 "_: EMAIL OF TRANSLATORS\n"
 "aleixpol@gmail.com"
 
-#, fuzzy
-#~ msgid "Error while parsing: %1<br/>"
-#~ msgstr "Error mentre llegia: %1"
-
-#~ msgid "Operation"
-#~ msgstr "Operació"
-
-#~ msgid "MathML Operation"
-#~ msgstr "Operació MathML"
-
-#, fuzzy
-#~ msgid "MathML f(x) function"
-#~ msgstr "Operació MathML"
-
-#, fuzzy
-#~ msgid "Save picture"
-#~ msgstr "Guardar imatge"
-
-#~ msgid "Resolution"
-#~ msgstr "Resolució"
-
-#~ msgid "center"
-#~ msgstr "centre"
