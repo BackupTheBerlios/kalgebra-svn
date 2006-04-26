@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-26 17:37+0200\n"
+"POT-Creation-Date: 2006-04-26 18:00+0200\n"
 "PO-Revision-Date: 2006-02-02 05:08+0100\n"
 "Last-Translator: Aleix Pol Gonzàlez <aleixpol@gmail.com>\n"
 "Language-Team:  <kde-i18n-ca@kde.org>\n"
@@ -23,7 +23,7 @@ msgstr "Error mientras se leía: %1<br />\n"
 
 #: analitza.cpp:46
 #, fuzzy
-msgid "Error while parsing: %1<br/>"
+msgid "Error while parsing: %1<br/>\n"
 msgstr "Error mientras se leía: %1<br />\n"
 
 #: analitza.cpp:176
@@ -258,6 +258,10 @@ msgid ""
 "_: EMAIL OF TRANSLATORS\n"
 "Your emails"
 msgstr "aleixpol@gmail.com"
+
+#, fuzzy
+#~ msgid "Error while parsing: %1<br/>"
+#~ msgstr "Error mientras se leía: %1<br />\n"
 
 #, fuzzy
 #~ msgid "Error while parsing: %1"

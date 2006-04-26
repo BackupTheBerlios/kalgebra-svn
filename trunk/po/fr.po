@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-26 17:37+0200\n"
+"POT-Creation-Date: 2006-04-26 18:00+0200\n"
 "PO-Revision-Date: 2006-02-02 20:57+0100\n"
 "Last-Translator: animatrix\n"
 "Language-Team:  <fr@li.org>\n"
@@ -24,7 +24,7 @@ msgstr "Erreur lors de l'analyse (parsing): %1<br />\n"
 
 #: analitza.cpp:46
 #, fuzzy
-msgid "Error while parsing: %1<br/>"
+msgid "Error while parsing: %1<br/>\n"
 msgstr "Erreur lors de l'analyse (parsing): %1<br />\n"
 
 #: analitza.cpp:176
@@ -264,6 +264,10 @@ msgid ""
 msgstr ""
 "_: EMAIL OF TRANSLATORS\n"
 "animatrix30@gmail.com"
+
+#, fuzzy
+#~ msgid "Error while parsing: %1<br/>"
+#~ msgstr "Erreur lors de l'analyse (parsing): %1<br />\n"
 
 #, fuzzy
 #~ msgid "Error while parsing: %1"

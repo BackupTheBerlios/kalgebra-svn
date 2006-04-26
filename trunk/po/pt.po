@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: KAlgebra 20051115\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-26 17:37+0200\n"
+"POT-Creation-Date: 2006-04-26 18:00+0200\n"
 "PO-Revision-Date: 2006-01-04 17:34-0000\n"
 "Last-Translator: Sara Carvalho <carvalho.sara@gmail.com>\n"
 "Language-Team: Sara Carvalho <carvalho.sara@gmail.com>\n"
@@ -21,7 +21,7 @@ msgstr "Erro durante análise: %1<br/>\n"
 
 #: analitza.cpp:46
 #, fuzzy
-msgid "Error while parsing: %1<br/>"
+msgid "Error while parsing: %1<br/>\n"
 msgstr "Erro durante análise: %1<br/>\n"
 
 #: analitza.cpp:176
@@ -257,6 +257,10 @@ msgid ""
 "_: EMAIL OF TRANSLATORS\n"
 "Your emails"
 msgstr "carvalho.sara@gmail.com"
+
+#, fuzzy
+#~ msgid "Error while parsing: %1<br/>"
+#~ msgstr "Erro durante análise: %1<br/>\n"
 
 #, fuzzy
 #~ msgid "Error while parsing: %1"
