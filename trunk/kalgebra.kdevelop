@@ -3,7 +3,7 @@
   <general>
     <author>Aleix Pol i Gonzalez</author>
     <email>aleixpol@gmail.com</email>
-    <version>0.3.0</version>
+    <version>0.5.0</version>
     <projectmanagement>KDevKDEAutoProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
     <keywords>
@@ -17,7 +17,6 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <secondaryLanguages/>
-    <versioncontrol/>
   </general>
   <kdevautoproject>
     <general>
@@ -109,8 +108,9 @@
       <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
-      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
+      <hidepatterns>*.o,*.lo,CVS,*~</hidepatterns>
       <hidenonprojectfiles>true</hidenonprojectfiles>
+      <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>
   <kdevdoctreeview>
@@ -212,6 +212,7 @@
       <headerCompletionDelay>250</headerCompletionDelay>
     </codecompletion>
     <references>
+      <pcs>KDElibs</pcs>
       <pcs>Qt</pcs>
     </references>
     <creategettersetter>
@@ -222,6 +223,11 @@
       <inlineGet>true</inlineGet>
       <inlineSet>true</inlineSet>
     </creategettersetter>
+    <qt>
+      <used>true</used>
+      <version>3</version>
+      <root>/usr/</root>
+    </qt>
   </kdevcppsupport>
   <dist>
     <custom>false</custom>

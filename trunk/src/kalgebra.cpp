@@ -234,7 +234,7 @@ void KAlgebra::update_varlist(){
 	varlist->clear();
 	QStringList qsl = a.vars.getNoms();
 	for ( QStringList::Iterator it = qsl.begin(); it != qsl.end(); ++it ) {
-		QListViewItem *klvi = new QListViewItem( varlist, *it, treu_tags(a.str(a.vars.value(*it))).stripWhiteSpace());
+		QListViewItem *klvi = new QListViewItem( varlist, *it, Analitza::treu_tags(a.str(a.vars.value(*it))).stripWhiteSpace());
 		varlist->insertItem(klvi);
 	}
 }
@@ -327,20 +327,6 @@ void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int) {
 		item->setPixmap(1, p);
 	}
 	delete e;
-}
-
-QString KAlgebra::treu_tags(QString in){ //This is an awful trick
-	bool tag=false;
-	QString out;
-	for(unsigned int i=0; i<in.length(); i++){
-		if(in[i]=='<')
-			tag=true;
-		else if(in[i]=='>')
-			tag=false;
-		else if(!tag)
-			out += in[i];
-	}
-	return out;
 }
 
 void KAlgebra::edit_var(QListViewItem *item, const QPoint &,int){

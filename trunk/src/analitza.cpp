@@ -161,7 +161,7 @@ double Analitza::evalua(QDomNode n){
 		if(e.tagName() == "apply" || e.tagName() == "lambda"){
 			j = e.firstChild();
 			nombres.append(evalua(j));
-		} else if (e.tagName() == "cn" || e.tagName() == "ci" || isNum(e.tagName())) {
+		} else if (e.tagName() == "cn" || (e.tagName() == "ci" && e.attribute("type")!="function") || isNum(e.tagName())) {
 			nombres.append(toNum(e));
 		} else if (e.tagName() == "declare"){
 			j = e.firstChild(); //Should be a <ci>
@@ -172,17 +172,20 @@ double Analitza::evalua(QDomNode n){
 		} else if(isOperador(e.tagName())) {
 			operador = e.tagName();
 			sons=isOperador(operador);
+		} else if(e.tagName() == "ci" && e.attribute("type")=="function") {
+			operador="ci";
+			break;
 		} else if (e.tagName() != "bvar")
 			err += i18n("The operator <em>%1</em> hasn't been implemented<br />\n").arg(e.tagName());
-		if(e.tagName() == "sum" || e.tagName() == "product") //if are bounded functions we treat it outside the loop
+		if(e.tagName() == "sum" || e.tagName() == "product") //we treat it outside the loop
 			break;
 		fills++;
 		n = n.nextSibling();
 	}
 	
 	if(operador=="sum") ret=sum(n);
+	else if(operador=="ci") ret=func(n);
 	else if(fills-1==sons || (sons==-1 && fills>=3) || operador.isEmpty() || operador == "minus"){
-		QDomDocument a;
 		QValueList<double>::iterator it = nombres.begin();
 		
 		ret = *it;
@@ -197,6 +200,22 @@ double Analitza::evalua(QDomNode n){
 		else
 			err += i18n("Can't have %1 parameter with <em>%2</em> operator, it should have %3 parameter<p />").arg(fills-1).arg(operador).arg(sons);
 	}
+	return ret;
+}
+
+double Analitza::func(QDomNode n)
+{
+	double ret=.0;
+	QDomElement func = vars.value();
+	QStringList var=bvar(n.parentNode());
+	vars.rename(var, QString("%1_").arg(var)); //We save the var value
+	
+	qDebug("--------");
+	print_dom(n.parentNode());
+	qDebug("--------");
+	
+	vars.remove(var);
+	vars.rename(QString("%1_").arg(var), var); //We restore the var value
 	return ret;
 }
 

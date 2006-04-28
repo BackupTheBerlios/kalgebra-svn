@@ -82,6 +82,7 @@ private:
 	////////////////////////////////////////
 	
 	double sum(QDomNode);
+	double func(QDomNode);
 
 public:
 	QString toString();
