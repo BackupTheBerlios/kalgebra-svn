@@ -1,7 +1,8 @@
+#include "analitza.h"
 #include "kvaredit.h"
 
 KVarEdit::KVarEdit(QString var, QString exp, Variables *v, QWidget *parent, const char *name, bool modal, WFlags) : KDialogBase (parent, name, modal, i18n("Add/Edit a variable"), Ok|Cancel, Ok, false) {
-	QWidget *page = new QWidget( this ); //Akets no cal k ls toquis em sembla, no passa res
+	QWidget *page = new QWidget( this );
 	setMainWidget(page);
 	/*page->setFixedWidth(400);
 	page->setFixedHeight(300);

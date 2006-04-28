@@ -1,5 +1,5 @@
 #include "qalgebrahighlighter.h"
-#include "qexpressionedit.h"
+
 
 QAlgebraHighlighter::QAlgebraHighlighter(QTextEdit *textEdit) : QSyntaxHighlighter(textEdit), m_mode(Autodetect){}
 

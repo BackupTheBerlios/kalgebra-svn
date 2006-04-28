@@ -3,9 +3,11 @@
 
 #include <qtextedit.h>
 #include <qlabel.h>
+
 #include "qalgebrahighlighter.h"
 #include "analitza.h"
 #include "qexp.h"
+
 
 /**
 	@author Aleix Pol i Gonzalez <aleixpol@gmail.com>

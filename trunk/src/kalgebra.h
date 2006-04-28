@@ -84,7 +84,7 @@ public:
 	void remove2D(int n);
 	void plot3D(QString operation);
 	void save2D(QString path);
-	void save3D(QString path);
+	void save3D(KURL path);
 	
 private:
 	QTabWidget *pestanya;

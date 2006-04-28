@@ -63,6 +63,7 @@ public:
 	static bool isNum(QString);
 	static QString treu_tags(QString in);
 	static QDomElement toCn(double);
+	static bool takesQualifiers(QString);
 	
 	Variables vars;
 	QString err;

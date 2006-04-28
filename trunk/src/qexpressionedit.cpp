@@ -1,4 +1,3 @@
-#include <kdebug.h>
 #include "qexpressionedit.h"
 
 QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode) : QTextEdit(parent, name), m_histPos(0), help(true)

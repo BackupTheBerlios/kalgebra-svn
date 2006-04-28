@@ -1,4 +1,4 @@
-/***************************************************************************
+ /***************************************************************************
  *   Copyright (C) 2005 by aleix                                           *
  *   aleixpol@gmail.com                                                    *
  *                                                                         *
@@ -23,21 +23,61 @@ using namespace std;
 
 // QString i18n(QString a){return a;}
 
+#if 0
+
+QString opr2str(int in)
+{
+	QString ret;
+	switch(in){
+		case tAssig:	ret="tAssig";	break;
+		case tLambda:	ret="tLambda";	break;
+		case tLimits:	ret="tLimits";	break;
+		case tAdd:	ret="tAdd";	break;
+		case tSub:	ret="tSub";	break;
+		case tMul:	ret="tMul";	break;
+		case tDiv:	ret="tDiv";	break;
+		case tPow:	ret="tPow";	break;
+		case tUmi:	ret="tUmi";	break;
+		case tFunc:	ret="tFunc";	break;
+		case tComa:	ret="tComa";	break;
+		case tLpr:	ret="tLpr";	break;
+		case tRpr:	ret="tRpr";	break;
+		case tEof:	ret="tEof";	break;
+		case tMaxOp:	ret="tMaxOp";	break;
+		case tVal:	ret="tVal";	break;
+		case tVar:	ret="tVar";	break;
+		default:	ret="chalaoooooooooo";
+	}
+	return ret;
+}
+
+void printPilaOpr(QValueStack<int> opr) //debug only
+{
+	QValueStack<int> aux=opr;
+	bool istop=true;
+	while(!opr.isEmpty()) {
+		qDebug("%6s %s", istop ? "top: " : "        ", opr2str(opr.pop()).ascii());
+		istop=false;
+	}
+}
+#endif
+
 const actEnum parseTbl[tMaxOp][tMaxOp] = {
-//	 :=   ->  +   -   *   /   ^   M   f   ,   (   )   $
-	{ R,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//:=
-	{ R,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-> Lambda
-	{ R,  R,  K,  R,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//+
-	{ R,  R,  R,  K,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-
-	{ R,  R,  R,  R,  K,  R,  S,  S,  S,  R,  S,  R,  R },	//*
-	{ R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	///
-	{ R,  R,  R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  R },	//^
-	{ R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	//UnaryMinus
-	{ R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  S,  R,  R },	//func
-	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  R,  R,  E },	//,
-	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S, E1 },	//(
-	{ R,  R,  R,  R,  R,  R,  R,  R, E3,  R, E2,  R,  R },	//)
-	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  E,  S, E3,  A },	//$
+//	 :=   ->  ..  +   -   *   /   ^   M   f   ,   (   )   $
+	{ R,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//:=
+	{ R,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-> Lambda
+	{ R,  R,  R,  S,  S,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//.. Limits
+	{ R,  R,  R,  K,  R,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//+
+	{ R,  R,  R,  R,  K,  S,  S,  S,  S,  S,  R,  S,  R,  R },	//-
+	{ R,  R,  R,  R,  R,  K,  R,  S,  S,  S,  R,  S,  R,  R },	//*
+	{ R,  R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	///
+	{ R,  R,  R,  R,  R,  R,  R,  R,  S,  S,  R,  S,  R,  R },	//^
+	{ R,  R,  R,  R,  R,  R,  R,  S,  S,  S,  R,  S,  R,  R },	//UnaryMinus
+	{ R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  R,  S,  R,  R },	//func
+	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  R,  R,  R,  E },	//,
+	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  S, E1 },	//(
+	{ R,  R,  R,  R,  R,  R,  R,  R,  R, E3,  R, E2,  R,  R },	//)
+	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  E,  S, E3,  A },	//$
 };
 
 QExp::QExp(QString exp){
@@ -62,13 +102,13 @@ TOKEN QExp::pillatoken(QString &a){
 		}
 		ret.val += a[0];
 		a[0]=' ';
-		for(i=1; a[i].isDigit() || a[i]=='.'; i++){
+		for(i=1; a[i].isDigit() || (a[i]=='.' && a[i+1]!='.'); i++){
 			coma = (a[i]=='.')? coma+1 : coma;
 			ret.val += a[i];
 			a[i]=' ';
 		}
 		if(a[i] == '(' || a[i].isLetter())
-			a = " *" +a;
+			a.prepend(" *");
 		
 		if(coma>1){
 			err += i18n("Too much comma in %1<br />\n").arg(ret.val);
@@ -93,6 +133,9 @@ TOKEN QExp::pillatoken(QString &a){
 	} else if(a[0]==':' && a[1] == '=') {
 		ret.tipus = tAssig;
 		a[1] =' ';
+	} else if(a[0]=='.' && a[1] == '.') {
+		ret.tipus = tLimits;
+		a[1] =' ';
 	} else if(a[0]=='+')
 		ret.tipus = tAdd;
 	else if(a[0]=='-')
@@ -113,7 +156,7 @@ TOKEN QExp::pillatoken(QString &a){
 	else if(a[0]==',')
 		ret.tipus = tComa;
 	else
-		err += i18n("Unknown token %1<br />\n").arg(a[0]);
+		err.append(i18n("Unknown token %1<br />\n").arg(a[0]));
 	
 	a[0]=' ';
 	antnum = ret.tipus;
@@ -173,6 +216,9 @@ int QExp::reduce(){
 		case tPow:
 			val.push(QString("<apply><power />%1%2</apply>").arg(val.pop()).arg(aux));
 			break;
+		case tLimits:
+			val.push(QString("<uplimit>%2</uplimit><downlimit>%1</downlimit>").arg(val.pop()).arg(aux));
+			break;
 		case tAssig: // :=
 			val.push(QString("<declare>%1%2</declare>").arg(val.pop()).arg(aux));
 			break;
@@ -183,7 +229,11 @@ int QExp::reduce(){
 				val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(aux));
 			break;
 		case tLambda: // ->
-			val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(aux));
+			if(opr.top()==tLambda || opr[1]==tFunc)
+				val.push(QString("<bvar>%1</bvar>%2").arg(val.pop()).arg(aux));
+			else
+				val.push(QString("<lambda><bvar>%1</bvar>%2</lambda>").arg(val.pop()).arg(aux));
+// 			printPilaOpr(opr);
 			break;
 		case tComa:
 			val.push(QString("%1%2").arg(val.pop()).arg(aux));
@@ -213,7 +263,10 @@ int QExp::parse(){
 		switch(parseTbl[opr.top()][tok]){
 			case K:
 				a=val.pop();
-				val.push(QString("%1%2").arg(val.pop()).arg(a));
+				if(opr.top()==tLambda)
+					val.push(QString("%1<bvar>%2</bvar>").arg(val.pop()).arg(a));
+					else
+					val.push(QString("%1%2").arg(val.pop()).arg(a));
 				opr.pop();
 				break;
 			case R:

@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by ,,,                                             *
- *   aleix@sklar                                                           *
+ *   Copyright (C) 2005 by Aleix Pol i Gonzalez                            *
+ *   aleixpol@gmail.com                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -43,7 +43,7 @@ int Analitza::setPath(QString ar){
 	}
 	if ( !doc.setContent( &file ) ) {
 		file.close();
-		err += i18n("Error while parsing: %1<br/>").arg(ar);
+		err += i18n("Error while parsing: %1<br/>\n").arg(ar);
 		return -2;
 	}
 	file.close();
@@ -174,14 +174,14 @@ double Analitza::evalua(QDomNode n){
 			sons=isOperador(operador);
 		} else if (e.tagName() != "bvar")
 			err += i18n("The operator <em>%1</em> hasn't been implemented<br />\n").arg(e.tagName());
-		if(e.tagName() == "sum" || e.tagName() == "product")
+		if(e.tagName() == "sum" || e.tagName() == "product") //if are bounded functions we treat it outside the loop
 			break;
 		fills++;
 		n = n.nextSibling();
 	}
 	
-	if(operador=="sum") ret =sum(n);
-	else if(fills-1==sons || (sons==-1 && fills>=3) || operador == "" || operador == "minus"){
+	if(operador=="sum") ret=sum(n);
+	else if(fills-1==sons || (sons==-1 && fills>=3) || operador.isEmpty() || operador == "minus"){
 		QDomDocument a;
 		QValueList<double>::iterator it = nombres.begin();
 		
@@ -191,7 +191,7 @@ double Analitza::evalua(QDomNode n){
 			it++;
 		for(; it != nombres.end(); ++it)
 			ret = opera(ret,*it,operador, fills<=2?1:0);
-	} else { 
+	} else {
 		if(sons==-1)
 			err += i18n("The <em>%1</em> operator, should have more than 1 parameter<p />").arg(operador);
 		else
@@ -200,7 +200,8 @@ double Analitza::evalua(QDomNode n){
 	return ret;
 }
 
-double Analitza::sum(QDomNode n){
+double Analitza::sum(QDomNode n)
+{
 	double ret=.0;
 	QString var=bvar(n.parentNode())[0];
 	vars.rename(var, QString("%1_").arg(var)); //We save the var value
@@ -610,13 +611,10 @@ QString Analitza::str(QDomNode n){
 			operador = "declare";
 			fills=3;
 		} else if (e.tagName()=="lambda"){
-			j = e.firstChild();
-			QStringList lambdas = bvar(j);
-			for (QStringList::Iterator it = lambdas.begin(); it != lambdas.end(); ++it){
-				nombres.append(*it);
-				j=j.nextSibling();
-			}
+			QStringList lambdas = bvar(n);
+			nombres.append(lambdas.join("<span class='op'>-&gt;</span>"));
 			fills=3;
+			j = e.firstChild();
 			nombres.append(str(j));
 			operador = "lambda";
 		}
@@ -654,7 +652,7 @@ QString Analitza::escriuS(QString res, QString oper, QString op, int unari=0){
 	} else if(op=="declare"){
 		r = QString("%1<span class='op'>:=</span>%2").arg(res).arg(oper);
 	} else if(op=="lambda"){
-		r = QString("%1<span class='op'>-></span>%2").arg(res).arg(oper);
+		r = QString("%1<span class='op'>-&gt;</span>%2").arg(res).arg(oper);
 	} else if(op != "") {
 		if(unari)
 			r = QString("<span class='func'>%1</span><span class='op'>(</span>%2<span class='op'>)</span>").arg(op).arg(res);
@@ -798,6 +796,25 @@ QString Analitza::escriuMMLP(QString res, QString oper, QString op, int unari=0)
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
+bool Analitza::takesQualifiers(QString op)
+{
+	if(	op=="int" ||
+		       op=="sum" ||
+		       op=="product" ||
+		       op=="root" ||
+		       op=="diff" ||
+		       op=="partialdiff" ||
+		       op=="limit" ||
+		       op=="log" ||
+		       op=="moment" ||
+		       op=="forall" ||
+		       op=="exists")
+		return true;
+	else
+		return false;
+		
+}
+
 QString Analitza::treu_tags(QString in){
 	bool tag=false;
 	QString out;
@@ -806,8 +823,13 @@ QString Analitza::treu_tags(QString in){
 			tag=true;
 		else if(in[i]=='>')
 			tag=false;
-		else if(!tag)
-			out += in[i];
+		else if(!tag) {
+			if(in.mid(i,4)=="&gt;"){
+				out += '>';
+				i+=3;
+			} else
+				out += in[i];
+		}
 	}
 	return out;
 }

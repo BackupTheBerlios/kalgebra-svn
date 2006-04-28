@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by aleix                                           *
- *   aleix@pilgrim                                                         *
+ *   Copyright (C) 2005 by Aleix Pol i Gonzàlez                            *
+ *   aleixpol@gmail.com                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -31,7 +31,7 @@
 #include "analitza.h"
 
 /**
-@author aleix
+	@author Aleix Pol i Gonzalez
 */
 
 typedef enum {
@@ -46,18 +46,19 @@ typedef enum {
 } actEnum;
 
 typedef enum {
-	tAssig,
-	tLambda,
-	tAdd,
-	tSub,
-	tMul,
-	tDiv,
-	tPow,
-	tUmi,
-	tFunc,
-	tComa,
-	tLpr, //(
-	tRpr, //)
+	tAssig, 	//:=
+	tLambda,	//->
+	tLimits,	//..
+	tAdd,		//+
+	tSub,		//-
+	tMul,		//*
+	tDiv,		// /
+	tPow,		//^
+	tUmi,		//-a
+	tFunc,		//f(x)
+	tComa,		//,
+	tLpr,		//(
+	tRpr,		//)
 	tEof,
 	tMaxOp,
 	tVal,
@@ -69,10 +70,17 @@ struct TOKEN {
 	tokEnum tipus;
 };
 
+// void printPilaOpr(QValueStack<int> opr);
+// QString opr2str(int);
+
 class QExp{
 public:
 	QExp(QString);
 	~QExp();
+	
+	int parse();
+	QString error();
+	QString mathML();
 	
 private:
 	QString mml;
@@ -95,10 +103,6 @@ private:
 	int getTok();
 	int shift();
 	int reduce();
-public:
-	int parse();
-	QString error();
-	QString mathML();
 };
 
 #endif

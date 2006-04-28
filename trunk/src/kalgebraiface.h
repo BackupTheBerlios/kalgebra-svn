@@ -3,6 +3,7 @@
 
 #include <dcopobject.h>
 #include <qstringlist.h>
+#include <kurl.h>
 
 /**
 @author Aleix Pol i Gonzalez
@@ -19,7 +20,7 @@ k_dcop:
 	virtual void remove2D(int n) =0;
 	virtual void plot3D(QString operation) = 0;
 	virtual void save2D(QString path) = 0;
-	virtual void save3D(QString path) = 0;
+	virtual void save3D(KURL path) = 0;
 };
 
 #endif

@@ -10,7 +10,6 @@
 #include <qlineedit.h>
 #include <qhbox.h>
 
-#include "analitza.h"
 #include "qexpressionedit.h"
 
 /**

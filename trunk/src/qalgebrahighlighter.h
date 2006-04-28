@@ -1,8 +1,9 @@
+#include <qsyntaxhighlighter.h>
+#include "qexpressionedit.h"
+#include "qexp.h"
+
 #ifndef QALGEBRAHIGHLIGHTER_H
 #define QALGEBRAHIGHLIGHTER_H
-
-#include <qsyntaxhighlighter.h>
-#include "qexp.h"
 
 typedef enum {
 	Disabled,

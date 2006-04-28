@@ -1,6 +1,5 @@
 #ifndef QDOUBLEPOINT_H
 #define QDOUBLEPOINT_H
-#include <qpoint.h>
 
 /**
 @author Aleix Pol i Gonzalez
