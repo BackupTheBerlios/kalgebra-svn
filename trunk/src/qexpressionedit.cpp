@@ -105,7 +105,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 			ch=true;
 			break;
 		case Qt::Key_Plus: case Qt::Key_Asterisk: case Qt::Key_Slash:
-			if(this->text().length() == this->selectedText().length() && m_auto){
+			if(this->text().length() == this->selectedText().length() && m_auto) {
 				this->setText("ans");
 				this->setCursorPosition(0, 3);
 			}
