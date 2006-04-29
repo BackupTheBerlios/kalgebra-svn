@@ -31,6 +31,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	varlist->addColumn(i18n("Name"),60);
 	varlist->addColumn(i18n("Value"),-1);
 	varlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+	varlist->setResizeMode(QListView::LastColumn);
 	operacio = new QExpressionEdit(consola, 0, Autodetect);
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
@@ -64,6 +65,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	func2dlist->addColumn(i18n("Function"));
 	func2dlist->addColumn(i18n("Color"));
 	func2dlist->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	func2dlist->setResizeMode(QListView::LastColumn);
 	addfunc = new KPushButton(i18n("Add function"), graphtab);
 	
 	funcs2d->addWidget(func2dlist);
