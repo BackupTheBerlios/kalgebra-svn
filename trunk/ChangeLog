@@ -8,6 +8,9 @@
 * divide operators fixed (divide, quotient, rem, factorof)
 * approx added
 * Expression to MathML compiler optimized. Some operators treated as n-ary instead of binary
+* Simplification option added (F2)
+* Fixed PowerPC error, now should behave fine
+* Function support added
 
 
 
