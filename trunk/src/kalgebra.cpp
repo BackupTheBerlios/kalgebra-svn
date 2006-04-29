@@ -62,8 +62,8 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	QVBoxLayout *funcs2d = new QVBoxLayout(graphtab);
 	graphtab->setMaximumWidth(250);
 	func2dlist = new KListView(graphtab);
-	func2dlist->addColumn(i18n("Function"));
 	func2dlist->addColumn(i18n("Color"));
+	func2dlist->addColumn(i18n("Function"));
 	func2dlist->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	func2dlist->setResizeMode(QListView::LastColumn);
 	addfunc = new KPushButton(i18n("Add function"), graphtab);
@@ -246,10 +246,6 @@ void KAlgebra::imatge2d(){
 	grafic->toImage(path);
 }
 
-/*void KAlgebra::imatge3dMML(){
-	grafic3d->outputFuncMML(funcio3dMML->text(), path);
-}*/
-
 void KAlgebra::set_res_low() { grafic->setResolution(416); g2d_res_check(G2D_RES_LOW); }
 void KAlgebra::set_res_std() { grafic->setResolution(832); g2d_res_check(G2D_RES_STD); }
 void KAlgebra::set_res_fine() { grafic->setResolution(1664); g2d_res_check(G2D_RES_FINE); }
@@ -306,8 +302,9 @@ void KAlgebra::new_func(){
 		grafic->unselect();
 		QPixmap p(15,15);
 		p.fill(e->color());
-		QCheckListItem *klvi = new QCheckListItem( func2dlist, e->text(), QCheckListItem::CheckBox);
-		klvi->setPixmap(1, p);
+		QCheckListItem *klvi = new QCheckListItem( func2dlist, "", QCheckListItem::CheckBox);
+		klvi->setPixmap(0, p);
+		klvi->setText(1, e->text());
 		klvi->setState(QCheckListItem::On);
 		bool inserted=grafic->addFunction(function(e->text(), e->color(), true));
 		if(inserted)
@@ -385,7 +382,8 @@ void KAlgebra::add2D(QString operation){
 	QPixmap p(15,15);
 	p.fill(QColor(0,150,0));
 	QCheckListItem *klvi = new QCheckListItem(func2dlist, operation, QCheckListItem::CheckBox);
-	klvi->setPixmap(1, p);
+	klvi->setPixmap(0, p);
+	klvi->setText(1, operation);
 	klvi->setState(QCheckListItem::On);
 	func2dlist->insertItem(klvi);
 	func2dlist->setSelected(klvi, true);
