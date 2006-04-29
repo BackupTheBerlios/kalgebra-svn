@@ -77,7 +77,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 {
 	bool ch=false;
 	
-	if(e->key()==Qt::Key_Backtab){
+	if(e->key()==Qt::Key_Backtab) {
 		setMode(isMathML() ? Expression : MathML);
 		return;
 	} else if(e->key()==Qt::Key_F2){
@@ -87,6 +87,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 		else
 			a.setText(text());
 		a.simplify();
+		this->setText(Analitza::treu_tags(a.toString()));
 		return;
 	}
 	

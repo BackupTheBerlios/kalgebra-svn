@@ -33,7 +33,8 @@ Analitza::~Analitza(){}
 
 void Analitza::setVars(Variables v){ vars=v; }
 
-int Analitza::setPath(QString ar){
+int Analitza::setPath(QString ar)
+{
 	QDomDocument doc;
 	QDomElement docElem;
 	QFile file(ar);
@@ -53,7 +54,8 @@ int Analitza::setPath(QString ar){
 	return 0;
 }
 
-int Analitza::setTextMML(QString str){
+int Analitza::setTextMML(QString str)
+{
 	QDomDocument doc;
 	
 	if ( !doc.setContent(str) ) {
@@ -64,7 +66,8 @@ int Analitza::setTextMML(QString str){
 	return 0;
 }
 
-int Analitza::setText(QString op){
+int Analitza::setText(QString op)
+{
 	QExp a(op);
 	a.parse();
 	err="";
@@ -78,20 +81,23 @@ int Analitza::setText(QString op){
 	return setTextMML(mmlexp);
 }
 
-QString Analitza::textMML(){
+QString Analitza::textMML()
+{
 	return mmlexp;
 }
 
 bool Analitza::simplify()
 {
-	QDomNode a=elem.firstChild();
+	/*qDebug("******************");
+	print_dom(elem);
 	qDebug("******************");
-	print_dom(a);
-	qDebug("******************");
-	QDomNode b= simp(a);
 	qDebug("..................");
-	print_dom(b);
+	print_dom(simp(elem.firstChild()));
 	qDebug("..................");
+	
+	print_dom(elem);*/
+	elem.replaceChild(simp(elem.firstChild().cloneNode(true)), elem.firstChild());
+// 	print_dom(elem);
 	return true;
 }
 
@@ -121,7 +127,6 @@ bool hasVars(QDomNode n) {
 }
 
 QDomNode Analitza::simp(QDomNode n){
-	bool s=true;
 	QDomNode k;
 	
 	if(!hasVars(n))
@@ -132,8 +137,9 @@ QDomNode Analitza::simp(QDomNode n){
 	for(unsigned int i=0; i<nl.length(); i++) {
 		k=nl.item(i);
 		if(k.isElement() && k.hasChildNodes()){
-			if(n.replaceChild(simp(k), k).isNull())
-				qDebug("mec mec");
+// 			if(n.replaceChild(simp(k), k).isNull())
+// 				qDebug("mec mec");
+			n.replaceChild(simp(k), k);
 		}
 	}
 	return n;
@@ -206,16 +212,28 @@ double Analitza::evalua(QDomNode n){
 double Analitza::func(QDomNode n)
 {
 	double ret=.0;
-	QDomElement func = vars.value();
-	QStringList var=bvar(n.parentNode());
-	vars.rename(var, QString("%1_").arg(var)); //We save the var value
+	bool ex=true;
+	QDomNodeList params = n.parentNode().childNodes();
+	QString funcname = params.item(0).toElement().text();
 	
-	qDebug("--------");
-	print_dom(n.parentNode());
-	qDebug("--------");
+	QDomElement funcop = vars.value(funcname, &ex);
+	if(ex) {
+		err += i18n("The function <em>%1</em> doesn't exist<br />\n").arg(funcname);
+		return 0;
+	}
 	
-	vars.remove(var);
-	vars.rename(QString("%1_").arg(var), var); //We restore the var value
+	QStringList var=bvar(funcop);
+	for(unsigned int i=0; i<var.count(); i++){
+		vars.rename(var[i], QString("%1_").arg(var[i])); //We save the var value
+		vars.modifica(var[i], params.item(i+1).toElement());
+	}
+	
+	ret=evalua(funcop);
+	
+	for(unsigned int i=0; i<var.count(); i++) {
+		vars.remove(var[i]);
+		vars.rename(QString("%1_").arg(var[i]), var[i]); //We save the var value
+	}
 	return ret;
 }
 
@@ -602,8 +620,8 @@ unsigned int Analitza::toOpId(QDomNode n){
 QString Analitza::str(QDomNode n){
 	QDomNode j, k=n;
 	QDomElement e;
-	QString operador;
-	QValueList<QString> nombres;
+	QString operador, r;
+	QStringList nombres;
 	unsigned int fills = 0;
 // 	qDebug("%s", n.toElement().text().ascii());
 	while( !n.isNull() ) {
@@ -616,7 +634,7 @@ QString Analitza::str(QDomNode n){
 				nombres.append("(" + str(j) + ")");
 		} else if (e.tagName() == "cn"){
 			nombres.append(QString("<span class='num'>%1</span>").arg(e.text()));
-		} else if (e.tagName() == "ci") {
+		} else if (e.tagName() == "ci" && e.attribute("type")!="function") {
 			nombres.append(QString("<span class='var'>%1</span>").arg(e.text()));
 		} else if(isNum(e.tagName())){
 			nombres.append(e.tagName());
@@ -624,31 +642,42 @@ QString Analitza::str(QDomNode n){
 			operador = e.tagName();
 		} else if (e.tagName()=="declare") {
 			j = e.firstChild(); //A <ci>
-			nombres.append(j.toElement().text());
+			nombres.append("<span class='var'>"+j.toElement().text()+"</span>");
 			j = j.nextSibling(); //Value to save
 			nombres.append(str(j));
 			operador = "declare";
 			fills=3;
 		} else if (e.tagName()=="lambda"){
-			QStringList lambdas = bvar(n);
-			nombres.append(lambdas.join("<span class='op'>-&gt;</span>"));
+			QString vars = bvar(n).join("</span><span class='op'>-&gt;</span><span class='var'>");
+			vars="<span class='var'>"+vars+"</span>";
+			nombres.append(vars);
 			fills=3;
 			j = e.firstChild();
 			nombres.append(str(j));
 			operador = "lambda";
+		} else if (e.tagName() == "ci" && e.attribute("type")=="function") {
+			nombres.append(QString("<span class='var'>%1</span>").arg(e.text()));
+			operador="ci";
 		}
 		fills++;
 		n= n.nextSibling();
 	}
 	
-	QValueList<QString>::iterator it = nombres.begin();
-	QString r= *it;
 	
-	if(fills>2)
-		it++;
+	if(operador=="ci") {
+		r=nombres[0];
+		nombres.remove(nombres.begin());
+		r.append("<span class='op'>(</span>"+nombres.join("<span class='op'>,</span> ")+"<span class='op'>)</span>");
+	} else {
+		QValueList<QString>::iterator it = nombres.begin();
+		r= *it;
 		
-	for(; it != nombres.end(); ++it)
-		r = escriuS(r,*it,operador, fills<=2?1:0);
+		if(fills>2)
+			it++;
+			
+		for(; it != nombres.end(); ++it)
+			r = escriuS(r,*it,operador, fills<=2?1:0);
+	}
 	
 	return r;
 }
@@ -672,7 +701,7 @@ QString Analitza::escriuS(QString res, QString oper, QString op, int unari=0){
 		r = QString("%1<span class='op'>:=</span>%2").arg(res).arg(oper);
 	} else if(op=="lambda"){
 		r = QString("%1<span class='op'>-&gt;</span>%2").arg(res).arg(oper);
-	} else if(op != "") {
+	} else if(!op.isEmpty()) {
 		if(unari)
 			r = QString("<span class='func'>%1</span><span class='op'>(</span>%2<span class='op'>)</span>").arg(op).arg(res);
 		else
