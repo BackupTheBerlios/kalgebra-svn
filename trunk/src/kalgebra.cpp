@@ -36,6 +36,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	operacio->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	operacio->setText("");
 	operacio->setFocus();
+	operacio->setAnalitza(&a);
 	
 	pestanya->addTab(consola, i18n("Console"));
 	cons_layout->addWidget(log_split);

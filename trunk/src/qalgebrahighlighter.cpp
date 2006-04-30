@@ -11,10 +11,14 @@ int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfL
 		for(unsigned int i=0; i<text.length(); i++){
 			if(text[i]=='<') { //We enter in a tag
 				lasttag=QString();
-				unsigned int j;
-				for(j=i+1; j<text.length() && text[j]!='>'; j++){
-					lasttag.append(text[j]);
+				unsigned int j=i+1, k=0;
+				for(k=i+1; k<text.length() && text[k]!='>'; k++){
+					lasttag.append(text[k]);
+					if(text[k]!=' ' && j==k-1)
+						j=k;
 				}
+				j++;
+				
 				
 				setFormat(i, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
 				setFormat(j, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
@@ -28,9 +32,12 @@ int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfL
 						setFormat(i+1, j-i-1, QColor(0,50,0));
 						setFormat(j-1, 1, QFont(this->textEdit()->currentFont().family(), this->textEdit()->currentFont().pointSize(), QFont::DemiBold, false));
 					}
+				} else if(j!=k) {
+					setFormat(i+1, j-i-1, QColor(150,0,0));
+					setFormat(j+1, k-j-1, QColor(150,100,0));
 				} else
 					setFormat(i+1, j-i-1, QColor(150,0,0));
-				i=j;
+				i=k;
 			}
 			else if(lasttag=="cn")
 				setFormat(i, 1, QColor(0,0,200));

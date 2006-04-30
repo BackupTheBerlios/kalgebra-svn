@@ -60,15 +60,16 @@ public:
 	double Calcula();
 	QStringList lambda(); //retrieve lambda vars
 	double toNum(QDomElement res);
+	
 	static bool isNum(QString);
 	static QString treu_tags(QString in);
 	static QDomElement toCn(double);
 	static bool takesQualifiers(QString);
+	static QStringList bvar(QDomNode);
 	
 	Variables vars;
 	QString err;
 private:
-	QStringList bvar(QDomNode);
 	QDomNode uplimit(QDomNode);
 	QDomNode downlimit(QDomNode);
 	QDomNode first_val(QDomNode);

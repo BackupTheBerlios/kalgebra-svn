@@ -212,11 +212,20 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 			}
 			emit signalHelper(sample+")</qt>");
 		}
-	} else if (param==-2){ //in case it is a var or an unfinnished func name... Dunno what to do here yet...
-// 		emit signalHelper("hola: " + funcname);
-	} else if (param==-3)
-		emit signalHelper("catalan error");
-	else
+	} else if(a!=NULL && a->vars.find(funcname)!=NULL) {
+		QStringList params = Analitza::bvar(a->vars.value(funcname));
+		
+		QString sample = (param < params.count()) ? QString("<qt><em>%1</em>(").arg(funcname) : QString("<qt text='red'><em>%1</em>(").arg(funcname);
+		
+		for(int i=0; i<params.count(); ++i) {
+			if(i==param)
+				sample += QString("<b>%1</b>").arg(params[i]);
+			else
+				sample += QString("%1").arg(params[i]);
+			if(i<params.count()-1) sample+= ", ";
+		}
+		emit signalHelper(sample+")</qt>");
+	} else
 		emit signalHelper("");
 // 	qDebug(funcname.ascii());
 // 	m_helptip->show();

@@ -26,6 +26,7 @@ public:
 	bool isMathML();
 	static bool isMathML(QString exp);
 	QString editingWord(int pos, int &param);
+	void setAnalitza(Analitza* in) {a=in;}
 private:
 	QLabel *m_helptip;
 	QAlgebraHighlighter *m_highlight;
@@ -40,6 +41,7 @@ private:
 	
 	void helpShow(const QString& funcname, int param=0);
 	static QString findPrec(const QString& exp, int &act, int cur, int &param, QString tit);
+	Analitza *a;
 public slots:
 	void returnP();
 	void cursorMov(int par, int pos);
