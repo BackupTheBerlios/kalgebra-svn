@@ -322,7 +322,7 @@ void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int) {
 		grafic->unselect();
 		QPixmap p(15,15);
 		p.fill(e->color());
-		grafic->editFunction(item->text(0), function(e->text(), e->color(), true));
+		grafic->editFunction(item->text(1), function(e->text(), e->color(), true));
 		item->setPixmap(0, p);
 		item->setText(1, e->text());
 	}
