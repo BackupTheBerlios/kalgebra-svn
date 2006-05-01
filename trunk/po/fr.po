@@ -1,4 +1,4 @@
-# translation of kalgebra.pot to fr.po
+# translation of fr.po to
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
@@ -8,12 +8,13 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-04-26 18:00+0200\n"
-"PO-Revision-Date: 2006-04-28 22:22+0200\n"
-"Last-Translator:  <animatrix30@gmail.com>\n"
+"PO-Revision-Date: 2006-04-29 13:13+0200\n"
+"Last-Translator: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.2\n"
+"Language-Team:  <fr@li.org>\n"
 
 #: analitza.cpp:41 analitza.cpp:60
 msgid "Error while parsing: %1<br />\n"
@@ -197,7 +198,7 @@ msgstr "Editer la valeur '%1'"
 
 #: kvaredit.cpp:99
 msgid "<qt text='#090'><b>Result: %1</b></qt>"
-msgstr "<qt text='#090'><b>f(x)=%1</b></qt>"
+msgstr "<qt text='#090'><b>Result: %1</b></qt>"
 
 #: main.cpp:7 main.cpp:18
 msgid "KAlgebra"
