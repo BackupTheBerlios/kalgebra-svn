@@ -41,7 +41,7 @@ msgstr ""
 
 #: analitza.cpp:362
 msgid "The operator <em>%1</em> hasn't been implemented<br/>"
-msgstr "L'opération <em>%1</em> n'a pas été mise en application<br />\n"
+msgstr "L'opération <em>%1</em> n'a pas été mise en application<br />"
 
 #: analitza.cpp:420
 msgid "The variable <em>%1</em> doesn't exist<br />\n"

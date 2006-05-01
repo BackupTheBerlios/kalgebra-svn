@@ -21,7 +21,7 @@
   <kdevautoproject>
     <general>
       <activetarget>src/kalgebra</activetarget>
-      <useconfiguration>optimized</useconfiguration>
+      <useconfiguration>debug</useconfiguration>
     </general>
     <run>
       <mainprogram>src/kalgebra</mainprogram>
@@ -108,7 +108,7 @@
       <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
-      <hidepatterns>*.o,*.lo,CVS,*~</hidepatterns>
+      <hidepatterns>*~ *.png</hidepatterns>
       <hidenonprojectfiles>true</hidenonprojectfiles>
       <showvcsfields>false</showvcsfields>
     </tree>
