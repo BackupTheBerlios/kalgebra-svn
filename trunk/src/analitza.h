@@ -66,6 +66,7 @@ public:
 	static QDomElement toCn(double);
 	static bool takesQualifiers(QString);
 	static QStringList bvar(QDomNode);
+	static bool isMathML(QString exp);
 	
 	Variables vars;
 	QString err;

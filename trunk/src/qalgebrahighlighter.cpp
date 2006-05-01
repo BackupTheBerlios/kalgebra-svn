@@ -6,7 +6,7 @@ QAlgebraHighlighter::QAlgebraHighlighter(QTextEdit *textEdit) : QSyntaxHighlight
 int QAlgebraHighlighter::highlightParagraph(const QString &text, int endStateOfLastPara) {
 	setFormat(0, text.length(), Qt::black);
 	
-	if(QExpressionEdit::isMathML(text)) {
+	if(Analitza::isMathML(text)) {
 		QString lasttag;
 		for(unsigned int i=0; i<text.length(); i++){
 			if(text[i]=='<') { //We enter in a tag

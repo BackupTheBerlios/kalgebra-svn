@@ -912,3 +912,8 @@ QDomElement Analitza::toCn(double new_val)
 
 	return e;
 }
+
+bool Analitza::isMathML(QString exp)
+{
+	return exp.stripWhiteSpace()[0]=='<';
+}

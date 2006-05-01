@@ -1,6 +1,7 @@
 #include "qexpressionedit.h"
 
-QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode) : QTextEdit(parent, name), m_histPos(0), help(true)
+QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode)
+	: QTextEdit(parent, name), m_histPos(0), help(true), m_auto(true), a(NULL)
 {
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	this->setMargin(2);
@@ -24,7 +25,6 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode
 	setMode(inimode);
 	connect(this, SIGNAL(returnPressed()), this, SLOT(returnP()));
 	connect(this, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorMov(int, int)));
-	m_auto=true;
 }
 
 QExpressionEdit::~QExpressionEdit() {}
@@ -37,13 +37,8 @@ bool QExpressionEdit::isMathML()
 		case Expression:
 			return false;
 		default:
-			return isMathML(this->text());
+			return Analitza::isMathML(this->text());
 	}
-}
-
-bool QExpressionEdit::isMathML(QString exp)
-{
-	return exp.stripWhiteSpace()[0]=='<';
 }
 
 void QExpressionEdit::setMode(Mode en)
@@ -195,7 +190,7 @@ void QExpressionEdit::cursorMov(int, int pos)
 	helpShow(s, param);
 }
 
-void QExpressionEdit::helpShow(const QString& funcname, int param)
+void QExpressionEdit::helpShow(const QString& funcname, unsigned int param)
 {
 	int op = Analitza::isOperador(funcname);
 	if(op) {
@@ -212,12 +207,12 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 			}
 			emit signalHelper(sample+")</qt>");
 		}
-	} else if(a!=NULL && a->vars.find(funcname)!=NULL) {
+	} else if(a!=NULL && a->vars.find(funcname)!=NULL) { //if it is a function defined by the user
 		QStringList params = Analitza::bvar(a->vars.value(funcname));
 		
 		QString sample = (param < params.count()) ? QString("<qt><em>%1</em>(").arg(funcname) : QString("<qt text='red'><em>%1</em>(").arg(funcname);
 		
-		for(int i=0; i<params.count(); ++i) {
+		for(unsigned int i=0; i<params.count(); ++i) {
 			if(i==param)
 				sample += QString("<b>%1</b>").arg(params[i]);
 			else

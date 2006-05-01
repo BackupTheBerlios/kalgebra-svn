@@ -26,10 +26,10 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	log->widget()->setFocusPolicy(QWidget::NoFocus);
 	log->widget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	varlist = new KListView(log_split);
-	varlist->setFocusPolicy(QWidget::NoFocus); //FIXME: WEO!
+	varlist->setFocusPolicy(QWidget::NoFocus);
 	varlist->setFixedWidth(250);
-	varlist->addColumn(i18n("Name"),60);
-	varlist->addColumn(i18n("Value"),-1);
+	varlist->addColumn(i18n("Name"));
+	varlist->addColumn(i18n("Value"));
 	varlist->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	varlist->setResizeMode(QListView::LastColumn);
 	operacio = new QExpressionEdit(consola, 0, Autodetect);
@@ -428,8 +428,9 @@ void KAlgebra::save3D(KURL path)
 QString KAlgebra::calculate(QString op) //This could be a nice example about how does it all work
 {
 	Analitza a;
-	double res;
-	if(QExpressionEdit::isMathML(op))
+	double res=0.;
+	
+	if(Analitza::isMathML(op))
 		a.setTextMML(op);
 	else
 		a.setText(op);

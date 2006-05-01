@@ -63,10 +63,10 @@ void KFunctionEdit::edit(bool){	//Let's see if the exp is correct
 	if(err_num==0) {
 		if(a.lambda().count()>0) {
 			a.vars.modifica(a.lambda()[0], 0.);
-			m_valid->setText(i18n("<qt text='#090'><b>f(%1)=%2</b></qt>").arg(a.lambda()[0]).arg(Analitza::treu_tags(a.toString())));
+			m_valid->setText(i18n("<qt text='#090'><b>f:=%1->%2</b></qt>").arg(a.lambda()[0]).arg(Analitza::treu_tags(a.toString())));
 		} else {
 			a.vars.modifica("x", 0.);
-			m_valid->setText(i18n("<qt text='#090'><b>f(x)=%1</b></qt>").arg(Analitza::treu_tags(a.toString())));
+			m_valid->setText(i18n("<qt text='#090'><b>f:=x->%1</b></qt>").arg(Analitza::treu_tags(a.toString())));
 		}
 		a.Calcula();
 		if(a.err != "")
