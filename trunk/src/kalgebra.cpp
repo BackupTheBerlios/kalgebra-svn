@@ -279,17 +279,17 @@ void KAlgebra::slot_getpixmap(){
 
 void KAlgebra::slot_editat(QListViewItem *it){
 	if(it != NULL){
-		grafic->setSelected(it->text(0));
+		grafic->setSelected(it->text(1));
 		
 		QListViewItemIterator it(func2dlist, QListViewItemIterator::NotChecked); //Looks ridiculous but I can't do better :S
 		while ( it.current() ) {
-			grafic->setShown(it.current()->text(0), false);
+			grafic->setShown(it.current()->text(1), false);
 			++it;
 		}
 		
 		it=QListViewItemIterator(func2dlist, QListViewItemIterator::Checked);
 		while ( it.current() ) {
-			grafic->setShown(it.current()->text(0), true);
+			grafic->setShown(it.current()->text(1), true);
 			++it;
 		}
 	} else {
@@ -316,15 +316,15 @@ void KAlgebra::new_func(){
 
 void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int) {
 	KFunctionEdit *e = new KFunctionEdit(this) ;
-	e->setText(item->text(0));
-	e->setColor(item->pixmap(1)->convertToImage().pixel(2,2));
+	e->setColor(item->pixmap(0)->convertToImage().pixel(2,2));
+	e->setText(item->text(1));
 	if(e->exec() == QDialog::Accepted) {
 		grafic->unselect();
 		QPixmap p(15,15);
 		p.fill(e->color());
 		grafic->editFunction(item->text(0), function(e->text(), e->color(), true));
-		item->setText(0, e->text());
-		item->setPixmap(1, p);
+		item->setPixmap(0, p);
+		item->setText(1, e->text());
 	}
 	delete e;
 }
@@ -351,6 +351,7 @@ void KAlgebra::changeStatusBar(const QString& text)
 
 void KAlgebra::tabChanges(QWidget *newWid)
 {
+	m_status->setText("");
 	if(newWid==consola) {
 		operacio->setFocus();
 		operacio->setCursorPosition(0,operacio->text().length());
