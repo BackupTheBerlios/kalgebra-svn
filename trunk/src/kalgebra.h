@@ -129,6 +129,7 @@ public slots:
 	//Console
 	void opera();
 	void saveLog();
+	void loadScript();
 	void edit_var(QListViewItem *item, const QPoint &p,int);
 	
 	//graf2D

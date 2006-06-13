@@ -50,7 +50,9 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
 	KAction *actSaveLog = new KAction(i18n("Save Log"), "savelog", KStdAccel::shortcut(KStdAccel::Save), this, SLOT(saveLog()), actionCollection(), "save");
+	KAction *actLoadScript = new KAction(i18n("Load Script"), "loadscript", NULL, this, SLOT(loadScript()), actionCollection());
 	actSaveLog->plug(menu_consola);
+	actLoadScript->plug(menu_consola);
 	
 	this->menuBar()->insertItem(i18n("Console"), menu_consola);
 	//tab consola/////////////////
@@ -362,6 +364,26 @@ void KAlgebra::tabChanges(QWidget *newWid)
 		funcio3d->setCursorPosition(0,funcio3d->text().length());
 	} else
 		qDebug("the new x-files");
+}
+
+void KAlgebra::loadScript()
+{
+	QString path = KFileDialog::getOpenFileName(QString::null, "*.kal", this);
+	
+	if(!path.isEmpty()) {
+		QStringList lines;
+		QFile file(path);
+		if ( file.open( IO_ReadOnly ) ) {
+			QTextStream stream(&file);
+			QString line;
+			while (!stream.atEnd()) {
+				line = stream.readLine(); // line of text excluding '\n'
+				qDebug("---%s", line.latin1());
+				opera_gen(line);
+			}
+			file.close();
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////
