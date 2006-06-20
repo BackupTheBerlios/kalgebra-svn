@@ -20,6 +20,7 @@ public:
 	
 	int setFunction(QString newFunc, QColor, bool selec=false);
 	void update_points(QRect viewport, unsigned int resolucio);
+	
 	QColor color(){ return m_color; }
 	void setColor(QColor newColor) { m_color=newColor; }
 	unsigned int npoints() { return m_last_resolution; }

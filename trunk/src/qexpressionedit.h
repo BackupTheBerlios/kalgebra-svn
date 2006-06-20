@@ -41,10 +41,11 @@ private:
 	void helpShow(const QString& funcname, unsigned int param=0);
 	static QString findPrec(const QString& exp, int &act, int cur, int &param, QString tit);
 	Analitza *a;
+	void ajudant(const QString&, QPoint p);
 public slots:
 	void returnP();
 	void cursorMov(int par, int pos);
-	
+	void ajudant(const QString&);
 signals:
 	void signalHelper(const QString&);
 };

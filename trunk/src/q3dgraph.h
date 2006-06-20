@@ -53,18 +53,18 @@ private:
 	void mousePressEvent(QMouseEvent *e); QPoint press;
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
+	void mem();
+	void crea();
+	Analitza func3d;
 	float graus[3];
 	float z;
-	Analitza func3d;
-	bool tefunc;
 	double **punts;
-	void crea();
 	double default_step;
 	double default_size;
 	double zoom;
 	int method;
 	bool trans;
-	void mem();
+	bool tefunc;
 	unsigned short keyspressed;
 protected slots:
 	void timeOutSlot();

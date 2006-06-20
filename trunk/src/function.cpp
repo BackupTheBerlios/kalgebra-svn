@@ -1,6 +1,7 @@
 #include "function.h"
 
-function::function(){ m_last_max_res=0; points=NULL; m_selected = false; }
+function::function() : points(NULL), m_selected(false), m_last_max_res(0)
+{}
 
 function::function(QString newFunc, QColor color=Qt::red, bool selec) {
 	setFunction(newFunc, color, selec);
@@ -53,19 +54,17 @@ void function::update_pointsY(QRect viewport, unsigned int max_res){
 		points = new QDoublePoint[max_res];
 	
 	double l_lim=viewport.left()-1, r_lim=viewport.right()+1, x=0.0;
-	unsigned int resolucio=0;
-		
+	
+	unsigned int resolucio=0, ample=static_cast<unsigned int>(-l_lim+r_lim);
 	while(resolucio<max_res)
-		resolucio+= -l_lim+r_lim;
-	
-	
-	resolucio -= -l_lim+r_lim;
+		resolucio+=ample;
+	resolucio -= ample;
 		
 	double inv_res= (double) (-l_lim+r_lim)/resolucio;
 	register int i=0;
 	
 	if(viewport.width() == m_last_viewport.width()) { //FIXME: resolucio diferent
-		int cacho = round(resolucio/(-l_lim+r_lim));
+		int cacho = static_cast<int>(round(resolucio/(-l_lim+r_lim)));
 		
 		if(viewport.right()<m_last_viewport.right()) {
 			r_lim= m_last_viewport.left();
@@ -98,7 +97,7 @@ void function::update_pointsY(QRect viewport, unsigned int max_res){
 }
 
 void function::update_pointsX(QRect viewport, unsigned int max_res){
-	if(viewport.top()==m_last_viewport.top() && viewport.bottom()==m_last_viewport.bottom() && max_res==m_last_max_res || max_res<=-viewport.height())
+	if(viewport.top()==m_last_viewport.top() && viewport.bottom()==m_last_viewport.bottom() && max_res==m_last_max_res || max_res<=static_cast<unsigned int>(-viewport.height()))
 		return;
 	
 	if(max_res!=m_last_max_res)
@@ -106,11 +105,11 @@ void function::update_pointsX(QRect viewport, unsigned int max_res){
 	
 	double t_lim=viewport.top()+1, b_lim=viewport.bottom()-1;
 	
-	unsigned int resolucio=0;
+	unsigned int resolucio=0, ample=static_cast<unsigned int>(-b_lim+t_lim);
 	
 	while(resolucio<max_res)
-		resolucio+= -b_lim+t_lim;
-	resolucio -= -b_lim+t_lim;
+		resolucio+= ample;
+	resolucio -= ample;
 	
 	double inv_res= (double) ( -b_lim+t_lim)/resolucio;
 	register unsigned int i=0;

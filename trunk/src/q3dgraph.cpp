@@ -5,10 +5,9 @@
 #include <ksavefile.h>
 #include <ktempfile.h>
 
-Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name){
+Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name),
+ 		punts(NULL), trans(false), tefunc(false) {
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
-	tefunc=false;
-	trans=false;
 	graus[0] = 90.0;
 	graus[1] = 0.0;
 	graus[2] = 0.0;
@@ -16,7 +15,6 @@ Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name){
 	default_step = 0.2f;
 	default_size = 8.0f;
 	zoom = 1.0f;
-	punts=0; //If I don't put this, the program crashes
 	keyspressed=0;
 	method = G_SOLID;
 	this->setFocusPolicy(QWidget::WheelFocus);
@@ -216,7 +214,7 @@ void Q3DGraph::paintGL() {
 void Q3DGraph::crea() {
 	double mida=default_size*zoom, step=default_step*zoom;
 	int i, j;
-	const int k=(int) 2*mida/step;
+	const int k= static_cast<int>(2*mida/step);
 	QDomElement *x, *y;
 	
 	QTime t;
@@ -333,9 +331,12 @@ int Q3DGraph::setFunc(QString Text){
 }
 
 void Q3DGraph::mem(){
-	if(punts!=NULL)
-		return;
-	int j= (int) 2*default_size/default_step;
+	int j= static_cast<int>(2*default_size/default_step);
+	if(punts!=NULL){
+		for(int i=0; i<j; i++)
+			delete punts[i];
+		delete punts;
+	}
 	punts = new double* [j];
 	for(int i=0; i<j; i++)
 		punts[i] = new double[j];

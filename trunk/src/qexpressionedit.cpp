@@ -13,18 +13,21 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, const char *name, Mode inimode
 	
 	m_history.append("");
 	
-	/*m_helptip = new QLabel("", this);
+	m_helptip = new QLabel("", this, "lol", WType_Popup);
 	m_helptip->setFrameShape(QFrame::Box);
 	m_helptip->setPaletteBackgroundColor(QColor(255,230,255));
 	m_helptip->setAlignment(AlignAuto | AlignVCenter | AlignHCenter);
-	m_helptip->setGeometry(QRect(this->mapFromGlobal(QPoint(0,0)), QPoint(160, 23)));
-	m_helptip->hide();*/
+	m_helptip->setFocusPolicy(NoFocus);
+	//m_helptip->setGeometry(QRect(this->mapFromGlobal(QPoint(100,0)), QPoint(160, 23)));
+	m_helptip->setGeometry(QRect(QPoint(100,0), QPoint(260, 23)));
+	//m_helptip->show();
 	
 	m_highlight= new QAlgebraHighlighter(this);
 	
 	setMode(inimode);
 	connect(this, SIGNAL(returnPressed()), this, SLOT(returnP()));
 	connect(this, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorMov(int, int)));
+	connect(this, SIGNAL(signalHelper(const QString&)), this, SLOT(ajudant(const QString&)));
 }
 
 QExpressionEdit::~QExpressionEdit() {}
@@ -146,12 +149,6 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 					return p;
 				}
 			} else act--;
-			
-			/* else if(act>=cur) { //This was a var or an unfinnished func name
-				param = -2; //If it returns -2 means it is the final var
-				return paraula;
-			}*/
-			
 		} else if(exp.at(act) == ',') {
 			nparams++;
 		} else if(exp.at(act) == '(') {
@@ -197,7 +194,9 @@ void QExpressionEdit::helpShow(const QString& funcname, unsigned int param)
 		if(op == -1) {
 			emit signalHelper(QString("<qt><em>%1</em>(..., <b>par%2</b>, ...)").arg(funcname).arg(param+1));
 		} else {
-			QString sample = (param < op) ? QString("<qt><em>%1</em>(").arg(funcname) : QString("<qt text='red'><em>%1</em>(").arg(funcname);
+			QString sample = (param < op) ? 
+						QString("<qt><em>%1</em>(").arg(funcname) :
+						QString("<qt text='red'><em>%1</em>(").arg(funcname);
 			for(int i=0; i<op; ++i) {
 				if(i==param)
 					sample += QString("<b>par%1</b>").arg(i+1);
@@ -226,13 +225,46 @@ void QExpressionEdit::helpShow(const QString& funcname, unsigned int param)
 // 	m_helptip->show();
 }
 
-void QExpressionEdit::setAutocomplete(bool a) { m_auto = a; }
-bool QExpressionEdit::autocomplete() { return m_auto; }
+void QExpressionEdit::setAutocomplete(bool a)
+{
+	m_auto = a;
+}
+
+bool QExpressionEdit::autocomplete()
+{
+	return m_auto;
+}
 
 void QExpressionEdit::removenl()
 {
 	this->setText(this->text().remove('\n'));
 }
 
+void QExpressionEdit::ajudant(const QString& msg)
+{
+	QFontMetrics fm( font() );
+	int para = 0, curPos = 0;
+	getCursorPosition( &para, &curPos );
+	int pixelsOffset = fm.width( text(), curPos );
+	pixelsOffset -= contentsX();
+	QPoint pos = mapToGlobal( QPoint( pixelsOffset, height() ) );
+	
+	ajudant(msg, pos-QPoint(0, 50));
+}
+
+void QExpressionEdit::ajudant(const QString& msg, QPoint p)
+{
+	if(!msg.isEmpty()){
+		QFontMetrics fm(m_helptip->font());
+		m_helptip->setText(msg);
+		m_helptip->setGeometry(QRect(p, p+QPoint(fm.width(Analitza::treu_tags(msg))+20, 23)));
+		//qDebug("%d, %d -%s-", fm.width(msg), msg.length(), msg.latin1());
+		//m_helptip->adjustSize();
+		m_helptip->show();
+		m_helptip->raise();
+		this->setFocus();
+	} else
+		m_helptip->hide();
+}
 
 #include "qexpressionedit.moc"

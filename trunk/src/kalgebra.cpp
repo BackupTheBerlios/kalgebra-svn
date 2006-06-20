@@ -460,11 +460,11 @@ QString KAlgebra::calculate(QString op) //This could be a nice example about how
 	
 	if(a.err.isEmpty())
 		res=a.Calcula();
-	
-	if(!a.err.isEmpty())
-		return i18n("Error: %1").arg(Analitza::treu_tags(a.err));
-	else
+		
+	if(a.err.isEmpty())	//If its still empty
 		return QString("%1").arg(res, 0, 'g', 12);
+	else
+		return i18n("Error: %1").arg(Analitza::treu_tags(a.err));
 }
 
 #include "kalgebra.moc"
