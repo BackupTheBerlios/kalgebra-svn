@@ -46,6 +46,12 @@ public:
 	void setTraslucency(bool tr);
 	QPixmap toPixmap();
 	bool save(const KURL& url);
+	
+	void setMida(double max);
+	void setStep(double res);
+	void setZ(float coord_z);
+	void setMethod(int m);
+
 private:
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);
@@ -53,26 +59,24 @@ private:
 	void mousePressEvent(QMouseEvent *e); QPoint press;
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
+	int load();
 	void mem();
 	void crea();
+	void sendStatus(const QString& msg) { emit status(msg); }
+	
 	Analitza func3d;
-	float graus[3];
-	float z;
-	double **punts;
 	double default_step;
 	double default_size;
 	double zoom;
+	double **punts;
+	float graus[3];
+	float z;
 	int method;
 	bool trans;
 	bool tefunc;
 	unsigned short keyspressed;
-protected slots:
-	void timeOutSlot();
-public:
-	void setMida(double max);
-	void setStep(double res);
-	void setZ(float coord_z);
-	void setMethod(int m);
+signals:
+	void status(const QString &msg);
 };
 
 #endif

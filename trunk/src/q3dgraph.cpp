@@ -6,23 +6,20 @@
 #include <ktempfile.h>
 
 Q3DGraph::Q3DGraph(QWidget *parent, const char *name) : QGLWidget(parent, name),
- 		punts(NULL), trans(false), tefunc(false) {
+ 		default_step(0.2f), default_size(8.0f), zoom(1.0f), punts(NULL), z(-35.),method(G_SOLID), trans(false), tefunc(false),
+		keyspressed(0) 
+{
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 	graus[0] = 90.0;
 	graus[1] = 0.0;
 	graus[2] = 0.0;
-	z = -35.0;
-	default_step = 0.2f;
-	default_size = 8.0f;
-	zoom = 1.0f;
-	keyspressed=0;
-	method = G_SOLID;
 	this->setFocusPolicy(QWidget::WheelFocus);
 // 	setMouseTracking(true);
 }
 
 
-Q3DGraph::~Q3DGraph(){
+Q3DGraph::~Q3DGraph()
+{
 	if(punts!=NULL)
 		delete [] punts;
 }
@@ -56,7 +53,7 @@ void Q3DGraph::initializeGL() {
 }
 
 void Q3DGraph::resizeGL( int width, int height ) {
-	height = height?height:1;
+	height = height ? height : 1;
 	
 	glViewport( 0, 0, (GLint)width, (GLint)height );
 	
@@ -115,8 +112,8 @@ void Q3DGraph::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	
-	if(keyspressed & KEYUP)		graus[0]-=3.f;
 	if(keyspressed & KEYDOWN)	graus[0]+=3.f;
+	if(keyspressed & KEYUP)		graus[0]-=3.f;
 	if(keyspressed & KEYAVPAG)	graus[1]+=3.f;
 	if(keyspressed & KEYREPAG)	graus[1]-=3.f;
 	if(keyspressed & KEYLEFT)	graus[2]+=3.f;
@@ -217,8 +214,7 @@ void Q3DGraph::crea() {
 	const int k= static_cast<int>(2*mida/step);
 	QDomElement *x, *y;
 	
-	QTime t;
-	t.restart();
+	
 	func3d.vars.modifica("x", 0);
 	func3d.vars.modifica("y", 0);
 	x=func3d.vars.find("x");
@@ -231,7 +227,6 @@ void Q3DGraph::crea() {
 			punts[i][j] = -1.*func3d.Calcula();
 		}
 	}
-	qDebug(".                                     Lasts: %d ms", t.elapsed() );
 }
 
 
@@ -315,19 +310,47 @@ void Q3DGraph::timeOut(){
 	this->repaint();
 }
 
-void Q3DGraph::timeOutSlot(){
-	timeOut();
-	this->repaint();
+int Q3DGraph::setFunc(QString Text){
+	int ret = func3d.setText(Text);
+	
+	if(!ret)
+		return load();
+	else
+		return ret;
 }
 
-int Q3DGraph::setFunc(QString Text){
-	mem();
+int Q3DGraph::setFuncMML(QString TextMML){
+	int ret = func3d.setTextMML(TextMML);
+	if(func3d.err.isEmpty())
+		return load();
+	else {
+		sendStatus(i18n("Error: %1").arg(func3d.err));
+		tefunc=false;
+		this->repaint();
+		return ret;
+	}
+}
+
+int Q3DGraph::load() {
+	func3d.vars.modifica("x", 0);
+	func3d.vars.modifica("y", 0);
+	func3d.Calcula();
 	
-	int ret = func3d.setText(Text);
-	tefunc=true;
-	crea();
-	this->repaint();
-	return ret;
+	if(func3d.err.isEmpty()) {
+		QTime t;
+		t.restart();
+		mem();
+		tefunc=true;
+		crea();
+		this->repaint();
+		sendStatus(i18n("Done: %1ms").arg(t.elapsed()));
+		return 0;
+	} else {
+		sendStatus(i18n("<b>Error:</b> %1").arg(func3d.err));
+		tefunc=false;
+		this->repaint();
+		return -1;
+	}
 }
 
 void Q3DGraph::mem(){
@@ -341,16 +364,6 @@ void Q3DGraph::mem(){
 	for(int i=0; i<j; i++)
 		punts[i] = new double[j];
 	
-}
-
-int Q3DGraph::setFuncMML(QString TextMML){
-	mem();
-	
-	int ret = func3d.setTextMML(TextMML);
-	tefunc=true;
-	crea();
-	this->repaint();
-	return ret;
 }
 
 void Q3DGraph::setMida(double newSize){

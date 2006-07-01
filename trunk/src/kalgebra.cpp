@@ -44,13 +44,11 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	cons_layout->addWidget(operacio);
 	
 	connect(operacio, SIGNAL(returnPressed()), this, SLOT(opera()));
-	connect(operacio, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
-	
-	connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int ))); //I'm disconnecting it until it is developed
+	connect(varlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_var(QListViewItem*, const QPoint&, int )));
 	
 	KPopupMenu *menu_consola = new KPopupMenu(this);
 	KAction *actSaveLog = new KAction(i18n("Save Log"), "savelog", KStdAccel::shortcut(KStdAccel::Save), this, SLOT(saveLog()), actionCollection(), "save");
-	KAction *actLoadScript = new KAction(i18n("Load Script"), "loadscript", NULL, this, SLOT(loadScript()), actionCollection());
+	KAction *actLoadScript = new KAction(i18n("Load Script"), "loadscript", KStdAccel::shortcut(KStdAccel::Open), this, SLOT(loadScript()), actionCollection(), "load");
 	actSaveLog->plug(menu_consola);
 	actLoadScript->plug(menu_consola);
 	
@@ -104,7 +102,8 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	funcio3d->setText("sin(x)*sin(y)"); //NOTE: La huevera, by Miquel Grau
 	pestanya->addTab(dibuix3d, i18n("3D Graph"));
 	connect(funcio3d, SIGNAL(returnPressed()), this, SLOT(dibuixa3d()) );
-	connect(funcio3d, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
+	connect(grafic3d, SIGNAL(status(const QString&)), this, SLOT(changeStatusBar(const QString&)));
+// 	connect(funcio3d, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
 	
 	layout3d->setSpacing(5);
 	layout3d->addWidget(grafic3d);
@@ -174,12 +173,10 @@ void KAlgebra::opera_gen(QString op){
 		
 		int err_no=0;
 		
-		if(op[0]=='<')
+		if(Analitza::isMathML(op))
 			err_no = a.setTextMML(op);
-		else {
+		else
 			err_no = a.setText(op);
-// 			operacioMML->setText(a.textMML());
-		}
 		
 		if(err_no==0)
 			b = a.Calcula();
@@ -249,10 +246,10 @@ void KAlgebra::imatge2d(){
 	grafic->toImage(path);
 }
 
-void KAlgebra::set_res_low() { grafic->setResolution(416); g2d_res_check(G2D_RES_LOW); }
-void KAlgebra::set_res_std() { grafic->setResolution(832); g2d_res_check(G2D_RES_STD); }
-void KAlgebra::set_res_fine() { grafic->setResolution(1664); g2d_res_check(G2D_RES_FINE); }
-void KAlgebra::set_res_vfine(){ grafic->setResolution(3328); g2d_res_check(G2D_RES_VFINE); }
+void KAlgebra::set_res_low()  { grafic->setResolution(416);	g2d_res_check(G2D_RES_LOW); }
+void KAlgebra::set_res_std()  { grafic->setResolution(832);	g2d_res_check(G2D_RES_STD); }
+void KAlgebra::set_res_fine() { grafic->setResolution(1664);	g2d_res_check(G2D_RES_FINE); }
+void KAlgebra::set_res_vfine(){ grafic->setResolution(3328);	g2d_res_check(G2D_RES_VFINE); }
 
 void KAlgebra::g2d_res_check(int id){
 	for(int i=G2D_RES_LOW;i<=G2D_RES_VFINE; i++)
@@ -268,18 +265,21 @@ void KAlgebra::slot_3dpoints(){ grafic3d->setMethod(G_POINTS); g3d_type_check(G3
 void KAlgebra::slot_3dlines() { grafic3d->setMethod(G_LINES);  g3d_type_check(G3D_TYPE_LINES);  }
 void KAlgebra::slot_3dsolid() { grafic3d->setMethod(G_SOLID);  g3d_type_check(G3D_TYPE_SOLID);  }
 
-void KAlgebra::slot_transparencia() {
+void KAlgebra::slot_transparencia()
+{
 	g3d->setItemChecked(G3D_TRANS, transparencia = !transparencia);
 	grafic3d->setTraslucency(transparencia);
 }
 
-void KAlgebra::slot_getpixmap(){
+void KAlgebra::slot_getpixmap()
+{
 	QString path = KFileDialog::getSaveFileName( QString::null, "*.png", this );
 	if(!path.isEmpty())
 		grafic3d->toPixmap().save(path, "PNG");
 }
 
-void KAlgebra::slot_editat(QListViewItem *it){
+void KAlgebra::slot_editat(QListViewItem *it)
+{
 	if(it != NULL){
 		grafic->setSelected(it->text(1));
 		
@@ -299,7 +299,8 @@ void KAlgebra::slot_editat(QListViewItem *it){
 	}
 }
 
-void KAlgebra::new_func(){
+void KAlgebra::new_func()
+{
 	KFunctionEdit *e = new KFunctionEdit(this) ;
 	if(e->exec() == QDialog::Accepted && e->isCorrect()) {
 		grafic->unselect();
@@ -316,7 +317,8 @@ void KAlgebra::new_func(){
 	delete e;
 }
 
-void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int) {
+void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int)
+{
 	KFunctionEdit *e = new KFunctionEdit(this) ;
 	e->setColor(item->pixmap(0)->convertToImage().pixel(2,2));
 	e->setText(item->text(1));
@@ -331,7 +333,8 @@ void KAlgebra::edit_func(QListViewItem *item, const QPoint &,int) {
 	delete e;
 }
 
-void KAlgebra::edit_var(QListViewItem *item, const QPoint &,int){
+void KAlgebra::edit_var(QListViewItem *item, const QPoint &,int)
+{
 	KVarEdit *e = new KVarEdit(item->text(0), item->text(1), &a.vars, this) ;
 	if(e->exec() == QDialog::Accepted ) { //Si s'ha acceptat
 		a.vars.modifica(item->text(0), e->val());
@@ -340,7 +343,8 @@ void KAlgebra::edit_var(QListViewItem *item, const QPoint &,int){
 	update_varlist();
 }
 
-void KAlgebra::slot_togglesquares(){
+void KAlgebra::slot_togglesquares()
+{
 	grafic->setSquares(!grafic->squares());
 	g2d->setItemChecked(G2D_TOGGSQUARES, grafic->squares());
 }
@@ -348,7 +352,6 @@ void KAlgebra::slot_togglesquares(){
 void KAlgebra::changeStatusBar(const QString& text)
 {
 	m_status->setText(text);
-// 	statusBar()->message(text);
 }
 
 void KAlgebra::tabChanges(QWidget *newWid)
@@ -357,11 +360,16 @@ void KAlgebra::tabChanges(QWidget *newWid)
 	if(newWid==consola) {
 		operacio->setFocus();
 		operacio->setCursorPosition(0,operacio->text().length());
-	} else if(newWid==hgraf2d)
+		changeStatusBar(i18n("Ready"));
+	} else if(newWid==hgraf2d) {
 		addfunc->setFocus();
-	else if(newWid==dibuix3d) {
+		changeStatusBar(i18n("Ready 2D"));
+	} else if(newWid==dibuix3d) {
 		funcio3d->setFocus();
 		funcio3d->setCursorPosition(0,funcio3d->text().length());
+		kapp->
+		grafic3d->repaint();
+		changeStatusBar(i18n("Ready 3D"));
 	} else
 		qDebug("the new x-files");
 }
@@ -427,7 +435,7 @@ QStringList KAlgebra::list2D(){
 
 void KAlgebra::remove2D(int){} //TODO: not implemented
 
-void KAlgebra::plot3D(QString operation)
+void KAlgebra::plot3D(QString)
 {
 	if(funcio3d->isMathML())
 		grafic3d->setFuncMML(funcio3d->text());
