@@ -5,9 +5,9 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	this->setMinimumSize(809,500);
 	
 	m_status = new QLabel(0, this->statusBar());
-	m_status->setMinimumWidth(809);
-	m_status->setFixedHeight(18);
-	m_status->setAlignment(AlignTop);
+// 	m_status->setMinimumWidth(809);
+// 	m_status->setFixedHeight(18);
+	m_status->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	this->statusBar()->addWidget(m_status);
 	this->statusBar()->show();
 	
@@ -367,7 +367,7 @@ void KAlgebra::tabChanges(QWidget *newWid)
 	} else if(newWid==dibuix3d) {
 		funcio3d->setFocus();
 		funcio3d->setCursorPosition(0,funcio3d->text().length());
-		kapp->
+// 		kapp->
 		grafic3d->repaint();
 		changeStatusBar(i18n("Ready 3D"));
 	} else
