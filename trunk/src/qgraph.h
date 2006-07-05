@@ -39,6 +39,11 @@ public:
 	inline void setSquares(bool newSquare) {m_squares=newSquare; valid=false; }
 	bool squares() const {return m_squares;}
 	void unselect();
+	void setViewPort(QRect);
+	void setResolution(int res);
+	void clear();
+	inline static int round(double val){ return (val-floor(val)>=0.5) ? (int) floor(val)+1 : (int) floor(val); }
+
 private:
 	//painting
 	QPixmap buffer; QPixmap front; bool valid;
@@ -73,15 +78,14 @@ private:
 	QPoint toViewport(const QPoint &mv);
 	void pintafunc(QPaintDevice*);
 	void update_scale() {
-		rang_x=(double) this->width()/((double)viewport.width()-1.0);
-		rang_y=(double) this->height()/((double)viewport.height()-1.0);
+		rang_x=(double) this->width()/((double)viewport.width()-1);
+		rang_y=(double) this->height()/((double)viewport.height()-1);
 		valid=false;
 		this->repaint(false);	}
-public:
-	void setViewPort(QRect);
-	void setResolution(int res);
-	void clear();
-	inline static int round(double val){ return (val-floor(val)>=0.5) ? (int) floor(val)+1 : (int) floor(val); }
+		
+	void sendStatus(const QString& msg) { emit status(msg); }
+signals:
+	void status(const QString &msg);
 };
 
 #endif

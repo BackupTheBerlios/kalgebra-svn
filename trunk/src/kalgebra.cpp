@@ -7,7 +7,7 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	m_status = new QLabel(0, this->statusBar());
 // 	m_status->setMinimumWidth(809);
 // 	m_status->setFixedHeight(18);
-	m_status->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	m_status->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 	this->statusBar()->addWidget(m_status);
 	this->statusBar()->show();
 	
@@ -78,6 +78,8 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	connect(func2dlist, SIGNAL(selectionChanged( QListViewItem *) ), this, SLOT(slot_editat(QListViewItem*)));
 	connect(func2dlist, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)), this, SLOT(edit_func(QListViewItem*, const QPoint&, int )));
 	connect(addfunc, SIGNAL(clicked()), this, SLOT(new_func()));
+	connect(grafic, SIGNAL(status(const QString&)), this, SLOT(changeStatusBar(const QString&)));
+
 	
 	res = new KPopupMenu(this);
 		res->insertItem(i18n("Poor"), this, SLOT(set_res_low()),0,G2D_RES_LOW);
@@ -103,7 +105,6 @@ KAlgebra::KAlgebra(): DCOPObject ("KAlgebraIface") , KMainWindow(0, "KAlgebra") 
 	pestanya->addTab(dibuix3d, i18n("3D Graph"));
 	connect(funcio3d, SIGNAL(returnPressed()), this, SLOT(dibuixa3d()) );
 	connect(grafic3d, SIGNAL(status(const QString&)), this, SLOT(changeStatusBar(const QString&)));
-// 	connect(funcio3d, SIGNAL(signalHelper(const QString&)), this, SLOT(changeStatusBar(const QString&)));
 	
 	layout3d->setSpacing(5);
 	layout3d->addWidget(grafic3d);
@@ -386,7 +387,7 @@ void KAlgebra::loadScript()
 			QString line;
 			while (!stream.atEnd()) {
 				line = stream.readLine(); // line of text excluding '\n'
-				qDebug("---%s", line.latin1());
+				//qDebug("---%s", line.latin1());
 				opera_gen(line);
 			}
 			file.close();
