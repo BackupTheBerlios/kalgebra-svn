@@ -2,14 +2,14 @@
 
 QGraph::QGraph(QWidget *parent, const char *name) : QWidget(parent, name, Qt::WStyle_NormalBorder), pushed(0), m_squares(true), resolucio(32)
 {
-	viewport = QRect::QRect(QPoint::QPoint(-12, 10), QPoint::QPoint(12, -10));
+	viewport = QRect(QPoint(-12, 10), QPoint(12, -10));
 	
 	this->setFocusPolicy(QWidget::WheelFocus);
-	micepos = new QLabel("", this);
+	/*micepos = new QLabel("", this);
 	micepos->setFrameShape(QFrame::Box);
 	micepos->setPaletteBackgroundColor(QColor(255,230,255));
 	micepos->setAlignment(AlignAuto | AlignVCenter | AlignHCenter);
-	micepos->hide();
+	micepos->hide();*/
 	this->setCursor(QCursor(Qt::CrossCursor));
 	setMouseTracking(true);
 	valid=false;
@@ -102,7 +102,7 @@ void QGraph::paintEvent( QPaintEvent * ){
 			ultim.setY(-10);
 		
 		finestra.setPen(QPen(QColor(0,0,0)));
-		finestra.drawText(ultim.x()+15, ultim.y()+15, QString("x=%1 y=%1") .arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
+		finestra.drawText(ultim.x()+15, ultim.y()+15, QString("x=%1 y=%2") .arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
 #if 0
 		ultim = toWidget(mark.x(), mark.y(), NULL);
 		//micepos->setText(QString("<qt>x=<b>%1</b> &nbsp; y=<b>%1</b></qt>") .arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
@@ -123,7 +123,7 @@ void QGraph::paintEvent( QPaintEvent * ){
 		ccursor.setStyle(Qt::SolidLine);
 		finestra.setPen(ccursor);
 		finestra.setBrush(rectbr);
-		micepos->hide();
+// 		micepos->hide();
 		
 		QPoint p=last;
 		QPoint p1=press;
@@ -213,7 +213,7 @@ void QGraph::mouseMoveEvent(QMouseEvent *e){
 	} else if(pushed == Qt::LeftButton) {
 		last = e->pos();
 	} else if(pushed==0)
-		sendStatus(QString("x=%1 y=%1") .arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
+		sendStatus(QString("x=%1 y=%2") .arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
 	
 	this->repaint(false);
 }
