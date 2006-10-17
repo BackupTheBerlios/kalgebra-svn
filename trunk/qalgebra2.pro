@@ -14,7 +14,6 @@ CONFIG += warn_on \
  opengl 
  \
  
-RESOURCES += qalgebra.qrc 
 HEADERS += algebra.h \
  analitza.h \
  console.h \
