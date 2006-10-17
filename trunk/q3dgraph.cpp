@@ -1,6 +1,11 @@
 #include "q3dgraph.h"
 
-#include <GL/glu.h>
+#if defined(Q_WS_MAC)
+	#include <OpenGL/glu.h>
+#else
+	#include <GL/glu.h>
+#endif
+
 #include <QImage>
 #include <QMouseEvent>
 #include <QKeyEvent>
