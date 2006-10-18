@@ -11,8 +11,12 @@ QT += xml \
 CONFIG += warn_on \
  qt \
  debug \
- opengl 
- \
+ opengl
+ 
+win32 { #Qt official release doesn't bundle debug libs I think
+	CONFIG -= debug
+	CONFIG += release staticlib
+}
  
 HEADERS += algebra.h \
  analitza.h \
@@ -49,4 +53,3 @@ SOURCES += algebra.cpp \
  operatorsmodel.cpp 
 
 TEMPLATE = app
-CONFIG -= release
