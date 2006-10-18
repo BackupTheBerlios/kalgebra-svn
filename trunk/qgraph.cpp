@@ -137,7 +137,8 @@ void QGraph::paintEvent( QPaintEvent * )
 	
 // 	finestra.setRenderHint(QPainter::Antialiasing, true);
 	
-	if(!m_readonly && this->cursor().shape() != Qt::PointingHandCursor) {
+	if(!m_readonly && mode==None) {
+		QString pos = QString("x=%1 y=%2").arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2);
 		ultim = toWidget(mark);
 		
 		ccursor.setColor(QColor(0xc0,0,0));
@@ -147,17 +148,17 @@ void QGraph::paintEvent( QPaintEvent * )
 		finestra.drawLine(QPointF(0.,ultim.y()), QPointF(this->width(), ultim.y()));
 		finestra.drawLine(QPointF(ultim.x(),0.), QPointF(ultim.x(), this->height()));
 		
-		double w=110., h=13.;
+		int w=finestra.fontMetrics().width(pos)+15, h=finestra.fontMetrics().height();
 		
 		if(ultim.x()+w > this->width())
 			ultim.setX(this->width()-w);
 		if(ultim.y()+h > this->height())
 			ultim.setY(this->height()-h);
 		if(ultim.y() < 0.)
-			ultim.setY(-10.);
+			ultim.setY(0.);
 		
 		finestra.setPen(QPen(QColor(0,0,0)));
-		finestra.drawText(QPointF(ultim.x()+15., ultim.y()+15.), QString("x=%1 y=%2").arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
+		finestra.drawText(QPointF(ultim.x()+15., ultim.y()+15.), pos);
 
 	} else if(!m_readonly && mode==Selection) {
 		ccursor.setColor(QColor(0xc0,0,0));
@@ -352,8 +353,6 @@ bool QGraph::addFunction(const function& func)
 		funclist.append(func);
 		sendStatus(i18n("%1 function added").arg(func.expression()));
 	}
-	
-	qDebug() << "Add:" << exist << funclist.back().expression() << "=" << func.expression();
 	
 	update_points();
 	return exist;

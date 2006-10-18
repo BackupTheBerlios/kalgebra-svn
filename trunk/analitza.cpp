@@ -249,16 +249,18 @@ Cn Analitza::operate(Container* c)
 
 Cn Analitza::sum(const Container& n)
 {
-	Cn ret(.0);
+	Cn ret(.0), *c;
 	QString var= n.bvarList()[0];
-	Cn ul= uplimit(n);
-	Cn dl= downlimit(n);
+	double ul= uplimit(n).value();
+	double dl= downlimit(n).value();
 	
 	bool existed=m_vars->contains(var);
 	m_vars->rename(var, var+"_"); //We save the var value
+	m_vars->modify(var, new Cn(0.));
+	c = (Cn*) m_vars->value(var);
 	
-	for(Cn a(dl); a<=ul; a++){
-		m_vars->modify(var, new Cn(a));
+	for(double a = dl; a<=ul; a++){
+		*c = a;
 		reduce(Object::plus, &ret, calc(n.m_params[4]), false);
 	}
 	if(existed)
