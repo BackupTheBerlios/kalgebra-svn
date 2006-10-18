@@ -108,9 +108,12 @@ void KFunctionEdit::edit()	//Let's see if the exp is correct
 		QExp e(funct);
 		e.parse();
 		funct = e.mathML();
-	}
-	
-	a->setTextMML(funct);
+		if(e.error().isEmpty())
+			a->setTextMML(funct);
+		else
+			a->m_err << i18n("From parser:") << e.error();
+	} else
+		a->setTextMML(funct);
 	
 	if(a->isCorrect()) {
 		QString var = a->bvarList().count()==0 ? "x" : a->bvarList()[0];

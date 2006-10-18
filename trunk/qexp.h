@@ -77,13 +77,13 @@ public:
 	~QExp();
 	
 	int parse();
-	QString error();
+	QStringList error();
 	QString mathML();
 	
 private:
 	QString mml;
 	QString str; //Auxiliar pel parsing
-	QString err;
+	QStringList err;
 	
 	tokEnum tok;
 	QString tokval;

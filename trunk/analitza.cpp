@@ -512,7 +512,7 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 			break;
 		case Object::gcd: //code by michael cane aka kiko :)
 			while (b > 0.) {
-				residu = (int) a % (int) b;
+				residu = (int) floor(a) % (int) floor(b);
 				a = b;
 				b = residu;
 			}
@@ -520,7 +520,7 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 		case Object::lcm: //code by michael cane aka kiko :)
 			c=a*b;
 			while (b > 0.) {
-				residu = (int) a % (int) b;
+				residu = (int) floor(a) % (int) floor(b);
 				a = b;
 				b = residu;
 			}

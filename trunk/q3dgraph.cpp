@@ -327,6 +327,8 @@ int Q3DGraph::setFunc(QString Text)
 		QExp e(Text);
 		e.parse();
 		Text=e.mathML();
+		if(!e.error().isEmpty())
+			return 0;
 	}
 	
 	if(func3d.setTextMML(Text))

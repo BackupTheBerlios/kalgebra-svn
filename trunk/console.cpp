@@ -15,6 +15,8 @@ bool Console::addOperation(const QString& op, bool mathml)
 		QExp e(op);
 		e.parse();
 		operation = e.mathML();
+		if(!e.error().isEmpty()) //FIXME: Must return an error message
+			return false;
 	}
 	
 	a.setTextMML(operation);

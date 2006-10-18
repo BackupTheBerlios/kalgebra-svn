@@ -94,7 +94,7 @@ TOKEN QExp::pillatoken(QString &a){
 	else if(a[0].isDigit() || (a[0]=='.' && a[1].isDigit())) {//es un numero
 		int coma=0;
 		if(a[0]=='.') {
-			ret.val += '0';
+			ret.val += "0";
 			coma++;
 		}
 		ret.val += a[0];
@@ -107,18 +107,21 @@ TOKEN QExp::pillatoken(QString &a){
 		if(a[i] == '(' || a[i].isLetter())
 			a.prepend(" *");
 		
-		if(coma>1){
-			err += i18n("Too much comma in %1<br />\n").arg(ret.val);
-		}
+		if(coma>1)
+			err << i18n("Too much comma in %1").arg(ret.val);
 		
 		ret.val = QString::QString("<cn>%1</cn>").arg(ret.val);
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
 		ret.val += a[0];
 		for(i=1; a[i].isLetter(); i++){
-			ret.val += a[i]; a[i]=' ';
+			ret.val += a[i];
+			a[i]=' ';
 		}
-		if(a[i]=='('){
+		
+		for(;a[i].isSpace();i++);
+		
+		if(a[i]=='(' || a[i].isLetterOrNumber()) {
 			ret.tipus=tFunc;
 		} else {
 			ret.val = QString::QString("<ci>%1</ci>").arg(ret.val);
@@ -153,21 +156,21 @@ TOKEN QExp::pillatoken(QString &a){
 	else if(a[0]==',')
 		ret.tipus = tComa;
 	else
-		err.append(i18n("Unknown token %1<br />\n").arg(a[0]));
+		err << i18n("Unknown token %1").arg(a[0]);
 	
 	a[0]=' ';
 	antnum = ret.tipus;
 	if(antnum==tok && tok<tLpr)
-		err.append(i18n("Value remaining<br />\n"));
+		err << i18n("Value remaining");
 	return ret;
 }
 
 int QExp::getTok(){
 	QString s;
 	TOKEN t;
-	if(firsttok){
+	if(firsttok)
 		firsttok=false;
-	}
+	
 	t=pillatoken(str);
 	tok = t.tipus;
 	tokval = t.val;
@@ -177,9 +180,9 @@ int QExp::getTok(){
 
 int QExp::shift(){
 // 	cout << "------>" << tokval.ascii() << "'" << endl;
-	if(tok==tVal){
+	if(tok==tVal)
 		val.push(tokval);
-	} else if(tok==tFunc){
+	else if(tok==tFunc){
 		func.push(tokval);
 		opr.push((char)tok);
 	} else
@@ -244,7 +247,8 @@ int QExp::reduce(){
 	return 0;
 }
 
-int QExp::parse(){
+int QExp::parse()
+{
 	opr.push(tEof);
 	firsttok = true;
 	antnum= tEof;
@@ -277,19 +281,19 @@ int QExp::parse(){
 				if(!val.isEmpty())
 					mml = QString("<math>%1</math>").arg(val.pop());
 				else
-					err += i18n("Wrong<br />\n");
+					err << i18n("Wrong");
 				return 0;
 			case E1:
-				err += i18n("Missing right paranthesis<br />\n");
+				err << i18n("Missing right paranthesis");
 				return 1;
 			case E2:
-				err += i18n("Missing operator<br />\n");
+				err << i18n("Missing operator");
 				return 2;
 			case E3:
-				err += i18n("Unbalanced right parenthesis<br />\n");
+				err << i18n("Unbalanced right parenthesis");
 				return 3;
 			case E:
-				err += i18n("Error<br />\n");
+				err << i18n("Error");
 				return 4;
 			default:
 				break;
@@ -298,10 +302,12 @@ int QExp::parse(){
 	return -1;
 }
 
-QString QExp::mathML(){
+QString QExp::mathML()
+{
 	return mml;
 }
 
-QString QExp::error(){
+QStringList QExp::error()
+{
 	return err;
 }
