@@ -99,7 +99,9 @@ TOKEN QAlgebraHighlighter::getToken(QString &a, int &l){
 			a[i]=' ';
 		}
 		
-		if(a[i]=='(' && (Analitza::whatType(ret.val)==Object::oper))
+		for(;a[i].isSpace();i++);
+
+		if((a[i]=='(' || a[i].isLetterOrNumber()) && (Analitza::whatType(ret.val)==Object::oper))
 			ret.tipus=tFunc;
 		else 
 			ret.tipus= tVar;
