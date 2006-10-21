@@ -45,17 +45,18 @@ void Q3DGraph::initializeGL() {
 	b = QImage(8, 8, QImage::Format_Mono);
 	b.fill(QColor(0xff, 0xff, 0xff).rgb());
 	for(int i=0; i<b.height(); i++)
-		b.setPixel(0, i, 0);
+		b.setPixel(4, i, 0);
 	
 	for(int i=0; i<b.width(); i++)
-		b.setPixel(i, 0, 0);
+		b.setPixel(i, 4, 0);
 		
 	t = QGLWidget::convertToGLFormat( b );
 	glGenTextures( 1, &texture[0] );
 	glBindTexture( GL_TEXTURE_2D, texture[0] );
 	glTexImage2D( GL_TEXTURE_2D, 0, 3, t.width(), t.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, t.bits() );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
@@ -73,18 +74,21 @@ void Q3DGraph::resizeGL( int width, int height ) {
 	glLoadIdentity();
 }
 
-void Q3DGraph::mousePressEvent(QMouseEvent *e){
+void Q3DGraph::mousePressEvent(QMouseEvent *e)
+{
 	if(e->button() == Qt::LeftButton){
 		press = e->pos(); keyspressed |= LCLICK;
 	}
 }
 
-void Q3DGraph::mouseReleaseEvent(QMouseEvent *e){
+void Q3DGraph::mouseReleaseEvent(QMouseEvent *e)
+{
 	if(e->button() == Qt::LeftButton)
 		keyspressed &= ~LCLICK;
 }
 
-void Q3DGraph::mouseMoveEvent(QMouseEvent *e){
+void Q3DGraph::mouseMoveEvent(QMouseEvent *e)
+{
 	if(keyspressed & LCLICK){
 		QPoint rel = e->pos() - press;
 		graus[0] += rel.y();
@@ -147,26 +151,27 @@ void Q3DGraph::paintGL()
 	if(punts==NULL)
 		return;
 	Q_CHECK_PTR(punts);
-	if(method == Dots || method == Lines) {
-		if(method == Dots)
-			glBegin(GL_POINTS);
-		else if(method == Lines)
-			glBegin(GL_LINES);
+	if(method==Dots) {
+		glBegin(GL_POINTS);
+		for(i=0; tefunc && i<(2*mida/step)-1; i++) {
+			for(j=0; tefunc && j<2*mida/step-1; j++) {
+				glColor3d( i*step/mida, j*step/mida, punts[i][j]/5);
+				glVertex3d(i*step-mida, j*step-mida, punts[i][j]);
+			}
+		}
+		glEnd();
+	} else if(method == Lines) {
+		glBegin(GL_LINES);
 		
 		for(i=0; tefunc && i<(2*mida/step)-1; i++) {
 			for(j=0; tefunc && j<2*mida/step-1; j++) {
-				if(method == Dots){
-					glColor3d( i*step/mida, j*step/mida, punts[i][j]/5);
-					glVertex3d(i*step-mida, j*step-mida, punts[i][j]);
-				} else {
-					glColor3d( i*step/mida, j*step/mida, punts[i][j]/5);
-					
-					glVertex3d( i*step-mida, j*step - mida, punts[i][j]);
-					glVertex3d( (i?i-1:i)*step-mida, j*step - mida, punts[i?i-1:i][j]);
-					
-					glVertex3d( i*step-mida, j*step - mida, punts[i][j]);
-					glVertex3d( i*step-mida, (j?j-1:j)*step - mida, punts[i][j?j-1:j]);
-				}
+				glColor3d( i*step/mida, j*step/mida, punts[i][j]/5);
+				
+				glVertex3d( i*step-mida, j*step - mida, punts[i][j]);
+				glVertex3d( (i?i-1:i)*step-mida, j*step - mida, punts[i?i-1:i][j]);
+				
+				glVertex3d( i*step-mida, j*step - mida, punts[i][j]);
+				glVertex3d( i*step-mida, (j?j-1:j)*step - mida, punts[i][j?j-1:j]);
 			}
 		}
 		glEnd();
@@ -175,46 +180,35 @@ void Q3DGraph::paintGL()
 			glEnable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
 			glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-		}else{
+		} else {
 			glDisable(GL_BLEND);
 			glEnable(GL_DEPTH_TEST);
 		}
 		
 		glEnable(GL_TEXTURE_2D);
-		glBegin(GL_QUADS);
-		
 		double transf=0.8;
 		
-		for(i=0; tefunc && i<(2*mida/step)-2; i++) {
-			for(j=0; tefunc && j<2*mida/step-2; j++) {
-				if(abs(punts[i][j]-punts[i][j+1])>700000. || abs(punts[i][j]-punts[i+1][j])>700000.){
-// 					qDebug("assimptota %f %f", punts[i][j], punts[i][j+1]);
-				} else {
-// 				if(punts[i][j]>300.)
-// 					qDebug("%f %f %f %f", punts[i][j], punts[i+1][j], punts[i][j+1], punts[i+1][j+1]);
+		glPushMatrix();
+		for(i=0; tefunc && i<(2*mida/step-2); i++) {
+			glPopMatrix();
+			
+			glPushMatrix();
+			glTranslatef(i*step-mida, -mida, 0);
+			glBegin(GL_TRIANGLE_STRIP);
+			for(j=0; tefunc && j<2*mida/step-1; j++) {
+				glTexCoord2f(j%2 ? .0f : 1.f, 0.f);
+				glColor4d((i*step-mida)/mida, (j*step-mida)/mida, 1./fabs(log(3.+punts[i][j])), transf);
+				glVertex3d(0., j*step, punts[i][j]);
 				
-				glTexCoord2f(0.0f, 1.0f);
-				glColor4d(   i*step/mida/2, (j+1)*step/mida/2, punts[i][j+1]/5,  transf);
-				glVertex3d(    i*step-mida, (j+1)*step - mida, punts[i][j+1]);
-				
-				
-				glTexCoord2f(0.0f, 0.0f);
-				glColor4d(   i*step/mida/2,     j*step/mida/2, punts[i][j]/5,    transf);
-				glVertex3d(    i*step-mida,     j*step - mida, punts[i][j]);
-				
-				glTexCoord2f(1.0f, 0.0f);
-				glColor4d((i+1)*step/mida/2,    j*step/mida/2, punts[i+1][j]/5,  transf);
-				glVertex3d( (i+1)*step-mida,    j*step - mida, punts[i+1][j]);
-				
-				glTexCoord2f(1.0f, 1.0f);
-				glColor4d((i+1)*step/mida/2, (j+1)*step/mida/2, punts[i+1][j+1]/5,transf);
-				glVertex3d( (i+1)*step-mida, (j+1)*step - mida, punts[i+1][j+1]);
-				}
+				glTexCoord2f(j%2 ? .0f : 1.f, 1.f);
+				glColor4d(((i+1)*step-mida)/mida, (j*step-mida)/mida, 1./fabs(log10(5.+punts[i+1][j])), transf);
+				glVertex3d(step, j*step, punts[i+1][j]);
 			}
+			glEnd();
 		}
-		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
+	glPopMatrix();
 	glFlush();
 }
 
@@ -269,8 +263,6 @@ void Q3DGraph::keyPressEvent( QKeyEvent *e ) {
 		case Qt::Key_E: //Be careful
 			keyspressed |= KEYE;
 			break;
-		default:
-			qDebug("lol: %x", e->key());
 	}
 // 	sendStatus(QString("-%1-").arg(keyspressed, 16));
 	this->repaint();
