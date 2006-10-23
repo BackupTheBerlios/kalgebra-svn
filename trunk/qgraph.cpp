@@ -30,7 +30,8 @@ QGraph::~QGraph() {
 // 	funclist.clear();
 }
 
-QSizePolicy QGraph::sizePolicy() const {
+QSizePolicy QGraph::sizePolicy() const
+{
 	return QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 }
 
@@ -108,6 +109,8 @@ void QGraph::pintafunc(QPaintDevice *qpd)
 				pfunc.setWidth((*it).selected()+1);
 				finestra.setPen(pfunc);
 				int i = (*it).npoints(), j;
+				
+				ultim=toWidget((*it).points[0]);
 				
 				for(j=0; j<i;j++){
 					act=toWidget((*it).points[j]);

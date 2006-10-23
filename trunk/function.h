@@ -46,6 +46,7 @@ private:
 	QStringList err; //function errors
 	void update_pointsY(QRect viewport, unsigned int resolucio); //for functions such as y=f(x)
 	void update_pointsX(QRect viewport, unsigned int resolucio); //for functions such as x=f(y)
+	void update_pointsPolar(QRect viewport, unsigned int resolucio); //for functions such as r=f(sigma)
 };
 
 #endif

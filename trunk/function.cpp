@@ -67,12 +67,14 @@ void function::update_points(QRect viewport, unsigned int max_res)
 	QStringList lambdas = func->bvarList();
 	
 	if(lambdas.count() <= 1){ //2D Graph only support 1 lambda, must recheck when add parametric functions
-		m_firstlambda = lambdas.count()==0 ? "x" : lambdas[0];
+		m_firstlambda = lambdas.isEmpty()? "x" : lambdas[0];
 		
 		if(m_firstlambda=="x")
 			update_pointsY(viewport, max_res);
 		else if(m_firstlambda=="y")
 			update_pointsX(viewport, max_res);
+		else if(m_firstlambda=="q")
+			update_pointsPolar(viewport, max_res);
 		else
 			err << i18n("Don't know how to represent f(%1)").arg(m_firstlambda);
 	} else
@@ -177,6 +179,43 @@ void function::update_pointsX(QRect viewport, unsigned int max_res)
 	m_last_max_res = max_res;
 }
 
+
+void function::update_pointsPolar(QRect viewport, unsigned int max_res)
+{
+	qDebug() << "polar";
+	
+	unsigned int resolucio=max_res;
+	double pi=2*acos(0.);
+	double x=0., y=0.0;
+	double r=0., th=0.;
+	
+	register unsigned int i=0;
+	
+	if(max_res!=m_last_max_res) {
+		if(points!=NULL)
+			delete [] points;
+		points = new QPointF[max_res];
+	}
+	
+	double inv_res= (double) 2.*pi/resolucio;
+	func->m_vars->modify("q", 0.);
+	Cn *varth = (Cn*) func->m_vars->value("q");
+	
+	for(th=0.; th<2.*pi && i<max_res; th+=inv_res) {
+		varth->setValue(th);
+		r = func->calculate().value();
+		
+		x = r * cos (th);
+		y = r * sin (th);
+		
+		points[i++]=QPointF(x, y);
+	}
+	
+	m_last_viewport=viewport;
+	m_last_resolution=resolucio;
+	m_last_max_res = max_res;
+}
+
 QPointF function::calc(const QPointF& p)
 {
 	QPointF dp=p;
@@ -184,6 +223,15 @@ QPointF function::calc(const QPointF& p)
 		if(m_firstlambda=="y") {
 			func->m_vars->modify("y", dp.y());
 			dp.setX(func->calculate().value());
+		} else if(m_firstlambda=="q") {
+			double x=0., y=0., th=atan(p.y()/p.x()), r=1.;
+			func->m_vars->modify("q", th);
+			r = func->calculate().value();
+			
+			x = r * cos (th);
+			y = r * sin (th);
+			
+			dp = QPointF(x, y);
 		} else {
 			func->m_vars->modify(QString("x"), dp.x());
 			dp.setY(func->calculate().value());
