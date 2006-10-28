@@ -1,3 +1,6 @@
+#ifndef ALGEBRA_H
+#define ALGEBRA_H
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QListWidget>
@@ -66,3 +69,5 @@ public slots:
 	
 	void about();
 };
+
+#endif

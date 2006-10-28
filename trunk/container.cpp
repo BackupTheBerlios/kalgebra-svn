@@ -62,13 +62,70 @@ Operator Container::firstOperator() const
 
 QString Container::toString() const
 {
-	QString ret;
+	QStringList ret;
+	bool func=false;
 	
+	Operator *op=NULL;
 	for(int i=0; i<m_params.count(); i++) {
-		if(m_params[i]!=NULL)
-			ret += m_params[i]->toString();
+		if(m_params[i]==NULL) {
+			qDebug() << "kkk";
+			return "<<kk>>";
+		}
+		
+		if(m_params[i]->type() == Object::oper)
+			op = (Operator*) m_params[i];
+		else if(m_params[i]->type() == Object::variable) {
+			Ci *b = (Ci*) m_params[i];
+			if(b->isFunction())
+				func=true;
+			ret << b->toString();
+		} else if(m_params[i]->type() == Object::container) {
+			Container *c = (Container*) m_params[i];
+			QString s = c->toString();
+			Operator child_op = c->firstOperator();
+			if(op!=NULL && op->weight() > child_op.weight() && child_op.nparams()!= 1)
+				s="("+s+")";
+			
+			ret << s;
+		} else 
+			ret << m_params[i]->toString();
 	}
-	return ret;
+	
+	switch(containerType()) {
+		case Object::declare:
+			return ret.join(":=");
+		case Object::lambda:
+			return ret.join("");
+		case Object::math:
+			return ret.join(", ");
+		case Object::apply:
+			if(func){
+				QString n = ret.takeFirst();
+				return QString("%1(%2)").arg(n).arg(ret.join(", "));
+			} else if(op==NULL)
+				return ret.join(" ");
+			else switch(op->operatorType()) {
+				case Object::plus:
+					return ret.join("+");
+				case Object::times:
+					return ret.join("*");
+				case Object::divide:
+					return ret.join("/");
+				case Object::minus:
+					return ret.join("-");
+				case Object::power:
+					return ret.join("^");
+				default:
+					break;
+			}
+			
+			return QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
+		case Object::bvar:
+			return ret[0]+"->";
+		default:
+			return ret.join(" ;; ");
+	}
+	return ret.join("");
 }
 
 QList<Object*> Container::copyParams() const

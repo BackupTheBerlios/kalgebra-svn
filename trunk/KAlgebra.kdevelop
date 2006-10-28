@@ -29,7 +29,7 @@
       <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
-      <hidepatterns>*.o,*.lo,CVS,*~,moc_*,*qrc*,*kdev*,Makefile,Doxyfile,qalge*,ui*</hidepatterns>
+      <hidepatterns>*.o,*.lo,CVS,*~,moc_*,*qrc*,*kdev*,Makefile,Doxyfile,qalge*,ui*,*tmp</hidepatterns>
       <hidenonprojectfiles>false</hidenonprojectfiles>
     </tree>
   </kdevfileview>

@@ -23,7 +23,6 @@
 
 #include <cmath>
 
-#include "operatorsmodel.h"
 #include "container.h"
 #include "value.h"
 #include "variables.h"
@@ -63,7 +62,8 @@ public:
 	
 	QStringList bvarList() const;
 	QString toString() const;
-	QString str(Container*) const;
+	QString toMathML() const;
+// 	QString str(Container*) const;
 	
 	void simplify();
 	Object* simp(Object* root);
@@ -74,8 +74,6 @@ public:
 	Object *m_tree;
 	Variables *m_vars;
 	QStringList m_err;
-	
-	OperatorsModel m_words;
 };
 
 #endif

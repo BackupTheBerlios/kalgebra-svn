@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "qexp.h"
-#include "object.h"
+#include "operator.h"
 using namespace std;
 
 #if 0

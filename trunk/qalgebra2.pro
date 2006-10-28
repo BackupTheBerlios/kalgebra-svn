@@ -33,7 +33,7 @@ HEADERS += algebra.h \
  qgraph.h \
  value.h \
  variables.h \
- operatorsmodel.h 
+ operator.h 
 SOURCES += algebra.cpp \
  analitza.cpp \
  console.cpp \
@@ -50,6 +50,6 @@ SOURCES += algebra.cpp \
  qgraph.cpp \
  value.cpp \
  variables.cpp \
- operatorsmodel.cpp 
+ operator.cpp 
 
 TEMPLATE = app

@@ -29,6 +29,7 @@
 
 #define i18n QString
 
+// OperatorsModel m_words;
 class Object
 {
 public:
@@ -63,33 +64,13 @@ public:
 	enum ObjectType type() const { return m_type; }
 	bool isCorrect() const { return m_correct && m_type!=none; }
 	void setCorrect(bool c) { m_correct=c; }
-	virtual QString toString() const;
+	virtual QString toString() const { return "object"; };
+	virtual QString toMathML() const { return "object"; };
 	static enum ObjectType whatType(const QString& tag);
 private:
 	enum ObjectType m_type;
 	bool m_correct;
 	QString err;
-};
-
-class Operator : public Object
-{
-	public:
-		Operator(enum OperatorType t) : Object(oper), m_optype(t) {}
-		Operator(Object *o);
-		virtual ~Operator() {}
-		
-		void setOperator(enum OperatorType t) { m_optype=t; }
-		static int nparams(enum OperatorType);
-		int nparams() const { return nparams(m_optype); }
-		enum OperatorType operatorType() const { return m_optype; }
-		static enum OperatorType toOperatorType(QString s);
-		unsigned int weight() const { return operatorWeight(m_optype); }
-		static unsigned int operatorWeight(OperatorType);
-// 		QString toString() const;
-		
-		Operator operator=(const Operator &a) { return m_optype=a.operatorType(); }
-	private:
-		enum OperatorType m_optype;
 };
 
 class Ci : public Object
@@ -103,6 +84,7 @@ class Ci : public Object
 		bool isFunction() const { return m_function; }
 		void setFunction(bool f) { m_function=f; }
 		QString toString() const { return m_name; }
+		QString toMathML() const { return QString("<ci>%1</ci>").arg(m_name);}
 	private:
 		QString m_name;
 		bool m_function;

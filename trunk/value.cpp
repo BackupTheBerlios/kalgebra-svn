@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "value.h"
+#include "operator.h"
 
 Cn::Cn(Object *o) 
 	: Object(Object::value), m_value(0.), m_boolean(false)

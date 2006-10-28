@@ -7,6 +7,8 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 
+#include "operator.h"
+
 QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
 	: QTextEdit(parent), m_histPos(0), help(true), m_auto(true), a(NULL), m_check(true), m_correct(true), m_ans("ans")
 {
@@ -41,7 +43,8 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
 	updateCompleter();
 	
 	treeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-	treeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+// 	treeView->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+	treeView->setColumnHidden(1, true);
 	treeView->setColumnHidden(2, true);
 	
 	connect(this, SIGNAL(returnPressed()), this, SLOT(returnP()));
@@ -56,49 +59,19 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
 void QExpressionEdit::updateCompleter()
 {
 	if(!isMathML()) {
-		QFile file(":/resources/operators.txt");
-		if(!file.open(QFile::ReadOnly))
-			return;
-		QStringList words;
-
-		for(int num_words = 0;;++num_words) {
-			QByteArray line = file.readLine();
-			if (line.isEmpty())
-				break;
-			words << line.trimmed();
-		}
-		
-		/*if(a!=NULL) {
-			qDebug("----------%s", a->m_vars->getNoms().join(", ").toAscii().data());
-			words << a->m_vars->getNoms();
-		}
-		
-		m_completer->setModel(new QStringListModel(words, m_completer));
-		*/
-		
-		/////////////////
-		int count = words.count();
-		if(a!=NULL)
-			count+=a->m_vars->count();
-		
-		QStandardItemModel *m_words = new QStandardItemModel(count, 3, m_completer);
-		int i;
-		for (i=0; i<words.count(); ++i) {
-			m_words->setData(m_words->index(i, 0), words[i]);
-			m_words->setData(m_words->index(i, 2), "op");
-		}
+		OperatorsModel *m_ops = new OperatorsModel(m_completer);
 		
 		if(a!=NULL) {
 			QHash<QString, Object*>::const_iterator it = a->m_vars->begin();
-			for(; it != a->m_vars->end(); ++it) {
-				m_words->setData(m_words->index(i, 0), it.key());
-// 				m_words->setData(m_words->index(i, 1), Analitza::treu_tags(a->str(it.value())));
-				m_words->setData(m_words->index(i, 2), "var");
+			for(int i=m_ops->count(); it != a->m_vars->end(); ++it) {
+				m_ops->setData(m_ops->index(i, 0), it.key());
+// 				m_ops->setData(m_ops->index(i, 1), Analitza::treu_tags(a->str(it.value())));
+				m_ops->setData(m_ops->index(i, 2), "var");
 				
 				i++;
 			}
 		}
-		m_completer->setModel(m_words);
+		m_completer->setModel(m_ops);
 	}
 }
 
@@ -138,11 +111,11 @@ bool QExpressionEdit::isMathML() const
 
 void QExpressionEdit::setMode(Mode en)
 {
-	/*if(!text().isEmpty()) {
+	if(!text().isEmpty()) {
 		Analitza a;
 		if(isMathML() && en==Expression) { //We convert it into MathML
 			a.setTextMML(this->toPlainText());
-			this->setPlainText(Analitza::treu_tags(a.toString()));
+			this->setPlainText(a.toString());
 			setCorrect(!a.isCorrect());
 		} else if(!isMathML() && en==MathML) {
 			QExp e(this->toPlainText());
@@ -152,7 +125,7 @@ void QExpressionEdit::setMode(Mode en)
 			this->setPlainText(e.mathML());
 		}
 	}
-	m_highlight->setMode(en);*/
+	m_highlight->setMode(en);
 	setCorrect(true);
 }
 
@@ -170,27 +143,26 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 {
 	bool ch=false;
 	
-	switch(e->key()) {
-		case Qt::Key_Backtab:
-			//setMode(isMathML() ? Expression : MathML);
-			return;
-		case Qt::Key_F2:
+	switch(e->key()){
+		case Qt::Key_F2: {
 			Analitza a;
-			/*if(isMathML()){
+			if(isMathML()){
 				a.setTextMML(toPlainText());
 				a.simplify();
-				this->setPlainText(a.textMML());
-			} else {*/
-			QExp e(toPlainText());
-			e.parse();
-			a.setTextMML(e.mathML());
-			a.simplify();
-			this->setPlainText(a.toString());
-// 			}
+				this->setPlainText(a.toMathML());
+			} else {
+				QExp e(toPlainText());
+				e.parse();
+				a.setTextMML(e.mathML());
+				a.simplify();
+				this->setPlainText(a.toString());
+				this->selectAll();
+			}
 			return;
-	}
-	
-	switch(e->key()){
+		}
+		case Qt::Key_F3:
+			setMode(isMathML() ? Expression : MathML);
+			return;
 		case Qt::Key_Return:
 		case Qt::Key_Enter:
 // 			qDebug() << m_completer->popup()->isVisible();

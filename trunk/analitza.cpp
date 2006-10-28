@@ -568,83 +568,20 @@ QStringList Analitza::bvarList() const //FIXME: if
 	
 }
 
+QString Analitza::toMathML() const
+{
+	if(m_tree==NULL)
+		return QString::null;
+	else
+		return m_tree->toMathML();
+}
+
 QString Analitza::toString() const
 {
 	if(m_tree==NULL)
 		return QString::null;
-	else if(m_tree->type() == Object::container)
-		return str((Container*) m_tree);
 	else
 		return m_tree->toString();
-}
-
-QString Analitza::str(Container *root) const
-{
-// 	objectWalker(root,0);
-	Q_ASSERT(root!=NULL && root->type()==Object::container);
-	QStringList ret;
-	bool func=false;
-	
-	Operator *op=NULL;
-	for(int i=0; i<root->m_params.count(); i++) {
-		if(root->m_params[i]==NULL) {
-			qDebug() << "kkk";
-			return "<<kk>>";
-		}
-		
-		if(root->m_params[i]->type() == Object::oper)
-			op = (Operator*) root->m_params[i];
-		else if(root->m_params[i]->type() == Object::variable) {
-			Ci *b = (Ci*) root->m_params[i];
-			if(b->isFunction())
-				func=true;
-			ret << b->toString();
-		} else if(root->m_params[i]->type() == Object::container) {
-			Container *c = (Container*) root->m_params[i];
-			QString s = str(c);
-			Operator child_op = c->firstOperator();
-			if(op!=NULL && op->weight() > child_op.weight() && child_op.nparams()!= 1)
-				s="("+s+")";
-			
-			ret << s;
-		} else 
-			ret << root->m_params[i]->toString();
-	}
-	
-	switch(root->containerType()) {
-		case Object::declare:
-			return ret.join(":=");
-		case Object::lambda:
-			return ret.join("");
-		case Object::math:
-			return ret.join(", ");
-		case Object::apply:
-			if(func){
-				QString n = ret.takeFirst();
-				return QString("%1(%2)").arg(n).arg(ret.join(", "));
-			} else if(op==NULL)
-				return ret.join(" ");
-			else switch(op->operatorType()) {
-				case Object::plus:
-					return ret.join("+");
-				case Object::times:
-					return ret.join("*");
-				case Object::divide:
-					return ret.join("/");
-				case Object::minus:
-					return ret.join("-");
-				case Object::power:
-					return ret.join("^");
-				default:
-					break;
-			}
-			
-			return QString("%1(%2)").arg(m_words.operToString(*op)).arg(ret.join(", "));
-		case Object::bvar:
-			return ret[0]+"->";
-		default:
-			return ret.join(" ;; ");
-	}
 }
 
 
@@ -676,13 +613,11 @@ Object* Analitza::simp(Object* root)
 			delete aux;
 		}
 		return root;
-	} else switch(root->type()) {
-		case Object::container: {
-			Container *c= (Container*) root;
-			QList<Object*>::iterator it = c->m_params.begin();
-			for(; it!=c->m_params.end(); it++)
-				*it = simp(*it);
-		} break;
+	} else if(root->type()==Object::container) {
+		Container *c= (Container*) root;
+		QList<Object*>::iterator it = c->m_params.begin();
+		for(; it!=c->m_params.end(); it++)
+			*it = simp(*it);
 	}
 	return root;
 }

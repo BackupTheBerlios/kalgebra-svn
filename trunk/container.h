@@ -25,7 +25,7 @@
 
 #include "object.h"
 #include "value.h"
-
+#include "operator.h"
 /**
 	@author Aleix Pol <aleixpol@gmail.com>
 */
@@ -55,6 +55,7 @@ class Container : public Object
 	Operator firstOperator() const;
 	QList<Object*> copyParams() const;
 	QString toString() const;
+	QString toMathML() const;
 // private:
 	enum ContainerType m_cont_type;
 	QList<Object*> m_params;

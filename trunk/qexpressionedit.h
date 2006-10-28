@@ -62,7 +62,7 @@ private:
 	bool m_correct;
 	QString m_ans;
 	QCompleter *m_completer;
-	QStandardItemModel *m_words;
+	//QStandardItemModel *m_words;
 	
 public slots:
 	void returnP();
