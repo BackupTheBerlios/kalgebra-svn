@@ -157,6 +157,11 @@ Cn Analitza::operate(Container* c)
 	if(c->containerType() > 100)
 		qDebug() << "wow";
 	
+	if(c->m_params.count()==0) {
+		m_err << i18n("Empty container: %1").arg(c->containerType());
+		return Cn(0.);
+	}
+	
 	if(c->m_params[0]->type() == Object::oper)
 		op = (Operator*) c->m_params[0];
 	
@@ -167,7 +172,8 @@ Cn Analitza::operate(Container* c)
 		case Object::math:
 		case Object::bvar:
 		case Object::uplimit:
-		case Object::downlimit:	{
+		case Object::downlimit:
+		{
 			if(c->m_params[0]->type() == Object::variable) {
 				Ci* var= (Ci*) c->m_params[0];
 				
@@ -178,7 +184,7 @@ Cn Analitza::operate(Container* c)
 			} else {
 				QList<Object*>::iterator it = c->m_params.begin();
 				for(; it!=c->m_params.end(); it++) {
-					if((*it)==NULL){
+					if((*it)==NULL) {
 						m_err << i18n("Null Object found");
 						ret.setCorrect(false);
 						return ret;
@@ -239,7 +245,7 @@ Cn Analitza::operate(Container* c)
 			}
 		} break;
 		case Object::lambda:
-			ret = calc(c->m_params[c->bvarList().count()]);
+			ret = calc(c->m_params[c->m_params.count()-1]);
 			break;
 		case Object::cnone:
 			break;
@@ -278,7 +284,9 @@ Cn Analitza::uplimit(const Container& c) const
 		if(c->type()==Object::container && c->containerType()==Object::uplimit && c->m_params[0]->type()==Object::value)
 			return Cn(c->m_params[0]);
 	}
-	return Cn(0.);
+	Cn r=Cn(0.);
+	r.setCorrect(false);
+	return r;
 }
 
 Cn Analitza::downlimit(const Container& c) const
@@ -288,7 +296,9 @@ Cn Analitza::downlimit(const Container& c) const
 		if(c->type()==Object::container && c->containerType()==Object::downlimit && c->m_params[0]->type()==Object::value)
 			return Cn(c->m_params[0]);
 	}
-	return Cn(0.);
+	Cn r=Cn(0.);
+	r.setCorrect(false);
+	return r;
 }
 
 bool Analitza::isFunction(Ci func) const
@@ -360,17 +370,23 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 			a = pow(a, b);
 			break;
 		case Object::rem:
-			a = (int)a % (int)b;
+			if(floor(b)!=0.)
+				a = static_cast<int>(floor(a)) % static_cast<int>(floor(b));
+			else
+				a=0.;//FIXME
 			break;
 		case Object::quotient:
 			a = floor(a / b);
 			break;
 		case Object::factorof:
-			a = (((int)a % (int)b)==0) ? 1.0 : 0.0;
+			if(floor(b)!=0.)
+				a = (((int)a % (int)b)==0) ? 1.0 : 0.0;
+			else
+				a = 0.; //FIXME
 			boolean = true;
 			break;
 		case Object::factorial:
-			b = a;
+			b = floor(a);
 			for(a=1.; b>1.; b--)
 				a*=b;
 			break;
@@ -444,7 +460,7 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 			a=log10(a);
 			break;
 		case Object::abs:
-			a=a>=0. ? a : -a;
+			a= a>=0. ? a : -a;
 			break;
 		//case Object::conjugate:
 		//case Object::arg:
@@ -538,10 +554,11 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 	ret->setValue(a);
 }
 
-QStringList Analitza::bvarList() const
+QStringList Analitza::bvarList() const //FIXME: if
 {
 	Container *c = (Container*) m_tree;
 	if(m_tree != NULL && c->type()==Object::container) {
+		qDebug() << c->m_params.count();
 		c = (Container*) c->m_params[0];
 		
 		if(c->type()==Object::container)
@@ -566,6 +583,7 @@ QString Analitza::str(Container *root) const
 // 	objectWalker(root,0);
 	Q_ASSERT(root!=NULL && root->type()==Object::container);
 	QStringList ret;
+	bool func=false;
 	
 	Operator *op=NULL;
 	for(int i=0; i<root->m_params.count(); i++) {
@@ -576,7 +594,12 @@ QString Analitza::str(Container *root) const
 		
 		if(root->m_params[i]->type() == Object::oper)
 			op = (Operator*) root->m_params[i];
-		else if(root->m_params[i]->type() == Object::container) {
+		else if(root->m_params[i]->type() == Object::variable) {
+			Ci *b = (Ci*) root->m_params[i];
+			if(b->isFunction())
+				func=true;
+			ret << b->toString();
+		} else if(root->m_params[i]->type() == Object::container) {
 			Container *c = (Container*) root->m_params[i];
 			QString s = str(c);
 			Operator child_op = c->firstOperator();
@@ -592,12 +615,15 @@ QString Analitza::str(Container *root) const
 		case Object::declare:
 			return ret.join(":=");
 		case Object::lambda:
-			return ret.join("->");
+			return ret.join("");
 		case Object::math:
 			return ret.join(", ");
 		case Object::apply:
-			if(op==NULL)
-				return ret.join("--");
+			if(func){
+				QString n = ret.takeFirst();
+				return QString("%1(%2)").arg(n).arg(ret.join(", "));
+			} else if(op==NULL)
+				return ret.join(" ");
 			else switch(op->operatorType()) {
 				case Object::plus:
 					return ret.join("+");

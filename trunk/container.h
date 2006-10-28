@@ -31,7 +31,7 @@
 */
 
 void print_dom(QDomNode in, int ind);
-void objectWalker(const Object*, int);
+void objectWalker(const Object*, int a=0);
 
 class Object;
 

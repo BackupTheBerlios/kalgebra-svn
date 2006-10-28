@@ -151,7 +151,7 @@ bool Container::hasVars() const
 	return ret;
 }
 
-void objectWalker(const Object* root, int ind=0)
+void objectWalker(const Object* root, int ind)
 {
 	Q_ASSERT(root!=NULL);
 	Container *c; Cn *num; Operator *op; Ci *var;

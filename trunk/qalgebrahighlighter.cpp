@@ -94,7 +94,7 @@ TOKEN QAlgebraHighlighter::getToken(QString &a, int &l){
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
 		ret.val += a[0];
-		for(i=1; a[i].isLetter(); i++){
+		for(i=1; a[i].isLetterOrNumber(); i++){
 			ret.val += a[i];
 			a[i]=' ';
 		}

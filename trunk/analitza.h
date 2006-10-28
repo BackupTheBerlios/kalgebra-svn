@@ -68,6 +68,7 @@ public:
 	void simplify();
 	Object* simp(Object* root);
 	static bool hasVars(Object*);
+	Container* tree() const { return (Container*) m_tree; }
 	
 // private:
 	Object *m_tree;

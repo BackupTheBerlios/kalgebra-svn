@@ -220,7 +220,7 @@ void Q3DGraph::crea() {
 	
 	Cn *x=(Cn*)func3d.m_vars->value("x"), *y=(Cn*)func3d.m_vars->value("y");
 	
-	qApp->processEvents();
+// 	qApp->processEvents();
 	Q_CHECK_PTR(punts);
 	for(int i=0; tefunc && i<k; i++) {
 		x->setValue(i*step-mida);

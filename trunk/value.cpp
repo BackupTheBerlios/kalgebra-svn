@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Aleix Pol   *
- *   aleixpol@gmail.com   *
+ *   Copyright (C) 2006 by Aleix Pol                                       *
+ *   aleixpol@gmail.com                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -26,6 +26,7 @@ Cn::Cn(Object *o)
 		Cn *v = (Cn*) o;
 		m_value = v->value();
 		m_boolean = v->isBoolean();
+		setCorrect(v->isCorrect());
 	} else {
 		setCorrect(false);
 	}

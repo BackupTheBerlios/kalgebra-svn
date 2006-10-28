@@ -22,6 +22,8 @@
 using namespace std;
 
 #if 0
+QString opr2str(int in);
+void printPilaOpr(QStack<int> opr);
 
 QString opr2str(int in)
 {
@@ -51,11 +53,17 @@ QString opr2str(int in)
 
 void printPilaOpr(QStack<int> opr) //debug only
 {
-	QStack<int> aux=opr;
 	bool istop=true;
 	while(!opr.isEmpty()) {
-		qDebug("%6s %s", istop ? "top: " : "        ", opr2str(opr.pop()).ascii());
+		qDebug() << ":   " << opr2str(opr.pop());
 		istop=false;
+	}
+}
+
+void printPilaVal(QStack<QString> val)
+{
+	while(!val.isEmpty()) {
+		qDebug() << ":   " << val.pop();
 	}
 }
 #endif
@@ -114,7 +122,7 @@ TOKEN QExp::pillatoken(QString &a){
 		ret.tipus= tVal;
 	} else if(a[0].isLetter()) {//es una variable o func
 		ret.val += a[0];
-		for(i=1; a[i].isLetter(); i++){
+		for(i=1; a[i].isLetterOrNumber(); i++){
 			ret.val += a[i];
 			a[i]=' ';
 		}
@@ -160,6 +168,7 @@ TOKEN QExp::pillatoken(QString &a){
 	
 	a[0]=' ';
 	antnum = ret.tipus;
+	//qDebug() << ret.val;
 	if(antnum==tok && tok<tLpr)
 		err << i18n("Value remaining");
 	return ret;
@@ -195,7 +204,12 @@ int QExp::shift(){
 int QExp::reduce(){
 	tokEnum oper = (tokEnum) opr.top();
 	opr.pop();
-	QString aux = val.isEmpty() ? "0" : val.pop();
+	QString aux;
+	if(val.isEmpty()) {
+		aux = "0";
+		err << i18n("Value Stack is empty");
+	} else
+		aux = val.pop();
 	
 	switch(oper) {
 		case tAdd:
@@ -229,7 +243,6 @@ int QExp::reduce(){
 				val.push(QString("<apply><ci type='function'>%1</ci>%2</apply>").arg(func.pop()).arg(aux));
 			break;
 		case tLambda: // ->
-// 			qDebug() << val.count();
 			if(!val.isEmpty() && opr.top()==tLambda || (opr.count()>1 && opr[1]==tFunc))
 				val.push(QString("<bvar>%1</bvar>%2").arg(val.pop()).arg(aux));
 			else if(!val.isEmpty())
@@ -278,7 +291,9 @@ int QExp::parse()
 				if(shift()) return 1;
 				break;
 			case A:
-				if(!val.isEmpty())
+// 				printPilaOpr(opr);
+// 				printPilaVal(val);
+				if(val.count()==1)
 					mml = QString("<math>%1</math>").arg(val.pop());
 				else
 					err << i18n("Wrong");

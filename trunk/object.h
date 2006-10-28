@@ -61,7 +61,7 @@ public:
 	
 	void setType(enum ObjectType t) { m_type=t; }
 	enum ObjectType type() const { return m_type; }
-	bool isCorrect() const { return m_correct; }
+	bool isCorrect() const { return m_correct && m_type!=none; }
 	void setCorrect(bool c) { m_correct=c; }
 	virtual QString toString() const;
 	static enum ObjectType whatType(const QString& tag);

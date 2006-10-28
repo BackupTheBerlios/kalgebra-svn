@@ -116,13 +116,14 @@ void KFunctionEdit::edit()	//Let's see if the exp is correct
 		a->setTextMML(funct);
 	
 	if(a->isCorrect()) {
-		QString var = a->bvarList().count()==0 ? "x" : a->bvarList()[0];
+		QStringList bvl = a->bvarList();
+		QString var = bvl.count()==0 ? "x" : bvl[0];
 		a->m_vars->modify(var, 0.);
-		m_valid->setText(QString("<b style='color:#090'>f:=%1->%2</b>").arg(var).arg(a->toString()));
+		m_valid->setText(QString("<b style='color:#090'>f:=%2</b>").arg(a->toString()));
 		a->calculate();
 	}
 	
-	if(!a->isCorrect()){
+	if(!a->isCorrect()) {
 		m_valid->setText(i18n("<b style='color:red'>WRONG</b>"));
 		m_graph->editFunction(0, function());
 		m_graph->forceRepaint();
@@ -146,10 +147,9 @@ void KFunctionEdit::ok(){
 }
 
 ///////////////////////////////////////
-
 ColorCombo::ColorCombo(QWidget* parent) : QComboBox(parent)
 {
-	setIconSize(QSize(width()*2, height()-10));
+	setIconSize(QSize(width()*2, QFontMetrics(font()).height()));
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	
 	setColor(Qt::green);
@@ -158,10 +158,11 @@ ColorCombo::ColorCombo(QWidget* parent) : QComboBox(parent)
 	setColor(Qt::red);
 }
 
-void ColorCombo::resizeEvent(QResizeEvent * event)
+void ColorCombo::resizeEvent(QResizeEvent * e)
 {
-	QWidget::resizeEvent(event);
-	setIconSize(QSize(width()*4, height()-10));
+	QWidget::resizeEvent(e);
+	QSize s = QSize(width(), QFontMetrics(font()).height()+2);
+// 	setIconSize(s);
 }
 
 void ColorCombo::setColor(const QColor &color)

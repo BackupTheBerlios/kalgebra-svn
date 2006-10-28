@@ -32,7 +32,7 @@ class Cn : public Object
 	public:
 		enum ValueFormat { none, nan, real, integer, boolean };
 		Cn() : Object(Object::value), m_value(0.), m_boolean(false) {}
-		Cn(const Cn& v) : Object(Object::value), m_value(v.value()), m_boolean(v.isBoolean()) {}
+		Cn(const Cn& v) : Object(Object::value), m_value(v.value()), m_boolean(v.isBoolean()) { setCorrect(v.isCorrect()); }
 		Cn(double b=0.) : Object(Object::value), m_value(b), m_boolean(false) {}
 		Cn(Object *o);
 		virtual ~Cn() {}
@@ -47,6 +47,7 @@ class Cn : public Object
 		bool operator<(double d) const { return m_value<d; }
 		bool operator<=(const Cn& d) const { return m_value<=d.value(); }
 		bool operator<=(double d) const { return m_value<=d; }
+		Cn operator=(double d) { m_value=d; return *this; }
 		
 		Cn operator++() { m_value++; return this; }
 		Cn operator++(int) { m_value++; return this; }
