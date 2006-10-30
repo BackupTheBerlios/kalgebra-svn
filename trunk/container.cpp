@@ -60,6 +60,11 @@ Operator Container::firstOperator() const
 	return ret;
 }
 
+QString Container::toMathML() const
+{
+	return QString(":)");
+}
+
 QString Container::toString() const
 {
 	QStringList ret;

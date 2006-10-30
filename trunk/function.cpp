@@ -42,6 +42,7 @@ int function::setFunction(const QString& newFunc, const QColor& color=Qt::red, b
 	m_color = color;
 	m_selected = selec;
 	m_show=true;
+	m_last_viewport=QRect();
 	
 	func = new Analitza;
 	QString funct = m_exp;
@@ -183,7 +184,7 @@ void function::update_pointsX(QRect viewport, unsigned int max_res)
 void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 {
 	Q_ASSERT(func->tree() != NULL && func->tree()->type()==Object::container);
-	if(max_res==m_last_max_res)
+	if(max_res==m_last_max_res || !m_last_viewport.isNull())
 		return;
 	unsigned int resolucio=max_res;
 	double pi=2.*acos(0.);

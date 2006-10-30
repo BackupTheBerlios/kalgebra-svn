@@ -197,7 +197,7 @@ void Q3DGraph::paintGL()
 			glBegin(GL_TRIANGLE_STRIP);
 			for(j=0; tefunc && j<2*mida/step-1; j++) {
 				glTexCoord2f(j%2 ? .0f : 1.f, 0.f);
-				glColor4d((i*step-mida)/mida, (j*step-mida)/mida, 1./fabs(log(3.+punts[i][j])), transf);
+				glColor4d((i*step-mida)/mida, (j*step-mida)/mida, 1./fabs(log10(5.+punts[i][j])), transf);
 				glVertex3d(0., j*step, punts[i][j]);
 				
 				glTexCoord2f(j%2 ? .0f : 1.f, 1.f);
