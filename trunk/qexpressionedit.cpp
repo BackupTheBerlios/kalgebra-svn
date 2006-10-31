@@ -260,7 +260,7 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 		} else if(exp.at(act) == ')') {
 			cat--;
 //			qDebug("cat: %d", cat);
-			if(cat == 0) {
+			if(cat == 0) { //FIXME: Better to put outside the if?
 				param=-1; //Means this is a useless func
 				return QString::null;
 			} else if(cat <0){
@@ -285,10 +285,13 @@ QString QExpressionEdit::editingWord(int pos, int &param)
 
 void QExpressionEdit::cursorMov()
 {
-	if(text().isEmpty()) setCorrect(true);
 	int param=0, pos=this->textCursor().position();
+	m_highlight->setPos(pos);
+	if(text().isEmpty())
+		setCorrect(true);
 	QString s = editingWord(pos, param);
 	helpShow(s, param);
+	m_highlight->rehighlight();
 }
 
 void QExpressionEdit::helpShow(const QString& funcname, int param)
@@ -306,7 +309,8 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 					sample += QString("<b>par%1</b>").arg(i+1);
 				else
 					sample += QString("par%1").arg(i+1);
-				if(i<op-1) sample+= ", ";
+				if(i<op-1)
+					sample += ", ";
 			}
 			emit signalHelper(sample+")");
 		}

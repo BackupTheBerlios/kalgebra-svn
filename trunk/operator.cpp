@@ -17,7 +17,7 @@ QString Operator::toMathML() const
 
 enum Object::OperatorType Operator::toOperatorType(QString e)
 {
-	qDebug() << "lol";
+	//qDebug() << "lol";
 	enum OperatorType ret=onone;
 	
 	if(e=="plus") ret=plus;

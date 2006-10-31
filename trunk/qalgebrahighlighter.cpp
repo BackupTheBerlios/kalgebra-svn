@@ -6,9 +6,11 @@ QAlgebraHighlighter::QAlgebraHighlighter(QTextDocument *doc) : QSyntaxHighlighte
 	negreta.setFontWeight(QFont::Bold);
 }
 
-void QAlgebraHighlighter::highlightBlock(const QString &text) {
-	//setFormat(0, text.length(), Qt::black);
+void QAlgebraHighlighter::highlightBlock(const QString &text)
+{
 	wrong=false;
+	if(m_pos>=text.length())
+		m_pos=text.length();
 	if(Analitza::isMathML(text)) {
 		QString lasttag;
 		for(int i=0; i<text.length(); i++){
@@ -48,8 +50,8 @@ void QAlgebraHighlighter::highlightBlock(const QString &text) {
 		}
 	} else {
 		int pos=0, len=0;
-		QString op=text.trimmed();
 		
+		QString op=text.trimmed();
 		TOKEN t=getToken(op, len);
 		for(pos=0; pos<text.length() && text[pos].isSpace(); pos++);
 		
@@ -69,12 +71,52 @@ void QAlgebraHighlighter::highlightBlock(const QString &text) {
 					break;
 			}
 			pos += len;
-			t=getToken(op, len);
+			t=getToken(op, len); //FIXME: Must be able to use QExp getToken function
 		}
+		
+		//To colour highlight the parentheses
+		int p=-1;
+		if(m_pos>0 && (text[m_pos-1]=='(' || text[m_pos-1]==')'))
+			p=m_pos-1;
+		else if(text.length()>m_pos && (text[m_pos]=='(' || text[m_pos]==')'))
+			p=m_pos;
+		
+		if(p>-1) {
+			QTextCharFormat form = format(p);
+			form.setBackground(QColor(0xff,0xff,0x80));
+			setFormat(p, 1, form);
+			if((p=complementary(text, p))>=0)
+				setFormat(p, 1, form);
+		}
+		//No more highlighting
 	}
 }
 
-TOKEN QAlgebraHighlighter::getToken(QString &a, int &l){
+int QAlgebraHighlighter::complementary(const QString& t, int p)
+{
+	Q_ASSERT(p<t.length());
+	bool opening = (t[p]=='(');
+	int cat=0;
+	if(p<1)
+		return -1;
+	do {
+		if(t[p]==')')
+			--cat;
+		else if(t[p]=='(')
+			++cat;
+		
+		p += opening ? 1 : -1;
+	} while(p>0 && p<t.length() && cat!=0);
+	
+	p -= opening ? 1 : -1;
+	
+	if(cat!=0)
+		return -2;
+	return p;
+}
+
+TOKEN QAlgebraHighlighter::getToken(QString &a, int &l)
+{
 	int i=0;
 	l=a.length();
 	a = a.trimmed();

@@ -558,7 +558,6 @@ QStringList Analitza::bvarList() const //FIXME: if
 {
 	Container *c = (Container*) m_tree;
 	if(m_tree != NULL && c->type()==Object::container) {
-		qDebug() << c->m_params.count();
 		c = (Container*) c->m_params[0];
 		
 		if(c->type()==Object::container)

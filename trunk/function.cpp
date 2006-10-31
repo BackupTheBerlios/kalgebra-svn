@@ -184,7 +184,7 @@ void function::update_pointsX(QRect viewport, unsigned int max_res)
 void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 {
 	Q_ASSERT(func->tree() != NULL && func->tree()->type()==Object::container);
-	if(max_res==m_last_max_res || !m_last_viewport.isNull())
+	if(max_res==m_last_max_res && !m_last_viewport.isNull())
 		return;
 	unsigned int resolucio=max_res;
 	double pi=2.*acos(0.);

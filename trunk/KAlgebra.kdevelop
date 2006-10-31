@@ -18,6 +18,7 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <defaultencoding/>
+    <versioncontrol/>
   </general>
   <kdevfileview>
     <groups>
@@ -29,7 +30,7 @@
       <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
-      <hidepatterns>*.o,*.lo,CVS,*~,moc_*,*qrc*,*kdev*,Makefile,Doxyfile,qalge*,ui*,*tmp</hidepatterns>
+      <hidepatterns>*.o,*.lo,CVS,*~,moc_*,*qrc*,*kdev*,Makefile,Doxyfile,qalgebra2*,ui*,*tmp</hidepatterns>
       <hidenonprojectfiles>false</hidenonprojectfiles>
     </tree>
   </kdevfileview>

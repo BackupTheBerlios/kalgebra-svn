@@ -24,7 +24,7 @@ class Operator : public Object
 		QString toString() const;
 		QString toMathML() const;
 		
-		Operator operator=(const Operator &a) { return m_optype=a.operatorType(); }
+		Operator operator=(const Operator &a) { setType(a.type()); m_optype=a.operatorType(); return *this;}
 		static const OperatorsModel m_words;
 	private:
 		enum OperatorType m_optype;
