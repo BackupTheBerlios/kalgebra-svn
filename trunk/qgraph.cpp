@@ -402,7 +402,8 @@ bool QGraph::setSelected(const QString& exp){
 	return true;
 }
 
-bool QGraph::setShown(const function& f, const bool& shown){
+bool QGraph::setShown(const function& f, const bool& shown)
+{
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
 		if((*it) == f)
 			(*it).setShown(shown);
