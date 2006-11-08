@@ -120,6 +120,10 @@
       <usePermanentCaching>true</usePermanentCaching>
       <alwaysIncludeNamespaces>false</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
+      <includeGlobalFunctions>true</includeGlobalFunctions>
+      <includeTypes>true</includeTypes>
+      <includeEnums>true</includeEnums>
+      <includeTypedefs>false</includeTypedefs>
     </codecompletion>
     <creategettersetter>
       <prefixGet/>
@@ -160,8 +164,8 @@
     </run>
     <make>
       <abortonerror>true</abortonerror>
-      <runmultiplejobs>false</runmultiplejobs>
-      <numberofjobs>1</numberofjobs>
+      <runmultiplejobs>true</runmultiplejobs>
+      <numberofjobs>3</numberofjobs>
       <dontact>false</dontact>
       <makebin/>
       <prio>0</prio>

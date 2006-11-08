@@ -170,7 +170,6 @@ void QGraph::paintEvent( QPaintEvent * )
 		finestra.setBrush(QColor(0xff,0xff, 0,0x90));
 		
 		finestra.drawRect(QRect(press,last));
-		
 		//QPoint p=last, p1=press;
 		/*QPoint p=toViewport(last)+viewport.topLeft(); //REAL mode
 		QPoint p1=toViewport(press)+viewport.topLeft();
@@ -223,7 +222,7 @@ void QGraph::mousePressEvent(QMouseEvent *e){
 
 void QGraph::mouseReleaseEvent(QMouseEvent *e){
 	this->setCursor(QCursor(Qt::CrossCursor));
-	if(!m_readonly && e->button()==Qt::LeftButton && !(e->modifiers()&Qt::ControlModifier)) {
+	if(!m_readonly && mode==Selection) {
 		if((toViewport(press) - toViewport(e->pos())).isNull())
 			return;
 		
@@ -249,6 +248,7 @@ void QGraph::mouseReleaseEvent(QMouseEvent *e){
 		update_points();
 		sendStatus(QString("(%1, %2)-(%3, %4)").arg(viewport.left()).arg(viewport.top()).arg(viewport.right()).arg(viewport.bottom()));
 	}
+	mode = None;
 	this->repaint();
 }
 
@@ -256,7 +256,7 @@ void QGraph::mouseMoveEvent(QMouseEvent *e)
 {
 	mark=calcImage(fromWidget(e->pos()));
 	
-	if(!m_readonly && (e->buttons()&Qt::MidButton || (e->buttons()&Qt::LeftButton && e->modifiers()&Qt::ControlModifier)) && ant != toViewport(e->pos())){
+	if(!m_readonly && mode==Pan && ant != toViewport(e->pos())){
 		QPointF rel = toViewport((e->pos() - press - (toWidget(QPointF(.5,.5))-toWidget(QPointF(0.,0.)))).toPoint());
 		viewport.setLeft(viewport.left() - rel.x()); viewport.setRight(viewport.right() - rel.x());
 		viewport.setTop(viewport.top() - rel.y()); viewport.setBottom(viewport.bottom() - rel.y());

@@ -183,7 +183,7 @@ void function::update_pointsX(QRect viewport, unsigned int max_res)
 
 void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 {
-	Q_ASSERT(func->tree() != NULL && func->tree()->type()==Object::container);
+	Q_ASSERT(func->tree() != NULL && func->tree()->isContainer());
 	if(max_res==m_last_max_res && !m_last_viewport.isNull())
 		return;
 	unsigned int resolucio=max_res;
@@ -241,10 +241,40 @@ QPointF function::calc(const QPointF& p)
 			func->m_vars->modify("y", dp.y());
 			dp.setX(func->calculate().value());
 		} else if(m_firstlambda=="q") {
-			double x=0., y=0., th=atan(p.y()/p.x()), r=1.;
+			double pi=2.*acos(0.);
+			double x=0., y=0.;
+			double th=atan(p.y()/p.x()), r=1., d=-509., dant=-500.;
+			if(p.x()<0.)	th += pi;
+			else if(th<0.)	th += 2.*pi;
+			
+			Cn ulimit = func->uplimit(func->tree()->m_params[0]), dlimit=func->downlimit(func->tree()->m_params[0]);
+			if(!ulimit.isCorrect()) ulimit = 2.*pi;
+			if(!dlimit.isCorrect()) dlimit = 0.;
+			
+			while(th<dlimit.value())
+				th += 2.*pi;
+			
+			if(th>ulimit.value()) th=ulimit.value();
+			
+			while(th>ulimit.value() && th<dlimit.value()) {
+				th += 2.*pi;
+				
+				func->m_vars->modify("q", th);
+				r = func->calculate().value();
+				
+				x = r * cos (th);
+				y = r * sin (th);
+				dp = QPointF(x, y);
+				
+				dant = d;
+				QPointF dist(dp-p);
+				d = sqrt(pow(dist.x(), 2.)+pow(dist.y(), 2.));
+			}
+						
+			qDebug("th: <%f> dant: <%f> d: <%f>", th, dant, d);
+			
 			func->m_vars->modify("q", th);
 			r = func->calculate().value();
-			
 			x = r * cos (th);
 			y = r * sin (th);
 			
