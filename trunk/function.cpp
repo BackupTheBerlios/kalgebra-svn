@@ -222,10 +222,7 @@ void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 		varth->setValue(th);
 		r = func->calculate().value();
 		
-		x = r * cos (th);
-		y = r * sin (th);
-		
-		points[i++]=QPointF(x, y);
+		points[i++]=fromPolar(r, th);
 	}
 	
 	m_last_viewport=viewport;
@@ -243,7 +240,7 @@ QPointF function::calc(const QPointF& p)
 		} else if(m_firstlambda=="q") {
 			double pi=2.*acos(0.);
 			double x=0., y=0.;
-			double th=atan(p.y()/p.x()), r=1., d=-509., dant=-500.;
+			double th=atan(p.y()/p.x()), r=1., d, d2;
 			if(p.x()<0.)	th += pi;
 			else if(th<0.)	th += 2.*pi;
 			
@@ -251,34 +248,33 @@ QPointF function::calc(const QPointF& p)
 			if(!ulimit.isCorrect()) ulimit = 2.*pi;
 			if(!dlimit.isCorrect()) dlimit = 0.;
 			
-			while(th<dlimit.value())
+			/*while(th<dlimit.value())
 				th += 2.*pi;
 			
-			if(th>ulimit.value()) th=ulimit.value();
-			
-			while(th>ulimit.value() && th<dlimit.value()) {
-				th += 2.*pi;
-				
+			while(th>ulimit.value())
+				th -= 2.*pi;*/
+			QPointF dist;
+			for(;;) {
 				func->m_vars->modify("q", th);
 				r = func->calculate().value();
-				
-				x = r * cos (th);
-				y = r * sin (th);
-				dp = QPointF(x, y);
-				
-				dant = d;
-				QPointF dist(dp-p);
+				dp = fromPolar(r, th);
+				dist = (dp-p);
 				d = sqrt(pow(dist.x(), 2.)+pow(dist.y(), 2.));
+				
+				func->m_vars->modify("q", th+2.*pi);
+				r = func->calculate().value();
+				dp = fromPolar(r, th);
+				dist = (dp-p);
+				d2 = sqrt(pow(dist.x(), 2.)+pow(dist.y(), 2.));
+				
+				if(d<d2)
+					break;
+				th += 2.*pi;
 			}
-						
-			qDebug("th: <%f> dant: <%f> d: <%f>", th, dant, d);
 			
 			func->m_vars->modify("q", th);
 			r = func->calculate().value();
-			x = r * cos (th);
-			y = r * sin (th);
-			
-			dp = QPointF(x, y);
+			dp = fromPolar(r, th);
 		} else {
 			func->m_vars->modify(QString("x"), dp.x());
 			dp.setY(func->calculate().value());

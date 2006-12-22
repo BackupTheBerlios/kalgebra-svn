@@ -295,8 +295,10 @@ int QExp::parse()
 // 				printPilaVal(val);
 				if(val.count()==1)
 					mml = QString("<math>%1</math>").arg(val.pop());
+				else if(val.count()>1)
+					err << i18n("Wrong stack result: %1").arg(val.pop());
 				else
-					err << i18n("Wrong");
+					err << i18n("Wrong stack result");
 				return 0;
 			case E1:
 				err << i18n("Missing right paranthesis");
@@ -308,7 +310,7 @@ int QExp::parse()
 				err << i18n("Unbalanced right parenthesis");
 				return 3;
 			case E:
-				err << i18n("Error");
+				err << i18n("Misplaced coma");
 				return 4;
 			default:
 				break;

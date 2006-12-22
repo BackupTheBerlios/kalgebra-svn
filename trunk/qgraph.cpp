@@ -205,7 +205,6 @@ void QGraph::wheelEvent(QWheelEvent *e){
 	sendStatus(QString("(%1, %2)-(%3, %4)").arg(viewport.left()).arg(viewport.top()).arg(viewport.right()).arg(viewport.bottom()));
 }
 
-
 void QGraph::mousePressEvent(QMouseEvent *e){
 // 	qDebug("%d", toViewport(e->pos()).x());
 	if(!m_readonly && (e->button()==Qt::LeftButton || e->button()==Qt::MidButton)) {
@@ -223,8 +222,16 @@ void QGraph::mousePressEvent(QMouseEvent *e){
 void QGraph::mouseReleaseEvent(QMouseEvent *e){
 	this->setCursor(QCursor(Qt::CrossCursor));
 	if(!m_readonly && mode==Selection) {
-		if((toViewport(press) - toViewport(e->pos())).isNull())
+		QPointF pd = toViewport(press) - toViewport(e->pos());
+		const double mindist = min(fabs(pd.x()), fabs(pd.y())), rate=7.;
+		const double minrate = min(fabs(viewport.width()/rate), fabs(viewport.height()/rate));
+		
+		if(mindist < minrate) {
+			qDebug() << mindist;
+			mode=None;
+			repaint();
 			return;
+		}
 		
 		QPointF p=toViewport(e->pos())+viewport.topLeft();
 		QPointF p1=toViewport(press)+viewport.topLeft();

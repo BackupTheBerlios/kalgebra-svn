@@ -41,7 +41,7 @@ public:
 	
 	
 	bool setTextMML(const QString&);
-	static Object* branch(const QDomElement& e);
+	Object* branch(const QDomElement& e);
 	static enum Object::ObjectType whatType(const QString& tag);
 	static bool isMathML(const QString& s) { return !s.isEmpty() && s[0]=='<'; }
 	QString operToString(const Operator&) const;

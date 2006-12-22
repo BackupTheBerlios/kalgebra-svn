@@ -5,19 +5,18 @@
 
 DEPENDPATH = . 
 INCLUDEPATH += . 
- 
+
 QT += xml \
  opengl 
 CONFIG += warn_on \
  qt \
- debug \
- opengl
- 
-win32 { #Qt official release doesn't bundle debug libs I think
-	CONFIG -= debug
-	CONFIG += release staticlib
+ opengl \
+ debug
+win32{    #Qt official release doesn't bundle debug libs I think
+    CONFIG -= debug
+    CONFIG += release staticlib
 }
- 
+
 HEADERS += algebra.h \
  analitza.h \
  console.h \

@@ -59,6 +59,7 @@ void Q3DGraph::initializeGL() {
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 }
 
 void Q3DGraph::resizeGL( int width, int height ) {

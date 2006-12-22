@@ -56,6 +56,8 @@ class Container : public Object
 	QList<Object*> copyParams() const;
 	QString toString() const;
 	QString toMathML() const;
+	Container* ulimit() const;
+	Container* dlimit() const;
 // private:
 	enum ContainerType m_cont_type;
 	QList<Object*> m_params;

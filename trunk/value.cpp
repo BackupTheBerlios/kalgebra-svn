@@ -100,8 +100,8 @@ void Cn::setValue(const QDomElement& val)
 #endif
 	}/* else if(tag=="true")		ret = toNum(vars.value("true"));
 	else if(tag=="false")		ret = toNum(vars.value("false"));
-	else if(tag=="pi")		ret = toNum(vars.value("pi"));*/
-// 	else if(tag=="exponentiale")	ret = std::exp(1.);
+	else if(tag=="pi")		ret = toNum(vars.value("pi"));
+	else if(tag=="exponentiale")	ret = std::exp(1.);*/
 	else if(tag=="eulergamma")	ret = 0.5772156649;
 	
 	m_value = ret;

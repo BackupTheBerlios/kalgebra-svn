@@ -88,49 +88,78 @@ QString Container::toString() const
 			Container *c = (Container*) m_params[i];
 			QString s = c->toString();
 			Operator child_op = c->firstOperator();
-			if(op!=NULL && op->weight() > child_op.weight() && child_op.nparams()!= 1)
-				s="("+s+")";
+			if(op!=NULL && op->weight()>child_op.weight() && child_op.nparams()!=1)
+				s=QString("(%1)").arg(s);
 			
-			ret << s;
+			if(c->containerType() == Object::bvar) {
+				Container *ul = ulimit(), *dl = dlimit();
+				if(ul!=NULL || dl!=NULL) {
+					if(dl!=NULL)
+						s += dl->toString();
+					s += "..";
+					if(ul!=NULL)
+						s += ul->toString();
+				}
+			}
+			
+			if(c->containerType()!=Object::uplimit && c->containerType()!=Object::downlimit)
+				ret << s;
 		} else 
 			ret << m_params[i]->toString();
 	}
 	
+	QString toret;
 	switch(containerType()) {
 		case Object::declare:
-			return ret.join(":=");
+			toret += ret.join(":=");
+			break;
 		case Object::lambda:
-			return ret.join("");
+			toret += ret.join("");
+			break;
 		case Object::math:
-			return ret.join(", ");
+			toret += ret.join("; ");
+			break;
 		case Object::apply:
 			if(func){
 				QString n = ret.takeFirst();
-				return QString("%1(%2)").arg(n).arg(ret.join(", "));
+				toret += QString("%1(%2)").arg(n).arg(ret.join(", "));
 			} else if(op==NULL)
-				return ret.join(" ");
+				toret += ret.join(" ");
 			else switch(op->operatorType()) {
 				case Object::plus:
-					return ret.join("+");
+					toret += ret.join("+");
+					break;
 				case Object::times:
-					return ret.join("*");
+					toret += ret.join("*");
+					break;
 				case Object::divide:
-					return ret.join("/");
+					toret += ret.join("/");
+					break;
 				case Object::minus:
-					return ret.join("-");
+					if(ret.count()==1)
+						toret += "-"+ret[0];
+					else
+						toret += ret.join("-");
+					break;
 				case Object::power:
-					return ret.join("^");
+					toret += ret.join("^");
+					break;
 				default:
+					toret += QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
 					break;
 			}
-			
-			return QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
+			break;
+		case Object::uplimit: //x->(n1..n2) is put at the same time
+		case Object::downlimit:
+			break;
 		case Object::bvar:
-			return ret[0]+"->";
+			toret += ret.join("->")+"->";
+			break;
 		default:
-			return ret.join(" ;; ");
+			toret += ret.join(" ?? ");
+			break;
 	}
-	return ret.join("");
+	return toret;
 }
 
 QList<Object*> Container::copyParams() const
@@ -185,6 +214,26 @@ QStringList Container::bvarList() const //NOTE: Should return Ci's instead of St
 	}
 	
 	return bvars;
+}
+
+Container* Container::ulimit() const
+{
+	for(QList<Object*>::const_iterator it=m_params.begin(); it!=m_params.end(); ++it) {
+		Container *c = (Container*) (*it);
+		if(c->type()==Object::container && c->containerType()==Object::uplimit && c->m_params[0]->type()==Object::value)
+			return (Container*) c->m_params[0];
+	}
+	return NULL;
+}
+
+Container* Container::dlimit() const
+{
+	for(QList<Object*>::const_iterator it=m_params.begin(); it!=m_params.end(); ++it) {
+		Container *c = (Container*) (*it);
+		if(c->type()==Object::container && c->containerType()==Object::downlimit && c->m_params[0]->type()==Object::value)
+			return (Container*) c->m_params[0];
+	}
+	return NULL;
 }
 
 bool Container::hasVars() const

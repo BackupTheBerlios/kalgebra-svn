@@ -18,7 +18,6 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <defaultencoding/>
-    <versioncontrol/>
   </general>
   <kdevfileview>
     <groups>
@@ -97,6 +96,8 @@
       <includestyle>4</includestyle>
       <designerintegration>ExternalDesigner</designerintegration>
       <root>/usr/share/qt4</root>
+      <qmake>/usr/bin/qmake</qmake>
+      <designer>/usr/bin/designer</designer>
     </qt>
     <codecompletion>
       <automaticCodeCompletion>true</automaticCodeCompletion>
@@ -138,7 +139,9 @@
       <synchronize>true</synchronize>
       <orientation>Horizontal</orientation>
     </splitheadersource>
-    <references/>
+    <references>
+      <pcs>Qt4</pcs>
+    </references>
   </kdevcppsupport>
   <kdevfilecreate>
     <useglobaltypes>
@@ -173,6 +176,8 @@
     </make>
     <qmake>
       <savebehaviour>2</savebehaviour>
+      <replacePaths>false</replacePaths>
+      <disableDefaultOpts>true</disableDefaultOpts>
     </qmake>
     <subclassing/>
   </kdevtrollproject>

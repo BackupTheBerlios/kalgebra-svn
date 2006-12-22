@@ -16,7 +16,7 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
 	this->setFixedHeight(QFontMetrics(this->currentFont()).height()+12);
 	this->setTabChangesFocus(true);
 	this->setAcceptRichText(false);
-	setAutoFormatting(AutoNone);
+	this->setAutoFormatting(AutoNone);
 	m_history.append("");
 	
 	m_helptip = new QLabel(this,
@@ -318,7 +318,9 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 		Container *c = (Container*) a->m_vars->value(funcname);
 		QStringList params = c->bvarList();
 		
-		QString sample = (param < params.count()) ? QString("<em>%1</em>(").arg(funcname) : QString("<em style='color:red'>%1</em>(").arg(funcname);
+		QString sample = (param < params.count()) ?
+				QString("<em>%1</em>(").arg(funcname) :
+				QString("<em style='color:red'>%1</em>(").arg(funcname);
 		
 		for(int i=0; i<params.count(); ++i) {
 			if(i==param)

@@ -72,7 +72,7 @@ Object* Analitza::branch(const QDomElement& elem)
 	Object* ret=NULL;
 	
 	switch(whatType(elem.tagName())) {
-		case Object::container:
+		case Object::container: {
 			c=new Container(Container::toContainerType(elem.tagName()));
 			
 			n = elem.firstChild();
@@ -82,8 +82,16 @@ Object* Analitza::branch(const QDomElement& elem)
 				
 				n = n.nextSibling();
 			}
+			
+			//Error collection
+			QList<Object*>::iterator i=c->m_params.begin();
+			Cn u=uplimit(*c), d=downlimit(*c);
+			bool dGreaterU = (u.isCorrect() && d.isCorrect()) && d.value()>u.value();
+			if(dGreaterU)
+				m_err << "The downlimit is greater than the uplimit. Probably should be "+ QString("%1..%2").arg(u.value()).arg(d.value());
+			//EOCollect
 			ret = c;
-			break;
+			break;}
 		case Object::value:
 			num= new Cn(0.);
 			num->setValue(elem);
