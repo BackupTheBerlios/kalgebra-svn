@@ -31,7 +31,7 @@ public:
 	~QGraph();
 	bool addFunction(const function&);
 	bool setSelected(const QString&);
-	bool setShown(const function&, const bool& shown);
+	bool setShown(const function&, bool shown);
 	bool editFunction(int num, const function& func);
 	bool editFunction(const QString& tochange, const function& func);
 	function* editFunction(int num);
@@ -50,13 +50,18 @@ public:
 	bool isReadOnly() const { return m_readonly; }
 	void setReadOnly(bool ro) { m_readonly=ro; setMouseTracking(!ro); }
 private:
+	static const QColor m_axeColor;
+	static const QColor m_axe2Color;
+	
 	//painting
 	QPixmap buffer; QPixmap front; bool valid;
 	QPainter finestra;
 	QLabel *micepos;
 	QList<function> funclist;
 	QPointF mark;
-	void dibuixa_eixos(QPainter*);
+	void drawAxes(QPainter*);
+	void drawPolarAxes(QPainter*);
+	void drawCartesianAxes(QPainter*);
 	void update_points();
 	QPointF toWidget(const QPointF &);
 	QPointF fromWidget(QPoint p);
@@ -90,6 +95,7 @@ private:
 	void sendStatus(const QString& msg) { emit status(msg); }
 	bool m_framed;
 	bool m_readonly;
+	QString m_posText;
 	static QRect toBiggerRect(const QRectF&);
 public slots:
 	void forceRepaint() { valid=false; repaint(); }

@@ -8,8 +8,10 @@
 @author Aleix Pol i Gonzalez
 */
 
+enum Axe { Cartesian=0, Polar};
 class function {
 public:
+
 	function();
 	function(const function& f);
 	function(const QString& newFunc, const QColor& color, bool selec=false, bool mathml=false);
@@ -29,10 +31,12 @@ public:
 	bool selected() const { return m_selected; }
 	void setShown(bool newShow) { m_show=newShow; }
 	bool isShown() const { return m_show && func->isCorrect(); }
-	QPointF calc(const QPointF& dp);
+	QPair<QPointF, QString> calc(const QPointF& dp);
 	bool operator==(const function& f) const { return f.expression()==expression() && f.color()==color();}
 	function operator=(const function& f);
 	Analitza* analitza() const { return func; }
+	
+	Axe axeType() const;
 private:
 	bool m_show;
 	bool m_selected;

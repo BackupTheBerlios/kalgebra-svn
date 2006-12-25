@@ -11,8 +11,12 @@
 #include <QKeyEvent>
 #include <QFrame>
 
+QColor const QGraph::m_axeColor(100,100,255);
+QColor const QGraph::m_axe2Color(235,225,255);
+
 QGraph::QGraph(QWidget *parent) :
-	QWidget(parent), mode(None), m_squares(true), resolucio(800), m_framed(false), m_readonly(false)
+	QWidget(parent),
+	mode(None), m_squares(true), resolucio(800), m_framed(false), m_readonly(false), m_posText("")
 {
 	this->setFocusPolicy(Qt::ClickFocus);
 	this->setCursor(QCursor(Qt::CrossCursor));
@@ -35,13 +39,78 @@ QSizePolicy QGraph::sizePolicy() const
 	return QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 }
 
-void QGraph::dibuixa_eixos(QPainter *finestra)
+void QGraph::drawAxes(QPainter *f)
+{
+	Axe a = Cartesian;
+	if(!funclist.isEmpty()){
+		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
+			if((*it).selected() && (*it).isShown()) {
+				a = (*it).axeType();
+				break;
+			}
+		}
+	}
+	
+	switch(a) {
+		case Polar:
+			drawPolarAxes(f);
+			break;
+		default:
+			drawCartesianAxes(f);
+	}
+	
+	//write coords
+	f->drawText(QPointF(3.+this->width()/2., 13.               ), QString::number(viewport.top()));
+	f->drawText(QPointF(3.+this->width()/2., this->height()-5. ), QString::number(viewport.bottom()));
+	f->drawText(QPointF(8.                 , this->height()/2.-5.), QString::number(viewport.left()));
+	f->drawText(QPointF(this->width()-30.  , this->height()/2.-5.),QString::number(viewport.right()));
+	//EO write coords
+}
+
+void QGraph::drawPolarAxes(QPainter *w)
 {
 	QPen ceixos;
-	QPointF centre = toWidget(QPointF(0.,0.)), p;
+	ceixos.setColor(m_axeColor);
+	w->setPen(ceixos);
+	const QPointF centre = toWidget(QPointF(0.,0.));
+	bool zero=false;
+	zero= centre.x()>0. && centre.y()>0. && centre.x()<width() && centre.y()<height();
+	//double thmin = floor(min(viewport.left(), viewport.bottom()));
+	//double thmax = ceil(max(viewport.right(), viewport.top()));
+	double thmin = zero ? 0. : min(floor(min(viewport.left(), viewport.bottom())), ceil(max(viewport.right(), viewport.top())));
+	double thmax = ceil(max(
+				sqrt(pow(viewport.topRight().x(), 2.) + pow(viewport.topRight().y(), 2.)),
+				sqrt(pow(viewport.bottomLeft().x(), 2.)+ pow(viewport.bottomLeft().y(), 2.))
+			    )
+			);
+	
+	qDebug() << "between2" << thmin << thmax;
+	
+	ceixos.setColor(m_axe2Color);
+	ceixos.setStyle(Qt::SolidLine);
+	w->setPen(ceixos);
+	
+	for(double i=thmin; i<thmax; i++) { //i is +
+		QPointF p(toWidget(QPointF(i,i)));
+		QPointF p2(toWidget(QPointF(-i,-i)));
+		w->drawEllipse(QRectF(p.x(),p.y(), p2.x()-p.x(),p2.y()-p.y()));
+	}
+	
+	ceixos.setColor(m_axeColor);
+	ceixos.setStyle(Qt::SolidLine);
+	w->setPen(ceixos);
+	w->drawLine(QPointF(0., centre.y()), QPointF(this->width(), centre.y()));
+	w->drawLine(QPointF(centre.x(), 0.), QPointF(centre.x(),this->height()));
+}
+
+void QGraph::drawCartesianAxes(QPainter *finestra)
+{
+	QPen ceixos;
+	const QPointF centre = toWidget(QPointF(0.,0.));
+	QPointF p;
 	double x;
 	
-	ceixos.setColor(QColor(225,225,255));
+	ceixos.setColor(m_axe2Color);
 	ceixos.setStyle(Qt::SolidLine);
 	finestra->setPen(ceixos);
 
@@ -61,7 +130,7 @@ void QGraph::dibuixa_eixos(QPainter *finestra)
 			finestra->drawLine(p, p+QPointF(3.,0.));
 	}
 	
-	ceixos.setColor(QColor(100,100,255));
+	ceixos.setColor(m_axeColor);
 	ceixos.setStyle(Qt::SolidLine);
 	finestra->setPen(ceixos);
 	
@@ -69,12 +138,6 @@ void QGraph::dibuixa_eixos(QPainter *finestra)
 	finestra->drawLine(QPointF(0., centre.y()), QPointF(this->width(), centre.y()));
 	finestra->drawLine(QPointF(centre.x(), 0.), QPointF(centre.x(),this->height()));
 	//EO dibuixa eixos viewport
-	//write coords
-	finestra->drawText(QPointF(3.+this->width()/2., 13.               ), QString::number(viewport.top()));
-	finestra->drawText(QPointF(3.+this->width()/2., this->height()-5. ), QString::number(viewport.bottom()));
-	finestra->drawText(QPointF(8.               , this->height()/2.-5.), QString::number(viewport.left()));
-	finestra->drawText(QPointF(this->width()-30., this->height()/2.-5.),QString::number(viewport.right()));
-	//EO write coords
 }
 
 void QGraph::pintafunc(QPaintDevice *qpd)
@@ -96,10 +159,11 @@ void QGraph::pintafunc(QPaintDevice *qpd)
 	} else
 		qDebug("!!!!!!!!!!");
 	
+	drawAxes(&finestra);
+	
 	finestra.setRenderHint(QPainter::Antialiasing, true);
 	
 	QRectF panorama = QRect(QPoint(0,0), size());
-	dibuixa_eixos(&finestra);
 	finestra.setPen(pfunc);
 	
 	if(funclist.count()>0){
@@ -141,7 +205,6 @@ void QGraph::paintEvent( QPaintEvent * )
 // 	finestra.setRenderHint(QPainter::Antialiasing, true);
 	
 	if(!m_readonly && mode==None) {
-		QString pos = QString("x=%1 y=%2").arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2);
 		ultim = toWidget(mark);
 		
 		ccursor.setColor(QColor(0xc0,0,0));
@@ -151,7 +214,7 @@ void QGraph::paintEvent( QPaintEvent * )
 		finestra.drawLine(QPointF(0.,ultim.y()), QPointF(this->width(), ultim.y()));
 		finestra.drawLine(QPointF(ultim.x(),0.), QPointF(ultim.x(), this->height()));
 		
-		int w=finestra.fontMetrics().width(pos)+15, h=finestra.fontMetrics().height();
+		int w=finestra.fontMetrics().width(m_posText)+15, h=finestra.fontMetrics().height();
 		
 		if(ultim.x()+w > this->width())
 			ultim.setX(this->width()-w);
@@ -161,7 +224,7 @@ void QGraph::paintEvent( QPaintEvent * )
 			ultim.setY(0.);
 		
 		finestra.setPen(QPen(QColor(0,0,0)));
-		finestra.drawText(QPointF(ultim.x()+15., ultim.y()+15.), pos);
+		finestra.drawText(QPointF(ultim.x()+15., ultim.y()+15.), m_posText);
 
 	} else if(!m_readonly && mode==Selection) {
 		ccursor.setColor(QColor(0xc0,0,0));
@@ -283,22 +346,23 @@ void QGraph::mouseMoveEvent(QMouseEvent *e)
 
 void QGraph::keyPressEvent(QKeyEvent * e)
 {
+	const double step = 1.; //TODO: Make step relative to viewport
 	switch(e->key()) {
 		case Qt::Key_Right:
-			viewport.setLeft(viewport.left() +1.);
-			viewport.setRight(viewport.right() +1.);
+			viewport.setLeft(viewport.left() +step);
+			viewport.setRight(viewport.right() +step);
 			break;
 		case Qt::Key_Left:
-			viewport.setLeft(viewport.left() -1.);
-			viewport.setRight(viewport.right() -1.);
+			viewport.setLeft(viewport.left() -step);
+			viewport.setRight(viewport.right() -step);
 			break;
 		case Qt::Key_Down:
-			viewport.setTop(viewport.top() -1.);
-			viewport.setBottom(viewport.bottom() -1.);
+			viewport.setTop(viewport.top() -step);
+			viewport.setBottom(viewport.bottom() -step);
 			break;
 		case Qt::Key_Up:
-			viewport.setTop(viewport.top() +1.);
-			viewport.setBottom(viewport.bottom() +1.);
+			viewport.setTop(viewport.top() +step);
+			viewport.setBottom(viewport.bottom() +step);
 			break;
 		case Qt::Key_Minus:
 // 			resolucio=(resolucio*viewport.width())/(viewport.width()+2.);
@@ -322,10 +386,13 @@ void QGraph::keyPressEvent(QKeyEvent * e)
 }
 
 QPointF QGraph::calcImage(QPointF dp){
+	m_posText="";
 	if(!funclist.isEmpty()){
 		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
 			if((*it).selected() && (*it).isShown()) {
-				dp=(*it).calc(dp);
+				QPair<QPointF, QString> o = (*it).calc(dp);
+				dp=o.first;
+				m_posText = o.second;
 				break;
 			}
 		}
@@ -409,15 +476,15 @@ bool QGraph::setSelected(const QString& exp){
 	return true;
 }
 
-bool QGraph::setShown(const function& f, const bool& shown)
+bool QGraph::setShown(const function& f, bool shown)
 {
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
 		if((*it) == f)
 			(*it).setShown(shown);
 	}
 	
-	update_points();
-// 	this->repaint();
+// 	update_points();
+	this->repaint();
 	return true;
 }
 

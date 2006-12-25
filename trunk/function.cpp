@@ -188,7 +188,6 @@ void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 		return;
 	unsigned int resolucio=max_res;
 	double pi=2.*acos(0.);
-	double x=0., y=0.0;
 	double r=0., th=0.;
 	Cn ulimit = func->uplimit(func->tree()->m_params[0]), dlimit=func->downlimit(func->tree()->m_params[0]);
 	
@@ -230,16 +229,17 @@ void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 	m_last_max_res = max_res;
 }
 
-QPointF function::calc(const QPointF& p)
+QPair<QPointF, QString> function::calc(const QPointF& p)
 {
 	QPointF dp=p;
+	QString pos;
 	if(func->m_tree!=NULL && !m_exp.isEmpty()) {
 		if(m_firstlambda=="y") {
 			func->m_vars->modify("y", dp.y());
 			dp.setX(func->calculate().value());
+			pos = QString("x=%1 y=%2").arg(dp.x(),3,'f',2).arg(dp.y(),3,'f',2);
 		} else if(m_firstlambda=="q") {
 			double pi=2.*acos(0.);
-			double x=0., y=0.;
 			double th=atan(p.y()/p.x()), r=1., d, d2;
 			if(p.x()<0.)	th += pi;
 			else if(th<0.)	th += 2.*pi;
@@ -275,10 +275,20 @@ QPointF function::calc(const QPointF& p)
 			func->m_vars->modify("q", th);
 			r = func->calculate().value();
 			dp = fromPolar(r, th);
+			pos = QString("r=%1 th=%2").arg(r,3,'f',2).arg(th,3,'f',2);
 		} else {
 			func->m_vars->modify(QString("x"), dp.x());
 			dp.setY(func->calculate().value());
+			pos = QString("x=%1 y=%2").arg(dp.x(),3,'f',2).arg(dp.y(),3,'f',2);
 		}
 	}
-	return dp;
+	return QPair<QPointF, QString>(dp, pos);
+}
+
+Axe function::axeType() const
+{
+	if(m_firstlambda=="q")
+		return Polar;
+	else
+		return Cartesian;
 }
