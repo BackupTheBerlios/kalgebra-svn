@@ -69,7 +69,7 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	
 	b_dock_funcs = new QDockWidget(i18n("Functions"), this);
 	b_tools = new QTabWidget(b_dock_funcs);
-	b_tools->setTabPosition(QTabWidget::East);
+	b_tools->setTabPosition(QTabWidget::South);
 	
 	this->addDockWidget(static_cast<Qt::DockWidgetArea>(2), b_dock_funcs);
 	
@@ -95,7 +95,7 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	connect(b_funcs, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
 		this, SLOT(canvi(QTreeWidgetItem *, QTreeWidgetItem *)));
 	
-	connect(b_funcs, SIGNAL(itemPressed(QTreeWidgetItem *, int)), this, SLOT(different(QTreeWidgetItem *, int)));
+	connect(b_funcs, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(different(QTreeWidgetItem *, int)));
 	connect(b_tools, SIGNAL(currentChanged(int)), this, SLOT(functools(int)));
 	connect(grafic, SIGNAL(status(const QString &)), this, SLOT(changeStatusBar(const QString &)));
 	
@@ -174,6 +174,7 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 void QAlgebra::afegeix()
 {
 	grafic3d->setFunc(t_exp->text());
+	grafic3d->setFocus();
 }
 
 void QAlgebra::new_func()

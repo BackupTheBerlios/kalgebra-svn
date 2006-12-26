@@ -57,6 +57,7 @@ public:
 	Cn uplimit(const Container& c) const;
 	Cn downlimit(const Container& c) const;
 	Cn sum(const Container& c);
+	Cn product(const Container& c);
 	Cn func(const Container& c);
 	bool isFunction(Ci var) const;
 	

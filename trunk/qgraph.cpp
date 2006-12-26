@@ -12,7 +12,7 @@
 #include <QFrame>
 
 QColor const QGraph::m_axeColor(100,100,255);
-QColor const QGraph::m_axe2Color(235,225,255);
+QColor const QGraph::m_axe2Color(235,235,255);
 
 QGraph::QGraph(QWidget *parent) :
 	QWidget(parent),
@@ -41,6 +41,7 @@ QSizePolicy QGraph::sizePolicy() const
 
 void QGraph::drawAxes(QPainter *f)
 {
+	finestra.setRenderHint(QPainter::Antialiasing, false);
 	Axe a = Cartesian;
 	if(!funclist.isEmpty()){
 		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
@@ -83,18 +84,18 @@ void QGraph::drawPolarAxes(QPainter *w)
 				sqrt(pow(viewport.bottomLeft().x(), 2.)+ pow(viewport.bottomLeft().y(), 2.))
 			    )
 			);
-	
-	qDebug() << "between2" << thmin << thmax;
-	
+		
 	ceixos.setColor(m_axe2Color);
 	ceixos.setStyle(Qt::SolidLine);
 	w->setPen(ceixos);
 	
+	finestra.setRenderHint(QPainter::Antialiasing, true);
 	for(double i=thmin; i<thmax; i++) { //i is +
 		QPointF p(toWidget(QPointF(i,i)));
 		QPointF p2(toWidget(QPointF(-i,-i)));
 		w->drawEllipse(QRectF(p.x(),p.y(), p2.x()-p.x(),p2.y()-p.y()));
 	}
+	finestra.setRenderHint(QPainter::Antialiasing, false);
 	
 	ceixos.setColor(m_axeColor);
 	ceixos.setStyle(Qt::SolidLine);
@@ -163,7 +164,7 @@ void QGraph::pintafunc(QPaintDevice *qpd)
 	
 	finestra.setRenderHint(QPainter::Antialiasing, true);
 	
-	QRectF panorama = QRect(QPoint(0,0), size());
+	QRectF panorama(QPoint(0,0), size());
 	finestra.setPen(pfunc);
 	
 	if(funclist.count()>0){
@@ -289,8 +290,7 @@ void QGraph::mouseReleaseEvent(QMouseEvent *e){
 		const double mindist = min(fabs(pd.x()), fabs(pd.y())), rate=7.;
 		const double minrate = min(fabs(viewport.width()/rate), fabs(viewport.height()/rate));
 		
-		if(mindist < minrate) {
-			qDebug() << mindist;
+		if(mindist < minrate) { //if selection is too small
 			mode=None;
 			repaint();
 			return;
@@ -339,7 +339,7 @@ void QGraph::mouseMoveEvent(QMouseEvent *e)
 	} else if(e->buttons()&Qt::LeftButton) {
 		last = e->pos();
 	} else if(e->buttons()==0)
-		sendStatus(QString("x=%1 y=%2") .arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
+		sendStatus(QString("x=%1 y=%2").arg(mark.x(),3,'f',2).arg(mark.y(),3,'f',2));
 	
 	this->repaint();
 }
@@ -483,7 +483,7 @@ bool QGraph::setShown(const function& f, bool shown)
 			(*it).setShown(shown);
 	}
 	
-// 	update_points();
+	valid=false;
 	this->repaint();
 	return true;
 }

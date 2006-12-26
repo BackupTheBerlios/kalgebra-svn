@@ -24,6 +24,26 @@
 @author Aleix Pol i Gonzalez
 */
 
+class Calculate3D : public QThread
+{
+public:
+	Calculate3D(QObject *p, const QString &exp, double** poi, int f, int t, double m, double s) : 
+		QThread(p), punts(poi), from(f), to(t), mida(m), step(s)
+	{
+		a.setTextMML(exp);
+	}
+	void run();
+	
+private:
+	Analitza a;
+	double **punts;
+	int from;
+	int to;
+	
+	double mida;
+	double step;
+};
+
 class Q3DGraph : public QGLWidget {
 Q_OBJECT
 public:
@@ -35,7 +55,7 @@ public:
 	virtual void initializeGL() ;
 	virtual void resizeGL( int width, int height ) ;
 	virtual void paintGL() ;
-	int setFunc(QString Text);
+	void setFunc(QString Text);
 	int setFuncMML(QString TextMML);
 	void dibuixa_eixos();
 	void setTransparency(bool tr) { trans = tr; glDraw(); }
@@ -57,10 +77,10 @@ private:
 	void mouseMoveEvent(QMouseEvent *e);
 	int load();
 	void mem();
-	void crea();
+	bool crea();
 	void sendStatus(const QString& msg) { emit status(msg); }
 	
-	Analitza func3d;
+	QString func3d;
 	double default_step;
 	double default_size;
 	double zoom;
@@ -71,6 +91,8 @@ private:
 	bool trans;
 	bool tefunc;
 	unsigned short keyspressed;
+	
+	int m_n;
 signals:
 	void status(const QString &msg);
 };

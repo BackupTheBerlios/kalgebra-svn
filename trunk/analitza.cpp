@@ -175,6 +175,8 @@ Cn Analitza::operate(Container* c)
 	
 	if(op!= NULL && op->operatorType()==Object::sum)
 		ret = sum(*c);
+	else if(op!= NULL && op->operatorType()==Object::product)
+		ret = product(*c);
 	else switch(c->containerType()) {
 		case Object::apply:
 		case Object::math:
@@ -276,6 +278,30 @@ Cn Analitza::sum(const Container& n)
 	for(double a = dl; a<=ul; a++){
 		*c = a;
 		reduce(Object::plus, &ret, calc(n.m_params[4]), false);
+	}
+	if(existed)
+		m_vars->rename(var+"_", var); //We restore the var value
+	else
+		m_vars->destroy(var);
+	
+	return ret;
+}
+
+Cn Analitza::product(const Container& n)
+{
+	Cn ret(1.), *c;
+	QString var= n.bvarList()[0];
+	double ul= uplimit(n).value();
+	double dl= downlimit(n).value();
+	
+	bool existed=m_vars->contains(var);
+	m_vars->rename(var, var+"_"); //We save the var value
+	m_vars->modify(var, new Cn(0.));
+	c = (Cn*) m_vars->value(var);
+	
+	for(double a = dl; a<=ul; a++){
+		*c = a;
+		reduce(Object::times, &ret, calc(n.m_params[4]), false);
 	}
 	if(existed)
 		m_vars->rename(var+"_", var); //We restore the var value

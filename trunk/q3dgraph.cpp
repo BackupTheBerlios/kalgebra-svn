@@ -16,7 +16,8 @@
 #include "qexp.h"
 
 Q3DGraph::Q3DGraph(QWidget *parent) : QGLWidget(parent),
-		default_step(0.15f), default_size(8.0f), zoom(1.0f), punts(NULL), z(-35.),method(Solid), trans(false), tefunc(false), keyspressed(0)
+		default_step(0.15f), default_size(8.0f), zoom(1.0f), punts(NULL), z(-35.),
+		method(Solid), trans(false), tefunc(false), keyspressed(0), m_n(2)
 {
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 	this->setFocusPolicy(Qt::ClickFocus);
@@ -213,21 +214,47 @@ void Q3DGraph::paintGL()
 	glFlush();
 }
 
-void Q3DGraph::crea() {
+bool Q3DGraph::crea()
+{
 	double mida=default_size*zoom, step=default_step*zoom;
-	const int k= static_cast<int>(2*mida/step);
-	func3d.m_vars->modify("x", 0.);
-	func3d.m_vars->modify("y", 0.);
+	const int k=static_cast<int>(mida/step)*2;
 	
-	Cn *x=(Cn*)func3d.m_vars->value("x"), *y=(Cn*)func3d.m_vars->value("y");
+	int part = k/m_n;
+	QList<Calculate3D*> threads;
 	
-// 	qApp->processEvents();
+	for(int i=0; i<m_n; ++i) {
+		Calculate3D *r = new Calculate3D(this, func3d, punts, part*i, part*(i+1), mida, step);
+		threads << r;
+		r->start();
+	}
+	
+	bool ret=true, s;
+	QList<Calculate3D*>::iterator it = threads.begin();
+	for(; it!=threads.end(); ++it) {
+		s = (*it)->wait(3000);
+		if(!s) {
+			ret=false;
+			(*it)->terminate();
+		}
+	}
+	return ret;
+}
+
+void Calculate3D::run()
+{
 	Q_CHECK_PTR(punts);
-	for(int i=0; tefunc && i<k; i++) {
+	
+	const int k= static_cast<int>(2*mida/step);
+	a.m_vars->modify("x", 0.);
+	a.m_vars->modify("y", 0.);
+	
+	Cn *x=(Cn*)a.m_vars->value("x"), *y=(Cn*)a.m_vars->value("y");
+	
+	for(int i=from; a.isCorrect() && i<to; i++) {
 		x->setValue(i*step-mida);
-		for(int j=0; tefunc && j<k; j++) {
+		for(int j=0; j<k; j++) {
 			y->setValue(j*step-mida);
-			punts[i][j] = -func3d.calculate().value();
+			punts[i][j] = -a.calculate().value();
 		}
 	}
 }
@@ -314,41 +341,30 @@ void Q3DGraph::timeOut(){
 	this->repaint();
 }
 
-int Q3DGraph::setFunc(QString Text)
+void Q3DGraph::setFunc(QString Text)
 {
+	func3d = "";
 	if(!Analitza::isMathML(Text)) {
 		QExp e(Text);
 		e.parse();
 		Text=e.mathML();
 		if(!e.error().isEmpty())
-			return 0;
+			return;
 	}
 	
-	if(func3d.setTextMML(Text))
-		return load();
-	else
-		return 0;
-}
-
-int Q3DGraph::setFuncMML(QString TextMML){
-	int ret = func3d.setTextMML(TextMML);
-	if(func3d.isCorrect())
-		return load();
-	else {
-		sendStatus(i18n("Error: %1").arg(func3d.m_err.join(", ")));
-		tefunc=false;
-		this->repaint();
-		return ret;
-	}
+	func3d = Text;
+	load();
 }
 
 int Q3DGraph::load() 
 {
-	func3d.m_vars->modify("x", 0.);
-	func3d.m_vars->modify("y", 0.);
-	func3d.calculate();
+	Analitza f3d;
+	f3d.setTextMML(func3d);
+	f3d.m_vars->modify("x", 0.);
+	f3d.m_vars->modify("y", 0.);
+	f3d.calculate();
 	
-	if(func3d.isCorrect()) {
+	if(f3d.isCorrect()) {
 		QTime t;
 		t.restart();
 		sendStatus(i18n("Generating... Please wait"));
@@ -359,7 +375,7 @@ int Q3DGraph::load()
 		this->repaint();
 		return 0;
 	} else {
-		sendStatus(i18n("Error: %1").arg(func3d.m_err.join(", ")));
+		sendStatus(i18n("Error: %1").arg(f3d.m_err.join(", ")));
 		tefunc=false;
 		this->repaint();
 		return -1;
@@ -385,61 +401,30 @@ void Q3DGraph::mem()
 	qDebug() << "Mida: " << midadelgrafo;
 }
 
-void Q3DGraph::setMida(double newSize){
+void Q3DGraph::setMida(double newSize)
+{
 	default_size = newSize;
 	this->repaint();
 }
-void Q3DGraph::setStep(double newRes){
+void Q3DGraph::setStep(double newRes)
+{
 	default_step = newRes;
 	this->repaint();
 }
-void Q3DGraph::setZ(float coord_z){
+
+void Q3DGraph::setZ(float coord_z)
+{
 	z = coord_z;
 	this->repaint();
 }
 
-void Q3DGraph::setMethod(enum Type m){
+void Q3DGraph::setMethod(enum Type m)
+{
 	method = m;
 	this->repaint();
 }
 
-QPixmap Q3DGraph::toPixmap(){
+QPixmap Q3DGraph::toPixmap()
+{
 	return this->renderPixmap();
 }
-
-/*bool Q3DGraph::save(const KURL& url)
-{
-	if ( KIO::NetAccess::exists( url, false, this ) ) //The file already exist
-		return false;
-
-	QString type(KImageIO::type(url.path()));
-	if (type.isNull())
-		type = "PNG";
-
-	bool ok = false;
-
-	if(url.isLocalFile()) {
-		KSaveFile saveFile(url.path());
-		if ( saveFile.status() == 0 ) {
-			if (toPixmap().save( saveFile.file(), type.latin1() ) )
-				ok = saveFile.close();
-		}
-	} else {
-		KTempFile tmpFile;
-		tmpFile.setAutoDelete(true);
-		if(tmpFile.status()==0) {
-			if(toPixmap().save( tmpFile.file(), type.latin1())) {
-				if(tmpFile.close())
-					ok = KIO::NetAccess::upload( tmpFile.name(), url, this );
-			}
-		}
-	}
-	
-//	QApplication::restoreOverrideCursor();
-	
-	if (!ok) {
-		qDebug("Was unable to save it");
-	}
-
-	return ok;
-}*/
