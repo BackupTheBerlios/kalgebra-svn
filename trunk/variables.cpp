@@ -28,6 +28,31 @@ Variables::Variables() : QHash<QString, Object*>()
 	insert("euler", new Cn(0.5772156649));
 }
 
+Variables::Variables(const Variables& v) : QHash<QString, Object*>(v)
+{
+	QHash<QString, Object*>::iterator i;
+	for (i = this->begin(); i != this->end(); i++) {
+		Object *ant = *i;
+		switch(ant->type()) {
+			case Object::variable:
+				*i = new Ci(ant);
+				break;
+			case Object::value:
+				*i = new Cn(ant);
+				break;
+			case Object::oper:
+				*i = new Operator(ant);
+				break;
+			case Object::container:
+				*i = new Container(ant);
+				break;
+			case Object::none:
+				qDebug() << "Error in a Variables copy";
+				break;
+		}
+	}
+}
+
 Variables::~Variables()
 {
 	QHash<QString, Object*>::iterator i;

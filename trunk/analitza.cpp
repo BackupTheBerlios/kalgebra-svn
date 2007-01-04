@@ -22,6 +22,12 @@
 
 Analitza::Analitza() : m_tree(NULL), m_vars(new Variables) { }
 
+Analitza::Analitza(const Analitza& a) : m_err(a.m_err)
+{
+	m_vars = new Variables(*a.m_vars);
+	m_tree = new Container(a.m_tree);
+}
+
 Analitza::~Analitza()
 {
 	if(m_tree!=NULL)
@@ -47,7 +53,6 @@ bool Analitza::setTextMML(const QString& s)
 	
 	m_tree = branch(doc.documentElement());
 	return true;
-
 }
 
 enum Object::ObjectType Analitza::whatType(const QString& tag)
@@ -626,13 +631,6 @@ void Analitza::simplify()
 {
 	if(m_tree!=NULL)
 		m_tree = simp(m_tree);
-//	objectWalker(m_tree, 0);
-// 	if(m_tree!=NULL)
-// 		return simp(m_tree);
-// 	else {
-// 		m_err << i18n("Must specify an operation");
-// 		return Cn(0.);
-// 	}
 }
 
 Object* Analitza::simp(Object* root)
@@ -645,12 +643,44 @@ Object* Analitza::simp(Object* root)
 			root = new Cn(calc(root));
 			delete aux;
 		}
-		return root;
-	} else if(root->type()==Object::container) {
+	} else if(root->isContainer()) {
 		Container *c= (Container*) root;
 		QList<Object*>::iterator it = c->m_params.begin();
-		for(; it!=c->m_params.end(); it++)
-			*it = simp(*it);
+		switch(c->firstOperator().operatorType()) {
+			case Object::times:
+				for(; it!=c->m_params.end(); ++it) {
+					*it = simp(*it);
+					if((*it)->type() == Object::value) {
+						Cn* n = (Cn*) (*it);
+						if(n->value()==0.) { //0*exp=0
+							delete root;
+							root = new Cn(0.);
+							break;
+						}/* else if(n->value()==1.) { //Identity member, FIXME 1*exp=exp
+							delete n;
+							c->m_params.erase(it);
+						}*/
+					}
+				}
+				break;
+			/*case Object::minus:
+			case Object::plus:
+				for(; it!=c->m_params.end(); it++) {
+					*it = simp(*it);
+					if((*it)->type() == Object::value) {
+						Cn* n = (Cn*) (*it);
+						if(n->value()==0.) { //0+-exp=exp
+							delete n;
+							c->m_params.erase(it);
+						}
+					}
+				}
+				break;*/
+			default:
+				for(; it!=c->m_params.end(); it++)
+					*it = simp(*it);
+				break;
+		}
 	}
 	return root;
 }

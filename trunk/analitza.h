@@ -37,8 +37,8 @@ class Analitza
 {
 public:
 	Analitza();
+	Analitza(const Analitza& a);
 	~Analitza();
-	
 	
 	bool setTextMML(const QString&);
 	Object* branch(const QDomElement& e);

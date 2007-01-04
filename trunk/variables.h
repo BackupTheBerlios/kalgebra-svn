@@ -30,6 +30,7 @@ class Variables : public QHash<QString, Object*>
 {
 public:
 	Variables();
+	Variables(const Variables& v);
 	~Variables();
 	
 	void modify(const QString&, Object*);

@@ -17,7 +17,7 @@
 
 Q3DGraph::Q3DGraph(QWidget *parent) : QGLWidget(parent),
 		default_step(0.15f), default_size(8.0f), zoom(1.0f), punts(NULL), z(-35.),
-		method(Solid), trans(false), tefunc(false), keyspressed(0), m_n(2)
+		method(Solid), trans(false), tefunc(false), keyspressed(0), m_n(5)
 {
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 	this->setFocusPolicy(Qt::ClickFocus);
@@ -222,29 +222,40 @@ bool Q3DGraph::crea()
 	int part = k/m_n;
 	QList<Calculate3D*> threads;
 	
+	Analitza *a = new Analitza();
+	a->setTextMML(func3d);
+	
+	QTime t;
+	t.restart();
+	
 	for(int i=0; i<m_n; ++i) {
-		Calculate3D *r = new Calculate3D(this, func3d, punts, part*i, part*(i+1), mida, step);
+		Calculate3D *r = new Calculate3D(this, Analitza(*a), punts, part*i, part*(i+1), mida, step);
 		threads << r;
 		r->start();
 	}
 	
-	bool ret=true, s;
+	bool ret=true;
 	QList<Calculate3D*>::iterator it = threads.begin();
 	for(; it!=threads.end(); ++it) {
-		s = (*it)->wait(3000);
-		if(!s) {
+		if(!(*it)->wait(3000)) {
 			ret=false;
 			(*it)->terminate();
 		}
 	}
+	
+	qDebug() << "Elapsed time" << t.elapsed();
+	
+	qDeleteAll(threads);
+	delete a;
 	return ret;
 }
 
 void Calculate3D::run()
 {
 	Q_CHECK_PTR(punts);
+	Q_CHECK_PTR(a.m_vars);
 	
-	const int k= static_cast<int>(2*mida/step);
+	const int k= static_cast<int>(mida/step)*2;
 	a.m_vars->modify("x", 0.);
 	a.m_vars->modify("y", 0.);
 	

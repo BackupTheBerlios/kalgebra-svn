@@ -18,6 +18,7 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <defaultencoding/>
+    <versioncontrol/>
   </general>
   <kdevfileview>
     <groups>
@@ -144,6 +145,7 @@
     </references>
   </kdevcppsupport>
   <kdevfilecreate>
+    <filetypes/>
     <useglobaltypes>
       <type ext="ui" />
       <type ext="cpp" />
@@ -164,6 +166,7 @@
       <autoinstall>false</autoinstall>
       <autokdesu>false</autokdesu>
       <envvars/>
+      <useglobalprogram>false</useglobalprogram>
     </run>
     <make>
       <abortonerror>true</abortonerror>

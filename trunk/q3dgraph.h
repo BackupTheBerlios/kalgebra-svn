@@ -27,11 +27,8 @@
 class Calculate3D : public QThread
 {
 public:
-	Calculate3D(QObject *p, const QString &exp, double** poi, int f, int t, double m, double s) : 
-		QThread(p), punts(poi), from(f), to(t), mida(m), step(s)
-	{
-		a.setTextMML(exp);
-	}
+	Calculate3D(QObject *p, const Analitza &na, double** poi, int f, int t, double m, double s) : 
+		QThread(p), a(na), punts(poi), from(f), to(t), mida(m), step(s) {}
 	void run();
 	
 private:
