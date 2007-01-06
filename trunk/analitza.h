@@ -50,6 +50,8 @@ public:
 	void reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary);
 	
 	Cn calc(Object* e);
+	Cn simpGeneric(Container* c);
+	Cn simpAdd(Container* c);
 	Cn calculate();
 	Cn operate(Container*);
 	bool isCorrect() const { return m_err.isEmpty(); }

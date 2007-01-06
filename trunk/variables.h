@@ -34,7 +34,7 @@ public:
 	~Variables();
 	
 	void modify(const QString&, Object*);
-	void modify(const QString& s, double d) { modify(s, new Cn(d)); }
+	void modify(const QString& s, const double& d) { modify(s, new Cn(d)); }
 	bool rename(const QString&, const QString&);
 	bool destroy(const QString&);
 	

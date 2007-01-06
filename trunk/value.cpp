@@ -39,6 +39,12 @@ QString Cn::toString() const
 	return ret;
 }
 
+QString Cn::toMathML() const
+{
+	QString ret = QString("<cn>%1</cn>").arg(m_value, 0, 'g', 12);
+	return ret;
+}
+
 enum Cn::ValueFormat Cn::whatValueFormat(const QDomElement& val)
 {
 	enum ValueFormat ret= none;

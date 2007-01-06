@@ -30,12 +30,8 @@ void QAlgebraHighlighter::highlightBlock(const QString &text)
 					setFormat(i+1, j-i-1, QColor(100,0,0));
 					setFormat(i+1, 1, negreta);
 				} else if(lasttag.endsWith("/")) {
-					if(Analitza::whatType(lasttag.left(lasttag.length()-1).trimmed())==Object::oper) {
-						setFormat(i+1, j-i-1, QColor(0,50,0));
-					} else {
-						setFormat(i+1, j-i-1, QColor(0,50,0));
-						setFormat(j-1, 1, negreta);
-					}
+					setFormat(i+1, j-i-1, QColor(0,50,0));
+					setFormat(j+1, 2, negreta);
 				} else if(j!=k) {
 					setFormat(i+1, j-i-1, QColor(150,0,0));
 					setFormat(j+1, k-j-1, QColor(150,100,0));

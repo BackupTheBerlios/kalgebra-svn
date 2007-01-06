@@ -21,6 +21,7 @@ function::function(const function& f)
 function function::operator=(const function& f)
 {
 	func=NULL; points=NULL; m_selected=f.selected(); m_last_max_res=0;
+	
 	setFunction(f.expression(), f.color(), f.selected(), Analitza::isMathML(f.expression()));
 	return *this;
 }

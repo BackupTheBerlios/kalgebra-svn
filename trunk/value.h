@@ -33,11 +33,11 @@ class Cn : public Object
 		enum ValueFormat { none, nan, real, integer, boolean };
 		Cn() : Object(Object::value), m_value(0.), m_boolean(false) {}
 		Cn(const Cn& v) : Object(Object::value), m_value(v.value()), m_boolean(v.isBoolean()) { setCorrect(v.isCorrect()); }
-		Cn(double b=0.) : Object(Object::value), m_value(b), m_boolean(false) {}
+		Cn(const double &b=0.) : Object(Object::value), m_value(b), m_boolean(false) {}
 		Cn(Object *o);
 		virtual ~Cn() {}
 		void setValue(const QDomElement& e);
-		void setValue(double v) { m_value=v; }
+		void setValue(const double& v) { m_value=v; }
 		double value() const { return m_value; }
 		bool isBoolean() const { return m_boolean; }
 		static double toNum(const QString& num, const QString& type, int base);
@@ -53,6 +53,7 @@ class Cn : public Object
 		Cn operator++(int) { m_value++; return this; }
 		
 		QString toString() const;
+		QString toMathML() const;
 	private:
 		double m_value;
 		bool m_boolean;

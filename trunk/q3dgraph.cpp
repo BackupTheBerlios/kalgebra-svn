@@ -17,7 +17,7 @@
 
 Q3DGraph::Q3DGraph(QWidget *parent) : QGLWidget(parent),
 		default_step(0.15f), default_size(8.0f), zoom(1.0f), punts(NULL), z(-35.),
-		method(Solid), trans(false), tefunc(false), keyspressed(0), m_n(5)
+		method(Solid), trans(false), tefunc(false), keyspressed(0), m_n(2)
 {
 	this->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
 	this->setFocusPolicy(Qt::ClickFocus);

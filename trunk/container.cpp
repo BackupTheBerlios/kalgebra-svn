@@ -62,7 +62,40 @@ Operator Container::firstOperator() const
 
 QString Container::toMathML() const
 {
-	return QString(":)");
+	QString ret;
+	QList<Object*>::const_iterator i;
+	for(i=m_params.constBegin(); i!=m_params.constEnd(); ++i) {
+		ret += (*i)->toMathML();
+	}
+	
+	QString tag;
+	switch(m_cont_type) {
+		case Object::declare:
+			tag="declare";
+			break;
+		case Object::lambda:
+			tag="lambda";
+			break;
+		case Object::math:
+			tag="math";
+			break;
+		case Object::apply:
+			tag="apply";
+			break;
+		case Object::uplimit:
+			tag="uplimit";
+			break;
+		case Object::downlimit:
+			tag="downlimit";
+			break;
+		case Object::bvar:
+			tag="bvar";
+			break;
+		default:
+			tag="dunno";
+			break;
+	}
+	return QString("<%1>%2</%1>").arg(tag).arg(ret);
 }
 
 QString Container::toString() const
@@ -277,7 +310,7 @@ void objectWalker(const Object* root, int ind)
 		return;
 	}
 	
-	switch(root->type()) {
+	switch(root->type()) { //TODO: include the function into a module and use toString
 		case Object::container:
 			c= (Container*) root;
 			qDebug() << qPrintable(s) << "| cont: " << (int) c->containerType();
@@ -291,14 +324,13 @@ void objectWalker(const Object* root, int ind)
 			break;
 		case Object::oper:
 			op= (Operator*) root;
-			qDebug() << qPrintable(s) << "| operator: " << op->operatorType();
+			qDebug() << qPrintable(s) << "| operator: " << op->toString();
 			break;
 		case Object::variable:
 			var = (Ci*) root;
 			qDebug() << qPrintable(s) << "| variable: " << var->name() << "Func:" << var->isFunction();
 			break;
-		default:
-			qDebug() << qPrintable(s) << "| dunno: " << (int) root->type();
+		default:			qDebug() << qPrintable(s) << "| dunno: " << (int) root->type();
 			break;
 	}
 }

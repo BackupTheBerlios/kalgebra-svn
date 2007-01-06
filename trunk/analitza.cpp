@@ -645,9 +645,10 @@ Object* Analitza::simp(Object* root)
 		}
 	} else if(root->isContainer()) {
 		Container *c= (Container*) root;
-		QList<Object*>::iterator it = c->m_params.begin();
+		QList<Object*>::iterator it;
 		switch(c->firstOperator().operatorType()) {
 			case Object::times:
+				it = c->m_params.begin();
 				for(; it!=c->m_params.end(); ++it) {
 					*it = simp(*it);
 					if((*it)->type() == Object::value) {
@@ -663,26 +664,89 @@ Object* Analitza::simp(Object* root)
 					}
 				}
 				break;
-			/*case Object::minus:
-			case Object::plus:
-				for(; it!=c->m_params.end(); it++) {
+			case Object::minus:
+			case Object::plus: {
+				bool d = false;
+				simpAdd(c);
+				it = c->m_params.begin();
+				
+				for(; it!=c->m_params.end();) {
 					*it = simp(*it);
+					d=false;
+					
 					if((*it)->type() == Object::value) {
 						Cn* n = (Cn*) (*it);
 						if(n->value()==0.) { //0+-exp=exp
 							delete n;
-							c->m_params.erase(it);
+							d=true;
 						}
 					}
+					
+					if(!d)
+						++it;
+					else
+						it = c->m_params.erase(it);
 				}
-				break;*/
+				}break;
 			default:
+				it = c->m_params.begin();
+				
 				for(; it!=c->m_params.end(); it++)
 					*it = simp(*it);
 				break;
 		}
 	}
 	return root;
+}
+
+
+Cn Analitza::simpAdd(Container * c)
+{
+	Cn value(0.), *aux;
+	QList<Object*>::iterator i(c->m_params.begin());
+	Operator o = c->firstOperator();
+	bool d, changed=false;
+	
+	for(; i!=c->m_params.end();) {
+		d=false;
+		
+		if((*i)->type()==Object::value) {
+			aux = (Cn*) *i;
+			if(changed)
+				reduce(o.operatorType(), &value, *aux, false);
+			else
+				value=*aux;
+			delete *i;
+			d=true;
+			changed=true;
+		}
+		
+		if(d)
+			i = c->m_params.erase(i);
+		else
+			++i;
+	}
+	
+	if(changed) {
+		bool found=false;
+		i=c->m_params.begin();
+		for(; !found && i!=c->m_params.end(); ++i) {
+			if((*i)->type()==Object::container) {
+				Container *c1 = (Container*) *i;
+				if(c1->containerType()==Object::apply) {
+					found=true;
+				}
+			} else if((*i)->type()==Object::value || (*i)->type()==Object::variable) {
+				found=true;
+			}
+		}
+		
+		if(found) {
+			--i;
+			c->m_params.insert(i, new Cn(value));
+		}
+	}
+	return value;
 }
 
 bool Analitza::hasVars(Object* o)
@@ -708,4 +772,5 @@ bool Analitza::hasVars(Object* o)
 	}
 	return r;
 }
+
 
