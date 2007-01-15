@@ -741,10 +741,8 @@ Cn Analitza::simpAdd(Container * c)
 			}
 		}
 		
-		if(found) {
-			--i;
-			c->m_params.insert(i, new Cn(value));
-		}
+		if(found)
+			c->m_params.append(new Cn(value));
 	}
 	return value;
 }

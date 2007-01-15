@@ -99,6 +99,8 @@
       <root>/usr/share/qt4</root>
       <qmake>/usr/bin/qmake-qt4</qmake>
       <designer>/usr/bin/designer</designer>
+      <designerprefix/>
+      <designerpluginpaths/>
     </qt>
     <codecompletion>
       <automaticCodeCompletion>true</automaticCodeCompletion>
