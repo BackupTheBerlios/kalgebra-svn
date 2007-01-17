@@ -213,7 +213,7 @@ OperatorsModel::OperatorsModel(QObject *parent) : QStandardItemModel(KEYWORDNUM,
 {
 	QStringList ops;
 	ops << "plus" << "times" << "minus" << "divide" << "quotient";
-	ops << "power" << " root" << " factorial";
+	ops << "power" << "root" << "factorial";
 	ops << "_and" << "_or" << "_xor" << "_not";
 	ops << "gcd" << "lcm" << "rem" << "factorof";
 	ops << "max" << "min";
