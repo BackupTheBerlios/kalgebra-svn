@@ -178,7 +178,10 @@ QString Container::toString() const
 					toret += ret.join("^");
 					break;
 				default:
-					toret += QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
+					if(ret.count() == 1)
+						toret += QString("%1 %2").arg(op->toString()).arg(ret.join(", "));
+					else
+						toret += QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
 					break;
 			}
 			break;
@@ -313,7 +316,7 @@ void objectWalker(const Object* root, int ind)
 	switch(root->type()) { //TODO: include the function into a module and use toString
 		case Object::container:
 			c= (Container*) root;
-			qDebug() << qPrintable(s) << "| cont: " << (int) c->containerType();
+			qDebug() << qPrintable(s) << "| cont: " << c->toMathML();
 			for(int i=0; i<c->m_params.count(); i++)
 				objectWalker(c->m_params[i], ind+1);
 			

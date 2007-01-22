@@ -3,7 +3,7 @@
 # Subdir relative project main directory: .
 # Target is an application:  
 
-DEPENDPATH = . 
+DEPENDPATH = .
 INCLUDEPATH += . 
 
 QT += xml \
@@ -11,7 +11,7 @@ QT += xml \
 CONFIG += warn_on \
  qt \
  opengl \
- debug
+ release
 win32{    #Qt official release doesn't bundle debug libs I think
     CONFIG -= debug
     CONFIG += release staticlib

@@ -45,7 +45,7 @@ bool Analitza::setTextMML(const QString& s)
 		delete m_tree;
 	
 	QDomDocument doc;
-
+	
 	if (!doc.setContent(s)) {
 		m_err << i18n("Error while parsing: %1").arg(s);
 		return false;
@@ -648,6 +648,7 @@ Object* Analitza::simp(Object* root)
 		QList<Object*>::iterator it;
 		switch(c->firstOperator().operatorType()) {
 			case Object::times:
+				simpScalar(c);
 				it = c->m_params.begin();
 				for(; it!=c->m_params.end(); ++it) {
 					*it = simp(*it);
@@ -667,7 +668,7 @@ Object* Analitza::simp(Object* root)
 			case Object::minus:
 			case Object::plus: {
 				bool d = false;
-				simpAdd(c);
+				simpScalar(c);
 				it = c->m_params.begin();
 				
 				for(; it!=c->m_params.end();) {
@@ -700,7 +701,7 @@ Object* Analitza::simp(Object* root)
 }
 
 
-Cn Analitza::simpAdd(Container * c)
+Cn Analitza::simpScalar(Container * c)
 {
 	Cn value(0.), *aux;
 	QList<Object*>::iterator i(c->m_params.begin());
@@ -742,10 +743,18 @@ Cn Analitza::simpAdd(Container * c)
 		}
 		
 		if(found)
-			c->m_params.append(new Cn(value));
+			switch(o.operatorType()) {
+				case Object::plus:
+					c->m_params.append(new Cn(value));
+					break;
+				default:
+					c->m_params.prepend(new Cn(value));
+			}
 	}
 	return value;
 }
+
+
 
 bool Analitza::hasVars(Object* o)
 {

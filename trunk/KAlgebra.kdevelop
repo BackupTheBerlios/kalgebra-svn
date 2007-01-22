@@ -142,9 +142,7 @@
       <synchronize>true</synchronize>
       <orientation>Horizontal</orientation>
     </splitheadersource>
-    <references>
-      <pcs>Qt4</pcs>
-    </references>
+    <references/>
   </kdevcppsupport>
   <kdevfilecreate>
     <filetypes/>
@@ -169,6 +167,15 @@
       <autokdesu>false</autokdesu>
       <envvars/>
       <useglobalprogram>false</useglobalprogram>
+      <runarguments>
+        <qalgebra2/>
+      </runarguments>
+      <cwd>
+        <qalgebra2>/home/apol/kalgebra/qalgebra-trunk/trunk</qalgebra2>
+      </cwd>
+      <debugarguments>
+        <qalgebra2/>
+      </debugarguments>
     </run>
     <make>
       <abortonerror>true</abortonerror>

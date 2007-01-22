@@ -61,7 +61,7 @@ bool Console::loadScript(const QString& path)
 			correct=true;
 			while (!stream.atEnd()) {
 				line = stream.readLine(); // line of text excluding '\n'
-                                correct &= addOperation(line);
+				correct &= addOperation(line);
 			}
 			file.close();
 		}

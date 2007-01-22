@@ -154,7 +154,9 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 				QExp e(toPlainText());
 				e.parse();
 				a.setTextMML(e.mathML());
+				objectWalker(a.m_tree);
 				a.simplify();
+				objectWalker(a.m_tree);
 				this->setPlainText(a.toString());
 				this->selectAll();
 			}
