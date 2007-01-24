@@ -10,8 +10,8 @@ class OperatorsModel;
 class Operator : public Object
 {
 	public:
-		Operator(enum OperatorType t) : Object(oper), m_optype(t) {}
-		Operator(Object *o);
+		Operator(OperatorType t) : Object(oper), m_optype(t) {}
+		Operator(Object const *o);
 		virtual ~Operator() {}
 		
 		void setOperator(enum OperatorType t) { m_optype=t; }
@@ -24,8 +24,10 @@ class Operator : public Object
 		QString toString() const;
 		QString toMathML() const;
 		
+		bool operator==(const Operator& o) { return m_optype==o.m_optype; }
 		Operator operator=(const Operator &a) { setType(a.type()); m_optype=a.operatorType(); return *this;}
 		static const OperatorsModel m_words;
+		static OperatorType multiplicityOperator(OperatorType t); //When we have n t's, we got one rn
 	private:
 		enum OperatorType m_optype;
 };

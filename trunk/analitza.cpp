@@ -649,8 +649,9 @@ Object* Analitza::simp(Object* root)
 		switch(c->firstOperator().operatorType()) {
 			case Object::times:
 				simpScalar(c);
-				it = c->m_params.begin();
-				for(; it!=c->m_params.end(); ++it) {
+				simpPolynomials(c);
+				
+				for(it=c->m_params.begin(); it!=c->m_params.end(); ++it) {
 					*it = simp(*it);
 					if((*it)->type() == Object::value) {
 						Cn* n = (Cn*) (*it);
@@ -658,20 +659,17 @@ Object* Analitza::simp(Object* root)
 							delete root;
 							root = new Cn(0.);
 							break;
-						}/* else if(n->value()==1.) { //Identity member, FIXME 1*exp=exp
-							delete n;
-							c->m_params.erase(it);
-						}*/
+						}
 					}
 				}
 				break;
 			case Object::minus:
 			case Object::plus: {
 				bool d = false;
-				simpScalar(c);
-				it = c->m_params.begin();
 				
-				for(; it!=c->m_params.end();) {
+				simpScalar(c);
+				simpPolynomials(c);
+				for(it=c->m_params.begin(); it!=c->m_params.end();) {
 					*it = simp(*it);
 					d=false;
 					
@@ -701,7 +699,7 @@ Object* Analitza::simp(Object* root)
 }
 
 
-Cn Analitza::simpScalar(Container * c)
+void Analitza::simpScalar(Container * c)
 {
 	Cn value(0.), *aux;
 	QList<Object*>::iterator i(c->m_params.begin());
@@ -751,10 +749,101 @@ Cn Analitza::simpScalar(Container * c)
 					c->m_params.prepend(new Cn(value));
 			}
 	}
-	return value;
+	return;
 }
 
-
+void Analitza::simpPolynomials(Container* c)
+{
+	Q_ASSERT(c!=NULL && c->type()==Object::container);
+	QList<QPair<double, Object*> > monos;
+	QList<Object*>::iterator it = c->m_params.begin();
+	Operator o(c->firstOperator());
+	
+	for(; it!=c->m_params.end(); ++it) {
+		Object *o2=*it;
+		QPair<double, Object*> imono;
+		bool ismono=false;
+		
+		if(o2->type() == Object::container) {
+			Container *cx = (Container*) o2;
+			if(cx->firstOperator()==Operator::multiplicityOperator(o.operatorType()) && cx->m_params.count()==3) {
+				bool valid=false;
+				int scalar=-1, var=-1;
+				
+				if(cx->m_params[1]->type()==Object::value) {
+					scalar=1;
+					var=2;
+					valid=true;
+				} else if(cx->m_params[2]->type()==Object::value) {
+					scalar=2;
+					var=1;
+					valid=true;
+				}
+				
+				if(valid) {
+					Cn* sc= (Cn*) cx->m_params[scalar];
+					imono.first = sc->value();
+					imono.second = objectCopy(cx->m_params[var]);
+					ismono = true;
+				}
+			}
+		}
+		
+		if(!ismono) {
+			imono.first = 1;
+			imono.second = objectCopy(o2);
+		}
+		
+		bool found = false;
+		QList<QPair<double, Object*> >::iterator it1 = monos.begin();
+		for(; it1!=monos.end(); ++it1) {
+			Object *o1=it1->second, *o2=imono.second;
+			if(o2->type()!=Object::oper && equalTree(o1, o2)) {
+				found = true;
+				break;
+			}
+		}
+		
+		if(found)
+			it1->first += imono.first;
+		else
+			monos.append(imono);
+	}
+	
+	qDeleteAll(c->m_params);
+	c->m_params.clear();
+	
+	if(o.operatorType()==Operator::plus) {
+		QList<QPair<double, Object*> >::iterator it = monos.begin();
+		for(;it!=monos.end();++it) {
+			if(it->first==1) {
+				c->m_params.append(it->second);
+			} else {
+				Container *cint = new Container(Container::apply);
+				cint->m_params.append(new Operator(Operator::times));
+				cint->m_params.append(new Cn(it->first));
+				cint->m_params.append(it->second);
+				c->m_params.append(cint);
+			}
+			
+		}
+	} else if(o.operatorType()==Operator::times) {
+		QList<QPair<double, Object*> >::iterator it = monos.begin();
+		for(;it!=monos.end();++it) {
+			if(it->first==1) {
+				c->m_params.append(it->second);
+			} else {
+				Container *cint = new Container(Container::apply);
+				cint->m_params.append(new Operator(Operator::power));
+				cint->m_params.append(it->second);
+				cint->m_params.append(new Cn(it->first));
+				c->m_params.append(cint);
+			}
+			
+		}
+	} else
+		qDebug() << "wooooo, not implemented";
+}
 
 bool Analitza::hasVars(Object* o)
 {
@@ -778,6 +867,54 @@ bool Analitza::hasVars(Object* o)
 			r=false;
 	}
 	return r;
+}
+
+Object* Analitza::objectCopy(Object const* old)
+{
+	Q_ASSERT(old!=NULL);
+	Object *o=NULL;
+	switch(old->type()) {
+		case Object::oper:
+			o = new Operator(old);
+			break;
+		case Object::value:
+			o = new Cn(old);
+			break;
+		case Object::variable:
+			o = new Ci(old);
+			break;
+		case Object::container:
+			o = new Container(old);
+			break;
+		default:
+			qDebug() << "Oops!";
+	}
+	return o;
+}
+
+bool Analitza::equalTree(Object const* o1, Object const * o2)
+{
+	Q_ASSERT(o1!=NULL && o2!=NULL);
+	if(o1==o2)
+		return true;
+	bool eq= o1->type()==o2->type();
+	switch(o2->type()) {
+		case Object::variable:
+			eq = Ci(o2)==Ci(o1);
+			break;
+		case Object::value:
+			eq = Cn(o2)==Cn(o1);
+			break;
+		case Object::container:
+			eq = Container(o2)==Container(o1);
+			break;
+		case Object::oper:
+			eq = Operator(o2)==Operator(o1);
+			break;
+		default:
+			break;
+	}
+	return eq;
 }
 
 

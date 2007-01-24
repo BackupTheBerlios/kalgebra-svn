@@ -4,14 +4,12 @@
 # Target is an application:  
 
 DEPENDPATH = .
-INCLUDEPATH += . 
-
 QT += xml \
  opengl 
 CONFIG += warn_on \
  qt \
  opengl \
- release
+ debug
 win32{    #Qt official release doesn't bundle debug libs I think
     CONFIG -= debug
     CONFIG += release staticlib
@@ -52,3 +50,5 @@ SOURCES += algebra.cpp \
  operator.cpp 
 
 TEMPLATE = app
+INCLUDEPATH += .
+

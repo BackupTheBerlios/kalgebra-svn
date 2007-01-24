@@ -47,7 +47,7 @@ class Container : public Object
 	void setContainerType(enum ContainerType c) { m_cont_type = c; }
 	enum ContainerType containerType() const { return m_cont_type; }
 	
-	
+	bool operator==(const Container& c) const;
 	static enum ContainerType toContainerType(const QString& tag);
 	void appendBranch(Object* o) { m_params.append(o); }
 	QStringList bvarList() const;

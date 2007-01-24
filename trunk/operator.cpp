@@ -92,6 +92,23 @@ enum Object::OperatorType Operator::toOperatorType(QString e)
 	return ret;
 }
 
+Operator::OperatorType Operator::multiplicityOperator(Operator::OperatorType t)
+{
+	OperatorType r;
+	switch(t) {
+		case plus:
+			r=times;
+			break;
+		case times:
+			r = power;
+			break;
+		default:
+			r=onone;
+	}
+	return r;
+}
+
+
 int Operator::nparams(Operator::OperatorType t)
 {
 	switch(t) {
@@ -168,7 +185,7 @@ int Operator::nparams(Operator::OperatorType t)
 }
 
 
-Operator::Operator(Object *o) : Object(o->type())
+Operator::Operator(Object const *o) : Object(o->type())
 {
 	if(type() == Object::oper) {
 		Operator *c = (Operator*) o;

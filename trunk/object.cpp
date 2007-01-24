@@ -21,7 +21,7 @@
 #include "object.h"
 #include "container.h"
 
-Ci::Ci(Object*o) : Object(o->type())
+Ci::Ci(Object const * o) : Object(o->type())
 {
 	if(type() == Object::variable) {
 		Ci *c = (Ci*) o;
@@ -30,4 +30,3 @@ Ci::Ci(Object*o) : Object(o->type())
 	} else
 		setType(Object::none);	
 }
-

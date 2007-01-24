@@ -20,7 +20,7 @@
 #include "value.h"
 #include "operator.h"
 
-Cn::Cn(Object *o) 
+Cn::Cn(Object const *o)
 	: Object(Object::value), m_value(0.), m_boolean(false)
 {
 	if(o->type()==Operator::value){

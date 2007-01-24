@@ -178,10 +178,7 @@ QString Container::toString() const
 					toret += ret.join("^");
 					break;
 				default:
-					if(ret.count() == 1)
-						toret += QString("%1 %2").arg(op->toString()).arg(ret.join(", "));
-					else
-						toret += QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
+					toret += QString("%1(%2)").arg(op->toString()).arg(ret.join(", "));
 					break;
 			}
 			break;
@@ -285,7 +282,7 @@ bool Container::hasVars() const
 					ret=true;
 					break;
 				case Object::container:
-				{	
+				{
 					Container *c = (Container*) (*i);
 					ret |= c->hasVars();
 					break;
@@ -296,6 +293,35 @@ bool Container::hasVars() const
 		}
 	}
 	return ret;
+}
+
+bool Container::operator==(const Container& c) const
+{
+	bool eq=c.m_params.count()==m_params.count();
+	QList<Object*>::const_iterator it = c.m_params.begin();
+	
+	for(int i=0; eq && i<m_params.count(); ++i) {
+		Object *o=m_params[i], *o1=c.m_params[i];
+		if(o->type() == o1->type() && o->type()!=Object::oper) {
+			switch(o->type()) {
+				case Object::variable:
+					eq = eq && Ci(o)==Ci(o1);
+					break;
+				case Object::value:
+					eq = eq && Cn(o)==Cn(o1);
+					break;
+				case Object::container:
+					eq = eq && Container(o)==Container(o1);
+					break;
+				case Object::oper:
+					eq = eq && Operator(o)==Operator(o1);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	return eq;
 }
 
 void objectWalker(const Object* root, int ind)

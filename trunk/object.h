@@ -56,8 +56,7 @@ public:
 		conjugate, arg, real, imaginary,
 		sum, product, function //FIXME: <- ????
 	};
-
-	Object(enum ObjectType t) : m_type(t), m_correct(true) {}
+	
 	virtual ~Object(){}
 	
 	void setType(enum ObjectType t) { m_type=t; }
@@ -68,6 +67,8 @@ public:
 	virtual QString toString() const { return "object"; };
 	virtual QString toMathML() const { return "object"; };
 	static enum ObjectType whatType(const QString& tag);
+protected:
+	Object(enum ObjectType t) : m_type(t), m_correct(true) {}
 private:
 	enum ObjectType m_type;
 	bool m_correct;
@@ -77,11 +78,12 @@ private:
 class Ci : public Object
 {
 	public:
-		Ci(Object*);
+		Ci(Object const *);
 		Ci(QString b=QString()) : Object(variable), m_name(b) {}
 		void setName(const QString& n) { m_name=n; }
 		QString name() const { return m_name; }
 		
+		bool operator==(const Ci& var) { return var.m_name==m_name; }
 		bool isFunction() const { return m_function; }
 		void setFunction(bool f) { m_function=f; }
 		QString toString() const { return m_name; }

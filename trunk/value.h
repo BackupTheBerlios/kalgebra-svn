@@ -22,7 +22,7 @@
 
 #include <object.h>
 #include <QtXml>
-
+#include <cmath>
 /**
 	@author Aleix Pol <aleixpol@gmail.com>
 */
@@ -34,15 +34,18 @@ class Cn : public Object
 		Cn() : Object(Object::value), m_value(0.), m_boolean(false) {}
 		Cn(const Cn& v) : Object(Object::value), m_value(v.value()), m_boolean(v.isBoolean()) { setCorrect(v.isCorrect()); }
 		Cn(const double &b=0.) : Object(Object::value), m_value(b), m_boolean(false) {}
-		Cn(Object *o);
+		Cn(Object const * o);
 		virtual ~Cn() {}
 		void setValue(const QDomElement& e);
 		void setValue(const double& v) { m_value=v; }
 		double value() const { return m_value; }
+		int intValue() const { return (int) m_value; }
 		bool isBoolean() const { return m_boolean; }
 		static double toNum(const QString& num, const QString& type, int base);
 		static enum ValueFormat whatValueFormat(const QDomElement&);
 		
+		bool isInteger() const { return std::floor(m_value)==m_value; }
+		bool operator==(const Cn& d) const { return m_value==d.value(); }
 		bool operator<(const Cn& d) const { return m_value<d.value(); }
 		bool operator<(double d) const { return m_value<d; }
 		bool operator<=(const Cn& d) const { return m_value<=d.value(); }

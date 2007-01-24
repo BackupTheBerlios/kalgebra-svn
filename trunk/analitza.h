@@ -50,8 +50,8 @@ public:
 	void reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary);
 	
 	Cn calc(Object* e);
-	Cn simpGeneric(Container* c);
-	Cn simpScalar(Container* c);
+	void simpScalar(Container* c);
+	void simpPolynomials(Container* c);
 	Cn calculate();
 	Cn operate(Container*);
 	bool isCorrect() const { return m_err.isEmpty(); }
@@ -66,6 +66,8 @@ public:
 	QStringList bvarList() const;
 	QString toString() const;
 	QString toMathML() const;
+	static bool equalTree(Object const* o1, Object const * o2);
+	static Object* objectCopy(Object const*);
 // 	QString str(Container*) const;
 	
 	void simplify();
