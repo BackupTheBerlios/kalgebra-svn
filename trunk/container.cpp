@@ -302,24 +302,32 @@ bool Container::operator==(const Container& c) const
 	
 	for(int i=0; eq && i<m_params.count(); ++i) {
 		Object *o=m_params[i], *o1=c.m_params[i];
-		if(o->type() == o1->type() && o->type()!=Object::oper) {
-			switch(o->type()) {
-				case Object::variable:
-					eq = eq && Ci(o)==Ci(o1);
-					break;
-				case Object::value:
-					eq = eq && Cn(o)==Cn(o1);
-					break;
-				case Object::container:
-					eq = eq && Container(o)==Container(o1);
-					break;
-				case Object::oper:
-					eq = eq && Operator(o)==Operator(o1);
-					break;
-				default:
-					break;
-			}
-		}
+		eq = eq && equalTree(o, o1);
+	}
+	return eq;
+}
+
+bool Container::equalTree(Object const* o1, Object const * o2)
+{
+	Q_ASSERT(o1!=NULL && o2!=NULL);
+	if(o1==o2)
+		return true;
+	bool eq= o1->type()==o2->type();
+	switch(o2->type()) {
+		case Object::variable:
+			eq = eq && Ci(o2)==Ci(o1);
+			break;
+		case Object::value:
+			eq = eq && Cn(o2)==Cn(o1);
+			break;
+		case Object::container:
+			eq = eq && Container(o2)==Container(o1);
+			break;
+		case Object::oper:
+			eq = eq && Operator(o2)==Operator(o1);
+			break;
+		default:
+			break;
 	}
 	return eq;
 }

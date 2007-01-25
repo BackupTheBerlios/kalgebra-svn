@@ -49,6 +49,7 @@ class Container : public Object
 	
 	bool operator==(const Container& c) const;
 	static enum ContainerType toContainerType(const QString& tag);
+	static bool equalTree(Object const* o1, Object const * o2);
 	void appendBranch(Object* o) { m_params.append(o); }
 	QStringList bvarList() const;
 	bool hasVars() const;

@@ -798,15 +798,20 @@ void Analitza::simpPolynomials(Container* c)
 		QList<QPair<double, Object*> >::iterator it1 = monos.begin();
 		for(; it1!=monos.end(); ++it1) {
 			Object *o1=it1->second, *o2=imono.second;
-			if(o2->type()!=Object::oper && equalTree(o1, o2)) {
+			if(o2->type()!=Object::oper && Container::equalTree(o1, o2)) {
+				objectWalker(o1);
+				objectWalker(o2);
+				qDebug() << "----------------------" << Container::equalTree(o1, o2);
+				
 				found = true;
 				break;
 			}
 		}
 		
-		if(found)
+		if(found) {
 			it1->first += imono.first;
-		else
+			delete imono.second; //FIXME: Could optimize it a bit, could use the old one since it is appended, then copy
+		} else
 			monos.append(imono);
 	}
 	
@@ -892,29 +897,5 @@ Object* Analitza::objectCopy(Object const* old)
 	return o;
 }
 
-bool Analitza::equalTree(Object const* o1, Object const * o2)
-{
-	Q_ASSERT(o1!=NULL && o2!=NULL);
-	if(o1==o2)
-		return true;
-	bool eq= o1->type()==o2->type();
-	switch(o2->type()) {
-		case Object::variable:
-			eq = Ci(o2)==Ci(o1);
-			break;
-		case Object::value:
-			eq = Cn(o2)==Cn(o1);
-			break;
-		case Object::container:
-			eq = Container(o2)==Container(o1);
-			break;
-		case Object::oper:
-			eq = Operator(o2)==Operator(o1);
-			break;
-		default:
-			break;
-	}
-	return eq;
-}
 
 
