@@ -36,7 +36,7 @@ KFunctionEdit::KFunctionEdit(QWidget *parent, Qt::WFlags f) :
 	connect(m_color, SIGNAL(currentIndexChanged(int)), this, SLOT(colorChange(int)));
 	
 	m_graph = new QGraph(this);
-	m_graph->setViewPort(QRect(QPoint(-9, 5), QPoint(9, -5)));
+	m_graph->setViewport(QRect(QPoint(-9, 5), QPoint(9, -5)));
 	m_graph->setResolution(200);
 	m_graph->setFocusPolicy(Qt::NoFocus);
 	m_graph->addFunction(function(m_func->text(), m_color->color(), true));

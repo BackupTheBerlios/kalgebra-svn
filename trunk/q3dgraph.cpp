@@ -106,8 +106,8 @@ void Q3DGraph::mouseMoveEvent(QMouseEvent *e)
 void Q3DGraph::dibuixa_eixos(){
 	glColor3f(0.8, 0.8, 0.4);
 	this->renderText(11.0, 0.0, 0.0, "X");
-	this->renderText(0.0, 0.0,-11.0, "Y");
-	this->renderText(0.0, 11.0, 0.0, "Z");
+	this->renderText(0.0, 0.0,-11.0, "Z");
+	this->renderText(0.0, 11.0, 0.0, "Y");
 	
 	glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f);

@@ -24,9 +24,9 @@ public:
 	KVarEdit(QWidget *parent = 0, bool modal = FALSE);
 	~KVarEdit();
 	QString text() const { return m_exp->text(); }
-	void setVar(QString newVar);		//This should edit the variable name
+	void setVar(const QString& newVar);	//This should edit the variable name
 	void setMode(int mode);			//This should select what Option we need
-	void setAnalitza(Analitza *na) { vars= na->m_vars; }
+	void setAnalitza(Analitza *na) { vars= na->m_vars; m_exp->setAnalitza(na); }
 	Object* val();
 private:
 	QExpressionEdit *m_exp;

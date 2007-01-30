@@ -26,7 +26,8 @@ QGraph::QGraph(QWidget *parent) :
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	valid=false;
 	
-	viewport = QRect(QPoint(-12, 10), QPoint(12, -10));
+	setViewport(QRect(QPoint(-12, 10), QPoint(12, -10)));
+	defViewport = viewport;
 	this->setAutoFillBackground(false);
 }
 
@@ -259,10 +260,10 @@ void QGraph::paintEvent( QPaintEvent * )
 void QGraph::wheelEvent(QWheelEvent *e){
 	int d = e->delta()>0 ? -1 : 1;
 	if(viewport.left()-d < 1 && viewport.top()+d > 1 && viewport.right()+d > 1 && viewport.bottom()-d < 1) {
-		viewport.setLeft(viewport.left() - 1.);
-		viewport.setTop(viewport.top() + 1.);
-		viewport.setRight(viewport.right() + 1.);
-		viewport.setBottom(viewport.bottom() - 1.);
+		viewport.setLeft(viewport.left() - d);
+		viewport.setTop(viewport.top() + d);
+		viewport.setRight(viewport.right() + d);
+		viewport.setBottom(viewport.bottom() - d);
 		update_scale();
 		update_points();
 	}
@@ -511,22 +512,22 @@ void QGraph::setResolution(int res)
 	update_points();
 }
 
-void QGraph::setViewPort(QRectF vp)
+void QGraph::setViewport(const QRectF &vp)
 {
-	if(vp.top()<vp.bottom()) {
-		double aux = vp.bottom();
-		vp.setBottom(vp.top());
-		vp.setTop(aux);
-	}
-	
-	if(vp.right()<vp.left()) {
-		double aux = vp.left();
-		vp.setLeft(vp.right());
-		vp.setRight(aux);
-	}
-	
 	viewport = vp;
-	update_points();
+	if(viewport.top()<viewport.bottom()) {
+		double aux = viewport.bottom();
+		viewport.setBottom(viewport.top());
+		viewport.setTop(aux);
+	}
+	
+	if(viewport.right()<viewport.left()) {
+		double aux = viewport.left();
+		viewport.setLeft(viewport.right());
+		viewport.setRight(aux);
+	}
+	
+	update_scale();
 }
 
 void QGraph::resizeEvent(QResizeEvent *)
@@ -573,3 +574,12 @@ bool QGraph::toImage(QString path)
 	return true;
 }
 //////////////////////////////////////////////////////////////
+
+void QGraph::update_scale()
+{
+	
+	rang_x= this->width()/(viewport.width()-1.);
+	rang_y= this->height()/(viewport.height()-1.);
+	valid=false;
+	this->repaint();
+}

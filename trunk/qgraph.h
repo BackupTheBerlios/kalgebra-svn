@@ -42,7 +42,7 @@ public:
 	inline void setSquares(bool newSquare) {m_squares=newSquare; valid=false; }
 	bool squares() const {return m_squares;}
 	void unselect();
-	void setViewPort(QRectF);
+	void setViewport(const QRectF&);
 	void setResolution(int res);
 	void clear();
 	bool isFramed() const { return m_framed; }
@@ -85,12 +85,9 @@ private:
 	double rang_x, rang_y;
 	QPointF ant;
 	QRectF viewport;
+	QRectF defViewport;
 	void pintafunc(QPaintDevice*);
-	void update_scale() {
-		rang_x= this->width()/(viewport.width()-1.);
-		rang_y= this->height()/(viewport.height()-1.);
-		valid=false;
-		this->repaint();	}
+	void update_scale();
 		
 	void sendStatus(const QString& msg) { emit status(msg); }
 	bool m_framed;
@@ -99,6 +96,7 @@ private:
 	static QRect toBiggerRect(const QRectF&);
 public slots:
 	void forceRepaint() { valid=false; repaint(); }
+	void resetViewport() { setViewport(defViewport); }
 signals:
 	void status(const QString &msg);
 };

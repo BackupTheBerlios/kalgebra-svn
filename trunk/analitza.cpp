@@ -646,26 +646,36 @@ Object* Analitza::simp(Object* root)
 	} else if(root->isContainer()) {
 		Container *c= (Container*) root;
 		QList<Object*>::iterator it;
+		bool d;
 		switch(c->firstOperator().operatorType()) {
 			case Object::times:
 				simpScalar(c);
 				simpPolynomials(c);
 				
-				for(it=c->m_params.begin(); it!=c->m_params.end(); ++it) {
+				for(it=c->m_params.begin(); it!=c->m_params.end();) {
 					*it = simp(*it);
+					d=false;
+					
 					if((*it)->type() == Object::value) {
 						Cn* n = (Cn*) (*it);
-						if(n->value()==0.) { //0*exp=0
+						if(n->value()==1.) { //1*exp=exp
+							delete n;
+							d=true;
+						} else if(n->value()==0.) { //0*exp=0
 							delete root;
 							root = new Cn(0.);
 							break;
 						}
 					}
+					
+					if(!d)
+						++it;
+					else
+						it = c->m_params.erase(it);
 				}
 				break;
 			case Object::minus:
-			case Object::plus: {
-				bool d = false;
+			case Object::plus:
 				
 				simpScalar(c);
 				simpPolynomials(c);
@@ -686,7 +696,7 @@ Object* Analitza::simp(Object* root)
 					else
 						it = c->m_params.erase(it);
 				}
-				}break;
+				break;
 			default:
 				it = c->m_params.begin();
 				
@@ -799,10 +809,6 @@ void Analitza::simpPolynomials(Container* c)
 		for(; it1!=monos.end(); ++it1) {
 			Object *o1=it1->second, *o2=imono.second;
 			if(o2->type()!=Object::oper && Container::equalTree(o1, o2)) {
-				objectWalker(o1);
-				objectWalker(o2);
-				qDebug() << "----------------------" << Container::equalTree(o1, o2);
-				
 				found = true;
 				break;
 			}

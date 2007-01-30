@@ -103,7 +103,8 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	QMenu *b_menu = menuBar()->addMenu(i18n("2&D Graph"));
 	QAction* b_actions[6];
 	b_actions[0] = b_menu->addAction(i18n("&Grid"), this, SLOT(toggleSquares()));
-	b_actions[1] = b_menu->addAction(i18n("&Save"), this, SLOT(saveGraph()));
+	b_menu->addAction(i18n("&Save"), this, SLOT(saveGraph()));
+	b_menu->addAction(i18n("&Reset View"), grafic, SLOT(resetViewport()));
 	b_menu->addSeparator()->setText(i18n("Resolution"));
 	b_actions[2] = b_menu->addAction(i18n("Poor"), this, SLOT(set_res_low()));
 	b_actions[3] = b_menu->addAction(i18n("Normal"), this, SLOT(set_res_std()));
@@ -228,8 +229,9 @@ void QAlgebra::functools(int i)
 void QAlgebra::edit_var(const QModelIndex &)
 {
 	KVarEdit e(this, false);
+	QString var(c_variables->currentItem()->text(0));
 	e.setAnalitza(c_results->analitza());
-	e.setVar(c_variables->currentItem()->text(0));
+	e.setVar(var);
 	
 	if(e.exec() == QDialog::Accepted)
 		c_results->analitza()->m_vars->modify(c_variables->currentItem()->text(0), e.val());
