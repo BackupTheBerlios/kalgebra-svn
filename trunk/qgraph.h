@@ -39,7 +39,7 @@ public:
 	
 	QSizePolicy sizePolicy() const;
 	
-	inline void setSquares(bool newSquare) {m_squares=newSquare; valid=false; }
+	void setSquares(bool newSquare) {m_squares=newSquare; valid=false; }
 	bool squares() const {return m_squares;}
 	void unselect();
 	void setViewport(const QRectF&);
@@ -54,7 +54,9 @@ private:
 	static const QColor m_axe2Color;
 	
 	//painting
-	QPixmap buffer; QPixmap front; bool valid;
+	QPixmap buffer;
+	QPixmap front;
+	bool valid;
 	QPainter finestra;
 	QLabel *micepos;
 	QList<function> funclist;
@@ -64,7 +66,7 @@ private:
 	void drawCartesianAxes(QPainter*);
 	void update_points();
 	QPointF toWidget(const QPointF &);
-	QPointF fromWidget(QPoint p);
+	QPointF fromWidget(const QPoint& p);
 	QPointF calcImage(QPointF dp);
 	QPointF toViewport(const QPoint &mv);
 	

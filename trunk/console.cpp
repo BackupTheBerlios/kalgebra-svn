@@ -15,8 +15,16 @@ bool Console::addOperation(const QString& op, bool mathml)
 		QExp e(op);
 		e.parse();
 		operation = e.mathML();
-		if(!e.error().isEmpty()) //FIXME: Must return an error message
+		if(!e.error().isEmpty()) {
+			QListWidgetItem *item = new QListWidgetItem(this);
+			QFont f = item->font();
+			item->setText(QString("%1\nError: %2").arg(op).arg(e.error().join("\n")));
+			item->setBackgroundColor(QColor(255,222,222));
+			item->setTextAlignment(Qt::AlignRight);
+			f.setBold(true);
+			item->setFont(f);
 			return false;
+		}
 	}
 	
 	a.setTextMML(operation);

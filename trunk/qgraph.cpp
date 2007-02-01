@@ -26,7 +26,7 @@ QGraph::QGraph(QWidget *parent) :
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	valid=false;
 	
-	setViewport(QRect(QPoint(-12, 10), QPoint(12, -10)));
+	setViewport(QRectF(QPointF(-12., 10.), QSizeF(24., -20.)));
 	defViewport = viewport;
 	this->setAutoFillBackground(false);
 }
@@ -233,16 +233,8 @@ void QGraph::paintEvent( QPaintEvent * )
 		ccursor.setStyle(Qt::SolidLine);
 		finestra.setPen(ccursor);
 		finestra.setBrush(QColor(0xff,0xff, 0,0x90));
-		
 		finestra.drawRect(QRect(press,last));
-		//QPoint p=last, p1=press;
-		/*QPoint p=toViewport(last)+viewport.topLeft(); //REAL mode
-		QPoint p1=toViewport(press)+viewport.topLeft();
-		p=toWidget((double)p.x(), (double)p.y(), NULL);
-		p1=toWidget((double)p1.x(), (double)p1.y(), NULL);
-		finestra.drawRect(QRect(p1,p));*/
-	} //else micepos->hide();
-// 	qDebug("<%d>", pushed);
+	}
 	
 	if(m_framed) {
 		QPen bord(Qt::black);
@@ -287,37 +279,12 @@ void QGraph::mousePressEvent(QMouseEvent *e){
 void QGraph::mouseReleaseEvent(QMouseEvent *e){
 	this->setCursor(QCursor(Qt::CrossCursor));
 	if(!m_readonly && mode==Selection) {
-		QPointF pd = toViewport(press) - toViewport(e->pos());
+		QPointF pd = toViewport(e->pos())-toViewport(press);
 		const double mindist = min(fabs(pd.x()), fabs(pd.y())), rate=7.;
 		const double minrate = min(fabs(viewport.width()/rate), fabs(viewport.height()/rate));
 		
-		if(mindist < minrate) { //if selection is too small
-			mode=None;
-			repaint();
-			return;
-		}
-		
-		QPointF p=toViewport(e->pos())+viewport.topLeft();
-		QPointF p1=toViewport(press)+viewport.topLeft();
-		
-		viewport.setTopLeft(p1);
-		viewport.setBottomRight(p);
-		
-		if(viewport.bottom() > viewport.top()){
-			double a=viewport.bottom();
-			viewport.setBottom(viewport.top());
-			viewport.setTop(a);
-		}
-		
-		if(viewport.left() > viewport.right()){
-			double a=viewport.left();
-			viewport.setLeft(viewport.right());
-			viewport.setRight(a);
-		}
-	
-		update_scale();
-		update_points();
-		sendStatus(QString("(%1, %2)-(%3, %4)").arg(viewport.left()).arg(viewport.top()).arg(viewport.right()).arg(viewport.bottom()));
+		if(mindist >= minrate) //if selection is not very small
+			setViewport(QRectF(fromWidget(press), QSizeF(pd.x(), pd.y())));
 	}
 	mode = None;
 	this->repaint();
@@ -328,15 +295,13 @@ void QGraph::mouseMoveEvent(QMouseEvent *e)
 	mark=calcImage(fromWidget(e->pos()));
 	
 	if(!m_readonly && mode==Pan && ant != toViewport(e->pos())){
-		QPointF rel = toViewport((e->pos() - press - (toWidget(QPointF(.5,.5))-toWidget(QPointF(0.,0.)))).toPoint());
-		viewport.setLeft(viewport.left() - rel.x()); viewport.setRight(viewport.right() - rel.x());
-		viewport.setTop(viewport.top() - rel.y()); viewport.setBottom(viewport.bottom() - rel.y());
+		QPointF rel = toViewport(e->pos() - press);
+		viewport.moveLeft(viewport.left() - rel.x());
+		viewport.moveTop(viewport.top() - rel.y());
+		setViewport(viewport);
 		
-		update_points();
 		press = e->pos();
-		ant = toViewport(e->pos());
 		valid=false;
-		sendStatus(QString("(%1, %2)-(%3, %4)").arg(viewport.left()).arg(viewport.top()).arg(viewport.right()).arg(viewport.bottom()));
 	} else if(e->buttons()&Qt::LeftButton) {
 		last = e->pos();
 	} else if(e->buttons()==0)
@@ -494,7 +459,7 @@ QPointF QGraph::toWidget(const QPointF& p)
 	return QPointF((-viewport.left() + p.x()) * rang_x,  (-viewport.top() + p.y()) * rang_y);
 }
 
-QPointF QGraph::fromWidget(QPoint p)
+QPointF QGraph::fromWidget(const QPoint& p)
 {
 	double part_negativa_x = -viewport.left();
 	double part_negativa_y = -viewport.top();
@@ -527,6 +492,7 @@ void QGraph::setViewport(const QRectF &vp)
 		viewport.setRight(aux);
 	}
 	
+	sendStatus(QString("(%1, %2)-(%3, %4)").arg(viewport.left()).arg(viewport.top()).arg(viewport.right()).arg(viewport.bottom()));
 	update_scale();
 }
 
@@ -577,9 +543,8 @@ bool QGraph::toImage(QString path)
 
 void QGraph::update_scale()
 {
-	
-	rang_x= this->width()/(viewport.width()-1.);
-	rang_y= this->height()/(viewport.height()-1.);
+	rang_x= this->width()/viewport.width();
+	rang_y= this->height()/viewport.height();
 	valid=false;
 	this->repaint();
 }
