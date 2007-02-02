@@ -12,7 +12,7 @@ CONFIG += warn_on \
  debug
 win32{    #Qt official release doesn't bundle debug libs I think
     CONFIG -= debug
-    CONFIG += release staticlib
+    CONFIG += release
 }
 
 HEADERS += algebra.h \
