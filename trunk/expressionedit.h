@@ -7,21 +7,21 @@
 #include <QLabel>
 #include <QStandardItemModel>
 
-#include "qalgebrahighlighter.h"
+#include "algebrahighlighter.h"
 #include "analitza.h"
-#include "qexp.h"
+#include "exp.h"
 
 
 /**
 *	@author Aleix Pol i Gonzalez <aleixpol@gmail.com>
 */
 
-class QExpressionEdit : public QTextEdit
+class ExpressionEdit : public QTextEdit
 {
 Q_OBJECT
 public:
-	QExpressionEdit(QWidget *parent = 0, Mode ini=Autodetect);
-	~QExpressionEdit();
+	ExpressionEdit(QWidget *parent = 0, Mode ini=Autodetect);
+	~ExpressionEdit();
 	bool mode() { return m_highlight->mode(); }
 	void setMode(Mode en);
 	void setAutocomplete(bool a);
@@ -42,7 +42,7 @@ public:
 	
 private:
 	QLabel *m_helptip;
-	QAlgebraHighlighter *m_highlight;
+	AlgebraHighlighter *m_highlight;
 	
 	void helpShow(const QString& funcname, int param=0);
 	static QString findPrec(const QString& exp, int &act, int cur, int &param, const QString& tit);

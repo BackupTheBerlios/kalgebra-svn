@@ -1,5 +1,5 @@
-#ifndef KFUNCTIONEDIT_H
-#define KFUNCTIONEDIT_H
+#ifndef FUNCTIONEDIT_H
+#define FUNCTIONEDIT_H
 
 #include <QLayout>
 #include <QLabel>
@@ -9,9 +9,9 @@
 #include <QComboBox>
 #include <QList>
 
-#include "qgraph.h"
-#include "qexpressionedit.h"
-#include "qalgebrahighlighter.h"
+#include "graph2d.h"
+#include "expressionedit.h"
+#include "algebrahighlighter.h"
 
 /**
 @author Aleix Pol i Gonzalez
@@ -30,12 +30,12 @@ public:
 	void resizeEvent(QResizeEvent * event);
 };
 
-class KFunctionEdit : public QWidget
+class FunctionEdit : public QWidget
 {
 Q_OBJECT
 public:
-	KFunctionEdit(QWidget *parent=0, Qt::WFlags f = 0 );
-	~KFunctionEdit();
+	FunctionEdit(QWidget *parent=0, Qt::WFlags f = 0 );
+	~FunctionEdit();
 	QString text() const { return m_func->toPlainText(); }
 	void setText(const QString &newText);
 	QColor color() const { return m_color->color(); }
@@ -45,10 +45,10 @@ public:
 	bool editing() const { return m_modmode; }
 	void setEditing(bool m) { m_modmode=m; m_valid->setText("editing"); }
 private:
-	QExpressionEdit *m_func;
+	ExpressionEdit *m_func;
 	QPushButton *m_ok;
 	QLabel *m_valid;
-	QGraph *m_graph;
+	Graph2D *m_graph;
 	ColorCombo *m_color;
 	
 	bool m_correct;

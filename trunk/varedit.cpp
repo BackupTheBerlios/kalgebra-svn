@@ -1,10 +1,10 @@
 #include "analitza.h"
-#include "kvaredit.h"
+#include "varedit.h"
 
 #include <QPushButton>
 #include <QLabel>
 
-KVarEdit::KVarEdit(QWidget *parent, bool modal) :
+VarEdit::VarEdit(QWidget *parent, bool modal) :
 	QDialog (parent), vars(NULL), m_correct(false), m_var("x")
 {
 	this->setWindowTitle(i18n("Add/Edit a variable"));
@@ -19,7 +19,7 @@ KVarEdit::KVarEdit(QWidget *parent, bool modal) :
 	
 	QVBoxLayout *topLayout = new QVBoxLayout(this);
 	
-	m_exp = new QExpressionEdit(this);
+	m_exp = new ExpressionEdit(this);
 	connect(m_exp, SIGNAL(textChanged()), this, SLOT(edit()));
 	connect(m_exp, SIGNAL(returnPressed()), this, SLOT(ok()));
 	
@@ -44,9 +44,9 @@ KVarEdit::KVarEdit(QWidget *parent, bool modal) :
 	m_exp->setFocus();
 }
 
-KVarEdit::~KVarEdit(){}
+VarEdit::~VarEdit(){}
 
-void KVarEdit::setVar(const QString& newVar)
+void VarEdit::setVar(const QString& newVar)
 {
 	m_var=newVar;
 	this->setWindowTitle(i18n("Edit '%1' value").arg(newVar));
@@ -60,14 +60,14 @@ void KVarEdit::setVar(const QString& newVar)
 	}
 }
 
-Object* KVarEdit::val()
+Object* VarEdit::val()
 {
 	Analitza a;
 	Object* ret;
 	
 	QString expres = m_exp->text();
 	if(!m_exp->isMathML()) {
-		QExp e(expres);
+		Exp e(expres);
 		e.parse();
 		expres = e.mathML();
 	}
@@ -82,7 +82,7 @@ Object* KVarEdit::val()
 	return ret;
 }
 
-void KVarEdit::edit()
+void VarEdit::edit()
 {
 	double val;
 	Analitza *a = new Analitza;
@@ -95,7 +95,7 @@ void KVarEdit::edit()
 	}
 	
 	if(!m_exp->isMathML()) {
-		QExp e(funct);
+		Exp e(funct);
 		e.parse();
 		funct = e.mathML();
 		if(e.error().isEmpty())
@@ -127,7 +127,10 @@ void KVarEdit::edit()
 	buttonBox->button(QDialogButtonBox::Ok)->setEnabled(m_correct);
 }
 
-void KVarEdit::ok(){
+void VarEdit::ok(){
 	if(m_correct)
 		accept();
 }
+
+#include "varedit.moc"
+

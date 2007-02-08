@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef QEXP_H
-#define QEXP_H
+#ifndef EXP_H
+#define EXP_H
 
 #include <QtCore>
 
@@ -71,10 +71,11 @@ struct TOKEN {
 // void printPilaOpr(QValueStack<int> opr);
 // QString opr2str(int);
 
-class QExp{
+class Exp
+{
 public:
-	QExp(QString);
-	~QExp();
+	Exp(QString);
+	~Exp();
 	
 	int parse();
 	QStringList error();

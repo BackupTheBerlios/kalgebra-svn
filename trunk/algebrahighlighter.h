@@ -1,9 +1,9 @@
 #include <QSyntaxHighlighter>
-#include "qexpressionedit.h"
-#include "qexp.h"
+#include "expressionedit.h"
+#include "exp.h"
 
-#ifndef QALGEBRAHIGHLIGHTER_H
-#define QALGEBRAHIGHLIGHTER_H
+#ifndef ALGEBRAHIGHLIGHTER_H
+#define ALGEBRAHIGHLIGHTER_H
 
 typedef enum {
 	Disabled,
@@ -21,10 +21,10 @@ typedef enum { //For mathml highlighting
 
 
 
-class QAlgebraHighlighter : public QSyntaxHighlighter
+class AlgebraHighlighter : public QSyntaxHighlighter
 {
 	public:
-		QAlgebraHighlighter(QTextDocument *doc);
+		AlgebraHighlighter(QTextDocument *doc);
 		//int highlightParagraph(const QString &text, int endStateOfLastPara);
 		Mode mode() { return m_mode; }
 		void setMode(const Mode& newMode){ m_mode=newMode; rehighlight(); }

@@ -1,4 +1,4 @@
-#include "qgraph.h"
+#include "graph2d.h"
 
 #include <QPicture>
 #include <QWheelEvent>
@@ -11,10 +11,10 @@
 #include <QKeyEvent>
 #include <QFrame>
 
-QColor const QGraph::m_axeColor(100,100,255);
-QColor const QGraph::m_axe2Color(235,235,255);
+QColor const Graph2D::m_axeColor(100,100,255);
+QColor const Graph2D::m_axe2Color(235,235,255);
 
-QGraph::QGraph(QWidget *parent) :
+Graph2D::Graph2D(QWidget *parent) :
 	QWidget(parent),
 	mode(None), m_squares(true), resolucio(800), m_framed(false), m_readonly(false), m_posText("")
 {
@@ -31,16 +31,16 @@ QGraph::QGraph(QWidget *parent) :
 	this->setAutoFillBackground(false);
 }
 
-QGraph::~QGraph() {
+Graph2D::~Graph2D() {
 // 	funclist.clear();
 }
 
-QSizePolicy QGraph::sizePolicy() const
+QSizePolicy Graph2D::sizePolicy() const
 {
 	return QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 }
 
-void QGraph::drawAxes(QPainter *f)
+void Graph2D::drawAxes(QPainter *f)
 {
 	finestra.setRenderHint(QPainter::Antialiasing, false);
 	Axe a = Cartesian;
@@ -69,7 +69,7 @@ void QGraph::drawAxes(QPainter *f)
 	//EO write coords
 }
 
-void QGraph::drawPolarAxes(QPainter *w)
+void Graph2D::drawPolarAxes(QPainter *w)
 {
 	QPen ceixos;
 	ceixos.setColor(m_axeColor);
@@ -105,7 +105,7 @@ void QGraph::drawPolarAxes(QPainter *w)
 	w->drawLine(QPointF(centre.x(), 0.), QPointF(centre.x(),this->height()));
 }
 
-void QGraph::drawCartesianAxes(QPainter *finestra)
+void Graph2D::drawCartesianAxes(QPainter *finestra)
 {
 	QPen ceixos;
 	const QPointF centre = toWidget(QPointF(0.,0.));
@@ -142,7 +142,7 @@ void QGraph::drawCartesianAxes(QPainter *finestra)
 	//EO dibuixa eixos viewport
 }
 
-void QGraph::pintafunc(QPaintDevice *qpd)
+void Graph2D::pintafunc(QPaintDevice *qpd)
 {
 	QPointF ultim(0.,0.), act(0.,0.);
 	QPen pfunc, ccursor;
@@ -193,7 +193,7 @@ void QGraph::pintafunc(QPaintDevice *qpd)
 	finestra.end();
 }
 
-void QGraph::paintEvent( QPaintEvent * )
+void Graph2D::paintEvent( QPaintEvent * )
 {
 	if(!valid) 
 		pintafunc(NULL);
@@ -249,7 +249,7 @@ void QGraph::paintEvent( QPaintEvent * )
 	win.drawPixmap(QPoint(0,0), front);
 }
 
-void QGraph::wheelEvent(QWheelEvent *e){
+void Graph2D::wheelEvent(QWheelEvent *e){
 	int d = e->delta()>0 ? -1 : 1;
 	if(viewport.left()-d < 1 && viewport.top()+d > 1 && viewport.right()+d > 1 && viewport.bottom()-d < 1) {
 		viewport.setLeft(viewport.left() - d);
@@ -262,7 +262,7 @@ void QGraph::wheelEvent(QWheelEvent *e){
 	sendStatus(QString("(%1, %2)-(%3, %4)").arg(viewport.left()).arg(viewport.top()).arg(viewport.right()).arg(viewport.bottom()));
 }
 
-void QGraph::mousePressEvent(QMouseEvent *e){
+void Graph2D::mousePressEvent(QMouseEvent *e){
 // 	qDebug("%d", toViewport(e->pos()).x());
 	if(!m_readonly && (e->button()==Qt::LeftButton || e->button()==Qt::MidButton)) {
 		last = press = e->pos();
@@ -276,7 +276,7 @@ void QGraph::mousePressEvent(QMouseEvent *e){
 	}
 }
 
-void QGraph::mouseReleaseEvent(QMouseEvent *e){
+void Graph2D::mouseReleaseEvent(QMouseEvent *e){
 	this->setCursor(QCursor(Qt::CrossCursor));
 	if(!m_readonly && mode==Selection) {
 		QPointF pd = toViewport(e->pos())-toViewport(press);
@@ -290,7 +290,7 @@ void QGraph::mouseReleaseEvent(QMouseEvent *e){
 	this->repaint();
 }
 
-void QGraph::mouseMoveEvent(QMouseEvent *e)
+void Graph2D::mouseMoveEvent(QMouseEvent *e)
 {
 	mark=calcImage(fromWidget(e->pos()));
 	
@@ -310,7 +310,7 @@ void QGraph::mouseMoveEvent(QMouseEvent *e)
 	this->repaint();
 }
 
-void QGraph::keyPressEvent(QKeyEvent * e)
+void Graph2D::keyPressEvent(QKeyEvent * e)
 {
 	const double step = 1.; //TODO: Make step relative to viewport
 	switch(e->key()) {
@@ -351,7 +351,7 @@ void QGraph::keyPressEvent(QKeyEvent * e)
 	this->repaint();
 }
 
-QPointF QGraph::calcImage(QPointF dp){
+QPointF Graph2D::calcImage(QPointF dp){
 	m_posText="";
 	if(!funclist.isEmpty()){
 		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
@@ -367,7 +367,7 @@ QPointF QGraph::calcImage(QPointF dp){
 }
 
 
-void QGraph::unselect(){
+void Graph2D::unselect(){
 	if(!funclist.isEmpty()){
 		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
 			(*it).setSelected(false);
@@ -375,7 +375,7 @@ void QGraph::unselect(){
 	}
 }
 
-void QGraph::update_points(){
+void Graph2D::update_points(){
 	if(!funclist.isEmpty()){
 // 		qDebug() << "res:" << resolucio;
 		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it )
@@ -385,7 +385,7 @@ void QGraph::update_points(){
 	}
 }
 
-bool QGraph::addFunction(const function& func)
+bool Graph2D::addFunction(const function& func)
 {
 	bool exist=false;
 	
@@ -401,7 +401,7 @@ bool QGraph::addFunction(const function& func)
 	return exist;
 }
 
-bool QGraph::editFunction(const QString& tochange, const function& func){
+bool Graph2D::editFunction(const QString& tochange, const function& func){
 	bool exist=false;
 	
 	for (QList<function>::iterator it = funclist.begin(); !exist && it != funclist.end(); ++it ){
@@ -411,19 +411,17 @@ bool QGraph::editFunction(const QString& tochange, const function& func){
 		}
 	}
 	
-	qDebug() << "editF:" << exist;
-	
 	update_points();
 	this->repaint();
 	return exist;
 }
 
-function* QGraph::editFunction(int num)
+function* Graph2D::editFunction(int num)
 {
 	return &funclist[num];
 }
 
-bool QGraph::editFunction(int num, const function& func)
+bool Graph2D::editFunction(int num, const function& func)
 {
 	Q_ASSERT(num<funclist.count());
 	funclist[num]=func;
@@ -433,7 +431,7 @@ bool QGraph::editFunction(int num, const function& func)
 	return true;
 }
 
-bool QGraph::setSelected(const QString& exp){
+bool Graph2D::setSelected(const QString& exp){
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it )
 		(*it).setSelected((*it).expression() == exp);
 	
@@ -442,7 +440,7 @@ bool QGraph::setSelected(const QString& exp){
 	return true;
 }
 
-bool QGraph::setShown(const function& f, bool shown)
+bool Graph2D::setShown(const function& f, bool shown)
 {
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
 		if((*it) == f)
@@ -454,30 +452,30 @@ bool QGraph::setShown(const function& f, bool shown)
 	return true;
 }
 
-QPointF QGraph::toWidget(const QPointF& p)
+QPointF Graph2D::toWidget(const QPointF& p)
 {
 	return QPointF((-viewport.left() + p.x()) * rang_x,  (-viewport.top() + p.y()) * rang_y);
 }
 
-QPointF QGraph::fromWidget(const QPoint& p)
+QPointF Graph2D::fromWidget(const QPoint& p)
 {
 	double part_negativa_x = -viewport.left();
 	double part_negativa_y = -viewport.top();
 	return QPointF(p.x()/rang_x-part_negativa_x, p.y()/rang_y-part_negativa_y);
 }
 
-QPointF QGraph::toViewport(const QPoint &mv)
+QPointF Graph2D::toViewport(const QPoint &mv)
 {
 	return QPointF(mv.x()/rang_x, mv.y()/rang_y);
 }
 
-void QGraph::setResolution(int res)
+void Graph2D::setResolution(int res)
 {
 	resolucio = res;
 	update_points();
 }
 
-void QGraph::setViewport(const QRectF &vp)
+void Graph2D::setViewport(const QRectF &vp)
 {
 	viewport = vp;
 	if(viewport.top()<viewport.bottom()) {
@@ -496,21 +494,21 @@ void QGraph::setViewport(const QRectF &vp)
 	update_scale();
 }
 
-void QGraph::resizeEvent(QResizeEvent *)
+void Graph2D::resizeEvent(QResizeEvent *)
 {
 	buffer=QPixmap(this->size());
 	update_scale();
 	repaint();
 }
 
-void QGraph::clear()
+void Graph2D::clear()
 {
 	funclist.clear();
 	valid=false;
 	repaint();
 }
 
-QRect QGraph::toBiggerRect(const QRectF& ent)
+QRect Graph2D::toBiggerRect(const QRectF& ent)
 {
 	QRect ret;
 	ret.setTop(static_cast<int>(ceil(ent.top())));
@@ -522,29 +520,31 @@ QRect QGraph::toBiggerRect(const QRectF& ent)
 }
 
 //////////////////////////////////////////////////////////////
-bool QGraph::toImage(QString path)
+bool Graph2D::toImage(QString path)
 {
 	bool b=false;
 	
-	if(!path.isEmpty() && path.endsWith(".svg")) {
+	/*if(!path.isEmpty() && path.endsWith(".svg")) {
 		QPicture pic;
 		pintafunc(&pic);
-		pic.save(path, "svg");
-	} else if(!path.isEmpty() && path.endsWith(".png")) {
+		pic.save(path, "SVG");
+	} else */if(!path.isEmpty() && path.endsWith(".png")) {
 		this->repaint();
 		b=buffer.save(path, "PNG");
 	} else
 		return false;
 	
-	qDebug() << "toImage:" << path << b << front.isNull();
+	qDebug() << "toImage:" << path << b << front.isNull() << QPicture::outputFormatList();
 	return true;
 }
 //////////////////////////////////////////////////////////////
 
-void QGraph::update_scale()
+void Graph2D::update_scale()
 {
 	rang_x= this->width()/viewport.width();
 	rang_y= this->height()/viewport.height();
 	valid=false;
 	this->repaint();
 }
+
+#include "graph2d.moc"

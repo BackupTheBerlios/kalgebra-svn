@@ -1,4 +1,4 @@
-#include "qexpressionedit.h"
+#include "expressionedit.h"
 
 #include <QLabel>
 #include <QKeyEvent>
@@ -9,7 +9,7 @@
 
 #include "operator.h"
 
-QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
+ExpressionEdit::ExpressionEdit(QWidget *parent, Mode inimode)
 	: QTextEdit(parent), m_histPos(0), help(true), m_auto(true), a(NULL), m_check(true), m_correct(true), m_ans("ans")
 {
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -29,7 +29,7 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
 	palette.setColor(m_helptip->backgroundRole(), QColor(255,230,255));
 	m_helptip->setPalette(palette);
 	
-	m_highlight= new QAlgebraHighlighter(this->document());
+	m_highlight= new AlgebraHighlighter(this->document());
 	
 	m_completer = new QCompleter(this);
 	m_completer->setWidget(this);
@@ -56,7 +56,7 @@ QExpressionEdit::QExpressionEdit(QWidget *parent, Mode inimode)
 	setMode(inimode);
 }
 
-void QExpressionEdit::updateCompleter()
+void ExpressionEdit::updateCompleter()
 {
 	if(!isMathML()) {
 		OperatorsModel *m_ops = new OperatorsModel(m_completer);
@@ -75,7 +75,7 @@ void QExpressionEdit::updateCompleter()
 	}
 }
 
-void QExpressionEdit::completed(const QString& newText)
+void ExpressionEdit::completed(const QString& newText)
 {
 	int c = newText.length() - lastWord(textCursor().selectionStart()).length();
 	QString toInsert=newText.right(c);
@@ -84,7 +84,7 @@ void QExpressionEdit::completed(const QString& newText)
 	insertPlainText(toInsert);
 }
 
-/*void QExpressionEdit::completed(const QModelIndex& index)
+/*void ExpressionEdit::completed(const QModelIndex& index)
 {
 	QStandardItem *it = m_words->itemFromIndex(index);
 	qDebug() << it;
@@ -95,9 +95,9 @@ void QExpressionEdit::completed(const QString& newText)
 	}
 }*/
 
-QExpressionEdit::~QExpressionEdit() {}
+ExpressionEdit::~ExpressionEdit() {}
 
-bool QExpressionEdit::isMathML() const
+bool ExpressionEdit::isMathML() const
 {
 	switch(m_highlight->mode()) {
 		case MathML:
@@ -109,7 +109,7 @@ bool QExpressionEdit::isMathML() const
 	}
 }
 
-void QExpressionEdit::setMode(Mode en)
+void ExpressionEdit::setMode(Mode en)
 {
 	if(!text().isEmpty()) {
 		Analitza a;
@@ -118,7 +118,7 @@ void QExpressionEdit::setMode(Mode en)
 			this->setPlainText(a.toString());
 			setCorrect(!a.isCorrect());
 		} else if(!isMathML() && en==MathML) {
-			QExp e(this->toPlainText());
+			Exp e(this->toPlainText());
 			e.parse();
 			setCorrect(!a.isCorrect());
 			
@@ -129,7 +129,7 @@ void QExpressionEdit::setMode(Mode en)
 	setCorrect(true);
 }
 
-void QExpressionEdit::returnP()
+void ExpressionEdit::returnP()
 {
 	removenl();
 	if(!this->toPlainText().isEmpty()) {
@@ -139,7 +139,7 @@ void QExpressionEdit::returnP()
 	}
 }
 
-void QExpressionEdit::keyPressEvent(QKeyEvent * e)
+void ExpressionEdit::keyPressEvent(QKeyEvent * e)
 {
 	bool ch=false;
 	
@@ -151,7 +151,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 				a.simplify();
 				this->setPlainText(a.toMathML());
 			} else {
-				QExp e(toPlainText());
+				Exp e(toPlainText());
 				e.parse();
 				a.setTextMML(e.mathML());
 				a.simplify();
@@ -218,7 +218,7 @@ void QExpressionEdit::keyPressEvent(QKeyEvent * e)
 	}
 }
 
-QString QExpressionEdit::lastWord(int pos)
+QString ExpressionEdit::lastWord(int pos)
 {
 	QString exp=text();
 	int act=pos-1;
@@ -227,7 +227,7 @@ QString QExpressionEdit::lastWord(int pos)
 	return exp.mid(act+1, pos-act-1);
 }
 
-QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &param, const QString& tit)
+QString ExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &param, const QString& tit)
 {
 	QString paraula=tit, p;
 	int nparams=0, cat=0;
@@ -276,14 +276,14 @@ QString QExpressionEdit::findPrec(const QString& exp, int &act, int cur, int &pa
 	return tit;
 }
 
-QString QExpressionEdit::editingWord(int pos, int &param)
+QString ExpressionEdit::editingWord(int pos, int &param)
 { //simplification use only
 	int p=0;
 	param=0;
 	return findPrec(this->toPlainText().mid(0,pos), p, pos, param, "");
 }
 
-void QExpressionEdit::cursorMov()
+void ExpressionEdit::cursorMov()
 {
 	int param=0, pos=this->textCursor().position();
 	m_highlight->setPos(pos);
@@ -294,7 +294,7 @@ void QExpressionEdit::cursorMov()
 	m_highlight->rehighlight();
 }
 
-void QExpressionEdit::helpShow(const QString& funcname, int param)
+void ExpressionEdit::helpShow(const QString& funcname, int param)
 {
 	int op = Operator::nparams(Operator::toOperatorType(funcname));
 	if(op) {
@@ -335,22 +335,22 @@ void QExpressionEdit::helpShow(const QString& funcname, int param)
 		emit signalHelper("");
 }
 
-void QExpressionEdit::setAutocomplete(bool a)
+void ExpressionEdit::setAutocomplete(bool a)
 {
 	m_auto = a;
 }
 
-bool QExpressionEdit::autocomplete()
+bool ExpressionEdit::autocomplete()
 {
 	return m_auto;
 }
 
-void QExpressionEdit::removenl()
+void ExpressionEdit::removenl()
 {
 	this->setPlainText(this->toPlainText().remove('\n'));
 }
 
-void QExpressionEdit::ajudant(const QString& msg)
+void ExpressionEdit::ajudant(const QString& msg)
 {
 	QFontMetrics fm( font() );
 	int curPos = 0;
@@ -362,7 +362,7 @@ void QExpressionEdit::ajudant(const QString& msg)
 	ajudant(msg, pos-QPoint(0, 50));
 }
 
-void QExpressionEdit::ajudant(const QString& msg, QPoint p)
+void ExpressionEdit::ajudant(const QString& msg, QPoint p)
 {
 	if(!msg.isEmpty()){
 		QFontMetrics fm(m_helptip->font());
@@ -376,7 +376,7 @@ void QExpressionEdit::ajudant(const QString& msg, QPoint p)
 		m_helptip->hide();
 }
 
-void QExpressionEdit::setCorrect(bool correct)
+void ExpressionEdit::setCorrect(bool correct)
 {
 	QPalette p;
 	QColor c;
@@ -393,7 +393,7 @@ void QExpressionEdit::setCorrect(bool correct)
 	this->setPalette(p);
 }
 
-void QExpressionEdit::focusInEvent ( QFocusEvent * event )
+void ExpressionEdit::focusInEvent ( QFocusEvent * event )
 {
 	QTextEdit::focusInEvent(event);
 	switch(event->reason()) {
@@ -404,3 +404,5 @@ void QExpressionEdit::focusInEvent ( QFocusEvent * event )
 			break;
 	}
 }
+
+#include "expressionedit.moc"

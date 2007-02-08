@@ -9,13 +9,14 @@
 #include <QApplication>
 #include <QScrollBar>
 
-#include "qexpressionedit.h"
+#include "expressionedit.h"
 #include "analitza.h"
 
 /** @author Aleix Pol Gonzalez */
 
 class Console : public QListWidget
 {
+
 Q_OBJECT
 public:
 	Console(QWidget *parent = 0);

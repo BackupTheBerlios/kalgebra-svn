@@ -1,4 +1,4 @@
-#include "q3dgraph.h"
+#include "graph3d.h"
 
 #if defined(Q_WS_MAC)
 	#include <OpenGL/glu.h>
@@ -13,9 +13,9 @@
 #include <QProgressDialog>
 #include <QApplication>
 
-#include "qexp.h"
+#include "exp.h"
 
-Q3DGraph::Q3DGraph(QWidget *parent) : QGLWidget(parent),
+Graph3D::Graph3D(QWidget *parent) : QGLWidget(parent),
 		default_step(0.15f), default_size(8.0f), zoom(1.0f), punts(NULL), z(-35.),
 		method(Solid), trans(false), tefunc(false), keyspressed(0), m_n(2)
 {
@@ -27,13 +27,13 @@ Q3DGraph::Q3DGraph(QWidget *parent) : QGLWidget(parent),
 }
 
 
-Q3DGraph::~Q3DGraph()
+Graph3D::~Graph3D()
 {
 	if(punts!=NULL)
 		delete [] punts;
 }
 
-void Q3DGraph::initializeGL() {
+void Graph3D::initializeGL() {
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
@@ -63,7 +63,7 @@ void Q3DGraph::initializeGL() {
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 }
 
-void Q3DGraph::resizeGL( int width, int height ) {
+void Graph3D::resizeGL( int width, int height ) {
 	height = height ? height : 1;
 	
 	glViewport( 0, 0, (GLint)width, (GLint)height );
@@ -76,20 +76,20 @@ void Q3DGraph::resizeGL( int width, int height ) {
 	glLoadIdentity();
 }
 
-void Q3DGraph::mousePressEvent(QMouseEvent *e)
+void Graph3D::mousePressEvent(QMouseEvent *e)
 {
 	if(e->button() == Qt::LeftButton){
 		press = e->pos(); keyspressed |= LCLICK;
 	}
 }
 
-void Q3DGraph::mouseReleaseEvent(QMouseEvent *e)
+void Graph3D::mouseReleaseEvent(QMouseEvent *e)
 {
 	if(e->button() == Qt::LeftButton)
 		keyspressed &= ~LCLICK;
 }
 
-void Q3DGraph::mouseMoveEvent(QMouseEvent *e)
+void Graph3D::mouseMoveEvent(QMouseEvent *e)
 {
 	if(keyspressed & LCLICK){
 		QPoint rel = e->pos() - press;
@@ -103,7 +103,7 @@ void Q3DGraph::mouseMoveEvent(QMouseEvent *e)
 	}
 }
 
-void Q3DGraph::dibuixa_eixos(){
+void Graph3D::dibuixa_eixos(){
 	glColor3f(0.8, 0.8, 0.4);
 	this->renderText(11.0, 0.0, 0.0, "X");
 	this->renderText(0.0, 0.0,-11.0, "Z");
@@ -122,7 +122,7 @@ void Q3DGraph::dibuixa_eixos(){
 	glEnd();
 }
 
-void Q3DGraph::paintGL()
+void Graph3D::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -214,7 +214,7 @@ void Q3DGraph::paintGL()
 	glFlush();
 }
 
-bool Q3DGraph::crea()
+bool Graph3D::crea()
 {
 	double mida=default_size*zoom, step=default_step*zoom;
 	const int k=static_cast<int>(mida/step)*2;
@@ -270,7 +270,7 @@ void Calculate3D::run()
 	}
 }
 
-void Q3DGraph::keyPressEvent( QKeyEvent *e ) {
+void Graph3D::keyPressEvent( QKeyEvent *e ) {
 	switch(e->key()) {
 		case Qt::Key_Up:
 			keyspressed |= KEYUP;
@@ -307,7 +307,7 @@ void Q3DGraph::keyPressEvent( QKeyEvent *e ) {
 	this->repaint();
 }
 
-void Q3DGraph::keyReleaseEvent( QKeyEvent *e ){
+void Graph3D::keyReleaseEvent( QKeyEvent *e ){
 	switch(e->key()) {
 		case Qt::Key_Up:
 			keyspressed &= ~KEYUP;
@@ -345,18 +345,18 @@ void Q3DGraph::keyReleaseEvent( QKeyEvent *e ){
 	this->repaint();
 }
 
-void Q3DGraph::timeOut(){
+void Graph3D::timeOut(){
 	graus[0] += 20.0;
 	graus[1] += 20.0;
 	graus[2] += 20.0;
 	this->repaint();
 }
 
-void Q3DGraph::setFunc(QString Text)
+void Graph3D::setFunc(QString Text)
 {
 	func3d = "";
 	if(!Analitza::isMathML(Text)) {
-		QExp e(Text);
+		Exp e(Text);
 		e.parse();
 		Text=e.mathML();
 		if(!e.error().isEmpty())
@@ -367,7 +367,7 @@ void Q3DGraph::setFunc(QString Text)
 	load();
 }
 
-int Q3DGraph::load() 
+int Graph3D::load() 
 {
 	Analitza f3d;
 	f3d.setTextMML(func3d);
@@ -393,7 +393,7 @@ int Q3DGraph::load()
 	}
 }
 
-void Q3DGraph::mem()
+void Graph3D::mem()
 {
 	int j= static_cast<int>(2*default_size/default_step);
 	if(punts!=NULL){
@@ -412,30 +412,49 @@ void Q3DGraph::mem()
 	qDebug() << "Mida: " << midadelgrafo;
 }
 
-void Q3DGraph::setMida(double newSize)
+void Graph3D::setMida(double newSize)
 {
 	default_size = newSize;
 	this->repaint();
 }
-void Q3DGraph::setStep(double newRes)
+void Graph3D::setStep(double newRes)
 {
 	default_step = newRes;
 	this->repaint();
 }
 
-void Q3DGraph::setZ(float coord_z)
+void Graph3D::setZ(float coord_z)
 {
 	z = coord_z;
 	this->repaint();
 }
 
-void Q3DGraph::setMethod(enum Type m)
+void Graph3D::setMethod(enum Type m)
 {
 	method = m;
 	this->repaint();
 }
 
-QPixmap Q3DGraph::toPixmap()
+QPixmap Graph3D::toPixmap()
 {
 	return this->renderPixmap();
 }
+
+
+void Graph3D::resetView()
+{
+	default_step=0.15f;
+	default_size=8.0f;
+	if(zoom!=1.0f) {
+		zoom=1.0f;
+		crea();
+	}
+	z=-35.;
+	
+	graus[0] = 90.0;
+	graus[1] = 0.0;
+	graus[2] = 0.0;
+	updateGL();
+}
+
+#include "graph3d.moc"

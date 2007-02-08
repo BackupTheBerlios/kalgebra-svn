@@ -1,12 +1,12 @@
-#include "qalgebrahighlighter.h"
+#include "algebrahighlighter.h"
 
 
-QAlgebraHighlighter::QAlgebraHighlighter(QTextDocument *doc) : QSyntaxHighlighter(doc), wrong(false), m_mode(Autodetect)
+AlgebraHighlighter::AlgebraHighlighter(QTextDocument *doc) : QSyntaxHighlighter(doc), wrong(false), m_mode(Autodetect)
 {
 	negreta.setFontWeight(QFont::Bold);
 }
 
-void QAlgebraHighlighter::highlightBlock(const QString &text)
+void AlgebraHighlighter::highlightBlock(const QString &text)
 {
 	wrong=false;
 	if(m_pos>=text.length())
@@ -88,7 +88,7 @@ void QAlgebraHighlighter::highlightBlock(const QString &text)
 	}
 }
 
-int QAlgebraHighlighter::complementary(const QString& t, int p)
+int AlgebraHighlighter::complementary(const QString& t, int p)
 {
 	Q_ASSERT(p<t.length());
 	bool opening = (t[p]=='(');
@@ -111,7 +111,7 @@ int QAlgebraHighlighter::complementary(const QString& t, int p)
 	return p;
 }
 
-TOKEN QAlgebraHighlighter::getToken(QString &a, int &l)
+TOKEN AlgebraHighlighter::getToken(QString &a, int &l)
 {
 	int i=0;
 	l=a.length();

@@ -8,11 +8,11 @@
 #include <QToolBox>
 #include <QTabWidget>
 
-#include "qexpressionedit.h"
-#include "qgraph.h"
-#include "kfunctionedit.h"
-#include "q3dgraph.h"
+#include "functionedit.h"
 #include "console.h"
+#include "expressionedit.h"
+#include "graph2d.h"
+#include "graph3d.h"
 
 class QAlgebra : public QMainWindow {
 Q_OBJECT
@@ -22,7 +22,7 @@ public:
 	QString calculate(QString exp);
 private:
 	//console
-	QExpressionEdit *c_exp;
+	ExpressionEdit *c_exp;
 	Console *c_results;
 	VariableView *c_variables;
 	int outs;
@@ -31,13 +31,13 @@ private:
 	//graf 2d
 	QTreeWidget *b_funcs;
 	QTabWidget *b_tools;
-	QGraph *grafic;
+	Graph2D *grafic;
 	QDockWidget *b_dock_funcs;
-	KFunctionEdit *b_funced;
+	FunctionEdit *b_funced;
 	
 	//graph 3d
-	QExpressionEdit *t_exp;
-	Q3DGraph *grafic3d;
+	ExpressionEdit *t_exp;
+	Graph3D *grafic3d;
 	
 public slots:
 	void operate();

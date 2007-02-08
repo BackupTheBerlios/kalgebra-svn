@@ -793,7 +793,7 @@ void Analitza::simpPolynomials(Container* c)
 				if(valid) {
 					Cn* sc= (Cn*) cx->m_params[scalar];
 					imono.first = sc->value();
-					imono.second = objectCopy(cx->m_params[var]);
+					imono.second = cx->m_params[var];
 					ismono = true;
 				}
 			}
@@ -814,11 +814,12 @@ void Analitza::simpPolynomials(Container* c)
 			}
 		}
 		
-		if(found) {
+		if(found)
 			it1->first += imono.first;
-			delete imono.second; //FIXME: Could optimize it a bit, could use the old one since it is appended, then copy
-		} else
+		else {
+			imono.second = objectCopy(imono.second);
 			monos.append(imono);
+		}
 	}
 	
 	qDeleteAll(c->m_params);

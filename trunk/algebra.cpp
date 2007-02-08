@@ -13,8 +13,8 @@
 #include <QMessageBox>
 
 #include "algebra.h"
-#include "qexpressionedit.h"
-#include "kvaredit.h"
+#include "varedit.h"
+#include "functionedit.h"
 
 QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 {
@@ -37,7 +37,7 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	this->addDockWidget(static_cast<Qt::DockWidgetArea>(2), c_dock_vars);
 	
 	c_variables = new VariableView(c_dock_vars);
-	c_exp = new QExpressionEdit(console);
+	c_exp = new ExpressionEdit(console);
 	c_exp->setAnalitza(c_results->analitza());
 	c_variables->setAnalitza(c_results->analitza());
 	c_dock_vars->setWidget(c_variables);
@@ -65,7 +65,7 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	//////EOConsola
 	
 	//////2D Graph
-	grafic = new QGraph(this);
+	grafic = new Graph2D(this);
 	
 	b_dock_funcs = new QDockWidget(i18n("Functions"), this);
 	b_tools = new QTabWidget(b_dock_funcs);
@@ -80,10 +80,11 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	b_funcs->setSelectionMode(QAbstractItemView::SingleSelection);
 	b_funcs->setRootIsDecorated(false);
 	b_funcs->setSortingEnabled(false);
+	
 	b_funcs->clear();
 	b_tools->addTab(b_funcs, i18n("List"));
 	
-	b_funced = new KFunctionEdit(b_tools);
+	b_funced = new FunctionEdit(b_tools);
 	connect(b_funced, SIGNAL(accept()), this, SLOT(new_func()));
 	b_tools->addTab(b_funced, i18n("&Add"));
 	
@@ -92,8 +93,8 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	tabs->addTab(grafic, i18n("&2D Graph"));
 	
 	connect(b_funcs, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(edit_func(const QModelIndex &)));
-	connect(b_funcs, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
-		this, SLOT(canvi(QTreeWidgetItem *, QTreeWidgetItem *)));
+	connect(b_funcs, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+		this, SLOT(canvi(QTreeWidgetItem*, QTreeWidgetItem*)));
 	
 	connect(b_funcs, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(different(QTreeWidgetItem *, int)));
 	connect(b_tools, SIGNAL(currentChanged(int)), this, SLOT(functools(int)));
@@ -129,8 +130,8 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	/////3DGraph
 	QWidget *tridim = new QWidget(p);
 	QVBoxLayout *t_layo = new QVBoxLayout(tridim);
-	t_exp = new QExpressionEdit(tridim);
-	grafic3d = new Q3DGraph(tridim);
+	t_exp = new ExpressionEdit(tridim);
+	grafic3d = new Graph3D(tridim);
 	
 	tridim->setLayout(t_layo);
 	tabs->addTab(tridim, i18n("&3D Graph"));
@@ -144,7 +145,8 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	QMenu *t_menu = menuBar()->addMenu(i18n("3D &Graph"));
 	QAction* t_actions[5];
 	t_actions[0] = t_menu->addAction(i18n("&Transparency"), this, SLOT(toggleTransparency()));
-	t_actions[1] = t_menu->addAction(i18n("&Save"), this, SLOT(save3DGraph()));
+	t_menu->addAction(i18n("&Save"), this, SLOT(save3DGraph()));
+	t_menu->addAction(i18n("&Reset View"), grafic3d, SLOT(resetView()));
 	t_menu->addSeparator()->setText(i18n("Type"));
 	t_actions[2] = t_menu->addAction(i18n("Dots"), this, SLOT(set_dots()));
 	t_actions[3] = t_menu->addAction(i18n("Lines"), this, SLOT(set_lines()));
@@ -228,7 +230,7 @@ void QAlgebra::functools(int i)
 
 void QAlgebra::edit_var(const QModelIndex &)
 {
-	KVarEdit e(this, false);
+	VarEdit e(this, false);
 	QString var(c_variables->currentItem()->text(0));
 	e.setAnalitza(c_results->analitza());
 	e.setVar(var);
@@ -277,9 +279,9 @@ void QAlgebra::set_res_std()	{ grafic->setResolution(832); }
 void QAlgebra::set_res_fine()	{ grafic->setResolution(1664);}
 void QAlgebra::set_res_vfine()	{ grafic->setResolution(3328);}
 
-void QAlgebra::set_dots()	{ grafic3d->setMethod(Q3DGraph::Dots);  }
-void QAlgebra::set_lines()	{ grafic3d->setMethod(Q3DGraph::Lines); }
-void QAlgebra::set_solid()	{ grafic3d->setMethod(Q3DGraph::Solid); }
+void QAlgebra::set_dots()	{ grafic3d->setMethod(Graph3D::Dots);  }
+void QAlgebra::set_lines()	{ grafic3d->setMethod(Graph3D::Lines); }
+void QAlgebra::set_solid()	{ grafic3d->setMethod(Graph3D::Solid); }
 
 void QAlgebra::toggleTransparency()
 {
@@ -300,7 +302,7 @@ void QAlgebra::toggleSquares()
 
 void QAlgebra::saveGraph()
 {
-	QString path = QFileDialog::getSaveFileName(this, NULL, NULL, i18n("Image File (*.png);;Vector image file (*.svg)"));
+	QString path = QFileDialog::getSaveFileName(this, NULL, NULL, i18n("Image File (*.png)"));//;;Vector image file (*.svg)"));
 	if(!path.isEmpty())
 		grafic->toImage(path);
 }
@@ -347,3 +349,5 @@ void QAlgebra::about()
 				"Author: Aleix Pol i Gonzalez (aleixpol@gmail.com)\n"
 				"Licenced under GPLv2 terms."));
 }
+
+#include "algebra.moc"

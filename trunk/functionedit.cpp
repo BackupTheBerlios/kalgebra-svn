@@ -1,11 +1,13 @@
-#include "kfunctionedit.h"
+#include "functionedit.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 
-KFunctionEdit::KFunctionEdit(QWidget *parent, Qt::WFlags f) :
+#include "exp.h"
+
+FunctionEdit::FunctionEdit(QWidget *parent, Qt::WFlags f) :
 		QWidget(parent, f), m_correct(false)
 {
 	this->setWindowTitle(i18n("Add/Edit a function"));
@@ -23,7 +25,7 @@ KFunctionEdit::KFunctionEdit(QWidget *parent, Qt::WFlags f) :
 	topLayout->setMargin(2);
 	topLayout->setSpacing(5);
 	
-	m_func = new QExpressionEdit(this);
+	m_func = new ExpressionEdit(this);
 	m_func->setAns("x");
 	connect(m_func, SIGNAL(textChanged()), this, SLOT(edit()));
 	connect(m_func, SIGNAL(returnPressed()), this, SLOT(ok()));
@@ -35,7 +37,7 @@ KFunctionEdit::KFunctionEdit(QWidget *parent, Qt::WFlags f) :
 	m_color->setColor(QColor(0,150,0));
 	connect(m_color, SIGNAL(currentIndexChanged(int)), this, SLOT(colorChange(int)));
 	
-	m_graph = new QGraph(this);
+	m_graph = new Graph2D(this);
 	m_graph->setViewport(QRect(QPoint(-9, 5), QPoint(9, -5)));
 	m_graph->setResolution(200);
 	m_graph->setFocusPolicy(Qt::NoFocus);
@@ -64,35 +66,35 @@ KFunctionEdit::KFunctionEdit(QWidget *parent, Qt::WFlags f) :
 	m_ok->setEnabled(false);
 }
 
-KFunctionEdit::~KFunctionEdit()
+FunctionEdit::~FunctionEdit()
 {}
 
 
-void KFunctionEdit::clear()
+void FunctionEdit::clear()
 {
 	m_func->setText(QString::null);
 	edit();
 }
 
-void KFunctionEdit::setText(const QString &newText)
+void FunctionEdit::setText(const QString &newText)
 {
 	m_func->setText(newText);
 	m_func->document()->setModified(true);
 }
 
-void KFunctionEdit::setColor(const QColor &newColor)
+void FunctionEdit::setColor(const QColor &newColor)
 {
 	m_color->setColor(newColor);
 	m_graph->editFunction(0)->setColor(newColor);
 	m_graph->forceRepaint();
 }
 
-void KFunctionEdit::colorChange(int)
+void FunctionEdit::colorChange(int)
 {
 	setColor(m_color->color());
 }
 
-void KFunctionEdit::edit()	//Let's see if the exp is correct
+void FunctionEdit::edit()	//Let's see if the exp is correct
 {
 	Analitza *a = new Analitza;
 	QString funct = m_func->text();
@@ -105,7 +107,7 @@ void KFunctionEdit::edit()	//Let's see if the exp is correct
 	}
 	
 	if(!m_func->isMathML()) {
-		QExp e(funct);
+		Exp e(funct);
 		e.parse();
 		funct = e.mathML();
 		if(e.error().isEmpty())
@@ -141,7 +143,7 @@ void KFunctionEdit::edit()	//Let's see if the exp is correct
 	delete a;
 }
 
-void KFunctionEdit::ok(){
+void FunctionEdit::ok(){
 	if(m_correct)
 		emit accept();
 }
@@ -182,3 +184,5 @@ QColor ColorCombo::color() const
 {
 	return QColor(itemData(currentIndex()).toString());
 }
+
+#include "functionedit.moc"

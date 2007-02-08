@@ -41,13 +41,13 @@ private:
 	double step;
 };
 
-class Q3DGraph : public QGLWidget {
+class Graph3D : public QGLWidget {
 Q_OBJECT
 public:
 	enum Type { Dots=0, Lines=1, Solid=2 };
 	
-	Q3DGraph(QWidget *parent = 0);
-	~Q3DGraph();
+	Graph3D(QWidget *parent = 0);
+	~Graph3D();
 
 	virtual void initializeGL() ;
 	virtual void resizeGL( int width, int height ) ;
@@ -64,7 +64,8 @@ public:
 	void setStep(double res);
 	void setZ(float coord_z);
 	void setMethod(enum Type m);
-
+public slots:
+	void resetView();
 private:
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);

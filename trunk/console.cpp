@@ -12,7 +12,7 @@ bool Console::addOperation(const QString& op, bool mathml)
 	QString operation = op;
 	
 	if(!mathml) {
-		QExp e(op);
+		Exp e(op);
 		e.parse();
 		operation = e.mathML();
 		if(!e.error().isEmpty()) {
@@ -130,3 +130,5 @@ void VariableView::updateVariables()
 		sortItems(0, Qt::AscendingOrder);
 	}
 }
+
+#include "console.moc"

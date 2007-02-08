@@ -1,5 +1,5 @@
-#ifndef QGRAPH_H
-#define QGRAPH_H
+#ifndef GRAPH2D_H
+#define GRAPH2D_H
 
 #include <cmath>
 
@@ -21,14 +21,14 @@
 
 /** @author aleix */
 
-class QGraph : public QWidget
+class Graph2D : public QWidget
 {
 Q_OBJECT
 public:
 	enum GraphMode {None=0, Pan, Selection};
 	
-	QGraph(QWidget *parent = 0);
-	~QGraph();
+	Graph2D(QWidget *parent = 0);
+	~Graph2D();
 	bool addFunction(const function&);
 	bool setSelected(const QString&);
 	bool setShown(const function&, bool shown);

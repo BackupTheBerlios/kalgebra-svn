@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "qexp.h"
+#include "exp.h"
 #include "operator.h"
 using namespace std;
 
@@ -86,12 +86,12 @@ const actEnum parseTbl[tMaxOp][tMaxOp] = {
 	{ S,  S,  S,  S,  S,  S,  S,  S,  S,  S,  E,  S, E3,  A },	//$
 };
 
-QExp::QExp(QString exp) : str(exp)
+Exp::Exp(QString exp) : str(exp)
 {}
 
-QExp::~QExp(){}
+Exp::~Exp(){}
 
-TOKEN QExp::pillatoken(QString &a){
+TOKEN Exp::pillatoken(QString &a){
 	int i=0;
 	a = a.trimmed();
 // 	printf("%s\n", a.ascii());
@@ -174,7 +174,7 @@ TOKEN QExp::pillatoken(QString &a){
 	return ret;
 }
 
-int QExp::getTok(){
+int Exp::getTok(){
 	QString s;
 	TOKEN t;
 	if(firsttok)
@@ -187,7 +187,7 @@ int QExp::getTok(){
 	return 0;
 }
 
-int QExp::shift(){
+int Exp::shift(){
 // 	cout << "------>" << tokval.ascii() << "'" << endl;
 	if(tok==tVal)
 		val.push(tokval);
@@ -201,7 +201,7 @@ int QExp::shift(){
 	return 0;
 }
 
-int QExp::reduce(){
+int Exp::reduce(){
 	tokEnum oper = (tokEnum) opr.top();
 	opr.pop();
 	QString aux;
@@ -260,7 +260,7 @@ int QExp::reduce(){
 	return 0;
 }
 
-int QExp::parse()
+int Exp::parse()
 {
 	opr.push(tEof);
 	firsttok = true;
@@ -319,12 +319,12 @@ int QExp::parse()
 	return -1;
 }
 
-QString QExp::mathML()
+QString Exp::mathML()
 {
 	return mml;
 }
 
-QStringList QExp::error()
+QStringList Exp::error()
 {
 	return err;
 }

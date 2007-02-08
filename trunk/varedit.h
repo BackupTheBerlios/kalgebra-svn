@@ -8,28 +8,27 @@
 #include <QLineEdit>
 #include <QGroupBox>
 #include <QDialogButtonBox>
-
-#include "qexpressionedit.h"
-//Added by qt3to4:
 #include <QLabel>
+
+#include "expressionedit.h"
 
 /**
 @author Aleix Pol i Gonzalez
 */
 
-class KVarEdit : public QDialog
+class VarEdit : public QDialog
 {
 Q_OBJECT
 public:
-	KVarEdit(QWidget *parent = 0, bool modal = FALSE);
-	~KVarEdit();
+	VarEdit(QWidget *parent = 0, bool modal = FALSE);
+	~VarEdit();
 	QString text() const { return m_exp->text(); }
 	void setVar(const QString& newVar);	//This should edit the variable name
 	void setMode(int mode);			//This should select what Option we need
 	void setAnalitza(Analitza *na) { vars= na->m_vars; m_exp->setAnalitza(na); }
 	Object* val();
 private:
-	QExpressionEdit *m_exp;
+	ExpressionEdit *m_exp;
 	
 	QRadioButton *m_opt_calc;		//Per escollir guardar calcul
 	QRadioButton *m_opt_exp;		//Per escollir guardar expressio
