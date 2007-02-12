@@ -2,27 +2,27 @@
 #include "exp.h"
 
 function::function()
-	: func(0), points(0), m_selected(false),m_last_max_res(0)
+	: func(0), m_show(true), m_selected(false),m_last_max_res(0), points(0)
 {}
 
-function::function(const QString& newFunc, const QColor& color=Qt::red, bool selec, bool mathml)
-	: func(0), points(0), m_selected(selec), m_last_max_res(0)
+function::function(const Expression& newFunc, const QColor& color=Qt::red, bool selec)
+	: func(0), m_show(true), m_selected(selec), m_last_max_res(0), points(0)
 {
-	setFunction(newFunc, color, selec, mathml);
+	setFunction(newFunc, color, selec);
 }
 
 
 function::function(const function& f)
-	: func(0), points(0), m_selected(false),m_last_max_res(0)
+	: func(0), m_show(true), m_selected(false),m_last_max_res(0), points(0)
 {
-	setFunction(f.expression(), f.color(), f.selected(), Analitza::isMathML(f.expression()));
+	setFunction(*f.func->expression(), f.color(), f.selected());
 }
 
 function function::operator=(const function& f)
 {
-	func=0; points=0; m_selected=f.selected(); m_last_max_res=0;
+	m_show=true; func=0; points=0; m_selected=f.selected(); m_last_max_res=0;
 	
-	setFunction(f.expression(), f.color(), f.selected(), Analitza::isMathML(f.expression()));
+	setFunction(*f.func->expression(), f.color(), f.selected());
 	return *this;
 }
 
@@ -34,25 +34,20 @@ function::~function()
 		delete [] points;
 }
 
-int function::setFunction(const QString& newFunc, const QColor& color=Qt::red, bool selec, bool mathml)
+int function::setFunction(const Expression& newFunc, const QColor& color=Qt::red, bool selec)
 {
 	int ret;
 	m_last_max_res=0;
 	m_last_resolution=0;
-	m_exp = newFunc.trimmed();
 	m_color = color;
 	m_selected = selec;
 	m_show=true;
 	m_last_viewport=QRect();
+	m_func = newFunc.toMathML();
 	
-	func = new Analitza;
-	QString funct = m_exp;
-	if(!mathml){
-		Exp e(funct);
-		e.parse();
-		funct = e.mathML();
-	}
-	ret = func->setTextMML(funct);
+	if(!func)
+		func = new Analitza;
+	func->setExpression(newFunc);
 	
 	if(points!=0) {
 		delete [] points;
@@ -184,13 +179,13 @@ void function::update_pointsX(QRect viewport, unsigned int max_res)
 
 void function::update_pointsPolar(QRect viewport, unsigned int max_res)
 {
-	Q_ASSERT(func->tree() != 0 && func->tree()->isContainer());
+	Q_ASSERT(func->expression()->isCorrect());
 	if(max_res==m_last_max_res && !m_last_viewport.isNull())
 		return;
 	unsigned int resolucio=max_res;
 	double pi=2.*acos(0.);
 	double r=0., th=0.;
-	Cn ulimit = func->uplimit(func->tree()->m_params[0]), dlimit=func->downlimit(func->tree()->m_params[0]);
+	Cn ulimit = func->expression()->uplimit(), dlimit=func->expression()->downlimit();
 	
 // 	objectWalker(func->tree());
 	
@@ -234,7 +229,7 @@ QPair<QPointF, QString> function::calc(const QPointF& p)
 {
 	QPointF dp=p;
 	QString pos;
-	if(func->m_tree!=0 && !m_exp.isEmpty()) {
+	if(func->expression()->isCorrect()) {
 		if(m_firstlambda=="y") {
 			func->m_vars->modify("y", dp.y());
 			dp.setX(func->calculate().value());
@@ -245,7 +240,7 @@ QPair<QPointF, QString> function::calc(const QPointF& p)
 			if(p.x()<0.)	th += pi;
 			else if(th<0.)	th += 2.*pi;
 			
-			Cn ulimit = func->uplimit(func->tree()->m_params[0]), dlimit=func->downlimit(func->tree()->m_params[0]);
+			Cn ulimit = func->expression()->uplimit(), dlimit=func->expression()->downlimit();
 			if(!ulimit.isCorrect()) ulimit = 2.*pi;
 			if(!dlimit.isCorrect()) dlimit = 0.;
 			

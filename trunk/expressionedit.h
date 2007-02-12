@@ -1,5 +1,5 @@
-#ifndef QEXPRESSIONEDIT_H
-#define QEXPRESSIONEDIT_H
+#ifndef EXPRESSIONEDIT_H
+#define EXPRESSIONEDIT_H
 
 #include <QTextEdit>
 #include <QKeyEvent>
@@ -20,10 +20,10 @@ class ExpressionEdit : public QTextEdit
 {
 Q_OBJECT
 public:
-	ExpressionEdit(QWidget *parent = 0, Mode ini=Autodetect);
+	ExpressionEdit(QWidget *parent = 0, AlgebraHighlighter::Mode ini=AlgebraHighlighter::Autodetect);
 	~ExpressionEdit();
 	bool mode() { return m_highlight->mode(); }
-	void setMode(Mode en);
+	void setMode(AlgebraHighlighter::Mode en);
 	void setAutocomplete(bool a);
 	bool autocomplete();
 	

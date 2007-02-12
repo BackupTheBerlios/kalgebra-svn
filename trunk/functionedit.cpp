@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 
-#include "exp.h"
+#include "expression.h"
 
 FunctionEdit::FunctionEdit(QWidget *parent, Qt::WFlags f) :
 		QWidget(parent, f), m_correct(false)
@@ -41,7 +41,7 @@ FunctionEdit::FunctionEdit(QWidget *parent, Qt::WFlags f) :
 	m_graph->setViewport(QRect(QPoint(-9, 5), QPoint(9, -5)));
 	m_graph->setResolution(200);
 	m_graph->setFocusPolicy(Qt::NoFocus);
-	m_graph->addFunction(function(m_func->text(), m_color->color(), true));
+	m_graph->addFunction(function(Expression(m_func->text(), m_func->isMathML()), m_color->color(), true));
 	m_graph->setMouseTracking(false);
 	m_graph->setFramed(true);
 	m_graph->setReadOnly(true);
@@ -96,7 +96,7 @@ void FunctionEdit::colorChange(int)
 
 void FunctionEdit::edit()	//Let's see if the exp is correct
 {
-	Analitza *a = new Analitza;
+	Analitza a;
 	QString funct = m_func->text();
 	
 	if(m_func->text().isEmpty()) {
@@ -106,41 +106,33 @@ void FunctionEdit::edit()	//Let's see if the exp is correct
 		return;
 	}
 	
-	if(!m_func->isMathML()) {
-		Exp e(funct);
-		e.parse();
-		funct = e.mathML();
-		if(e.error().isEmpty())
-			a->setTextMML(funct);
-		else
-			a->m_err << i18n("From parser:") << e.error();
-	} else
-		a->setTextMML(funct);
+	if(!m_func->isMathML())
+		a.expression()->setText(funct);
+	else
+		a.expression()->setMathML(funct);
 	
-	if(a->isCorrect()) {
-		QStringList bvl = a->bvarList();
+	if(a.isCorrect()) {
+		QStringList bvl = a.bvarList();
 		QString var = bvl.count()==0 ? "x" : bvl[0];
-		a->m_vars->modify(var, 0.);
-		m_valid->setText(QString("<b style='color:#090'>f:=%2</b>").arg(a->toString()));
-		a->calculate();
-	}
+		a.m_vars->modify(var, 0.);
+		m_valid->setText(QString("<b style='color:#090'>f:=%2</b>").arg(a.expression()->toString()));
+		a.calculate();
+	} else
+		a.m_err << i18n("From parser:") << a.expression()->error();
 	
-	if(!a->isCorrect()) {
-		m_valid->setText(i18n("<b style='color:red'>WRONG</b>"));
-		m_graph->editFunction(0, function());
-		m_graph->forceRepaint();
-		m_valid->setToolTip(a->m_err.join("\n"));
-		m_correct=false;
-	} else {
+	m_correct=a.isCorrect();
+	if(m_correct) {
+		m_graph->clear();
+		m_graph->addFunction(function(Expression(m_func->toPlainText(), m_func->isMathML()), m_color->color(), true));
 		m_valid->setToolTip(QString::null);
-		m_graph->editFunction(0, function(m_func->toPlainText(), m_color->color(), true));
-		m_correct=true;
+	} else {
+		m_graph->clear();
+		m_graph->forceRepaint();
+		m_valid->setText(i18n("<b style='color:red'>WRONG</b>"));
+		m_valid->setToolTip(a.m_err.join("\n"));
 	}
-	
 	m_func->setCorrect(m_correct);
 	m_ok->setEnabled(m_correct);
-	
-	delete a;
 }
 
 void FunctionEdit::ok(){
@@ -185,4 +177,4 @@ QColor ColorCombo::color() const
 	return QColor(itemData(currentIndex()).toString());
 }
 
-#include "functionedit.moc"
+//#include "functionedit.moc"

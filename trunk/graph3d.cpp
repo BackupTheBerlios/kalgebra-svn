@@ -223,7 +223,7 @@ bool Graph3D::crea()
 	QList<Calculate3D*> threads;
 	
 	Analitza *a = new Analitza();
-	a->setTextMML(func3d);
+	a->setExpression(func3d);
 	
 	QTime t;
 	t.restart();
@@ -352,25 +352,21 @@ void Graph3D::timeOut(){
 	this->repaint();
 }
 
-void Graph3D::setFunc(QString Text)
+void Graph3D::setFunc(QString Text) //FIXME:Must pass bool ismathml
 {
-	func3d = "";
-	if(!Analitza::isMathML(Text)) {
-		Exp e(Text);
-		e.parse();
-		Text=e.mathML();
-		if(!e.error().isEmpty())
-			return;
-	}
-	
-	func3d = Text;
-	load();
+	bool ismathml = Expression::isMathML(Text);
+	func3d = Expression(Text, ismathml);
+	objectWalker(func3d.m_tree);
+	if(func3d.isCorrect())
+		load();
+	else
+		sendStatus(i18n("Error: %1").arg(func3d.error().join(", ")));
 }
 
 int Graph3D::load() 
 {
 	Analitza f3d;
-	f3d.setTextMML(func3d);
+	f3d.setExpression(func3d);
 	f3d.m_vars->modify("x", 0.);
 	f3d.m_vars->modify("y", 0.);
 	f3d.calculate();
@@ -457,4 +453,4 @@ void Graph3D::resetView()
 	updateGL();
 }
 
-#include "graph3d.moc"
+//#include "graph3d.moc"

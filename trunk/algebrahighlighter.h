@@ -5,25 +5,23 @@
 #ifndef ALGEBRAHIGHLIGHTER_H
 #define ALGEBRAHIGHLIGHTER_H
 
-typedef enum {
-	Disabled,
-	Expression,
-	MathML,
-	Autodetect
-} Mode;
-
-typedef enum { //For mathml highlighting
-	gt,
-	lt,
-	tag,
-	value
-} MMLtokEnum;
-
-
-
 class AlgebraHighlighter : public QSyntaxHighlighter
 {
 	public:
+		typedef enum {
+			Disabled,
+			Expression,
+			MathML,
+			Autodetect
+		} Mode;
+		
+		typedef enum { //For mathml highlighting
+			gt,
+			lt,
+			tag,
+			value
+		} MMLtokEnum;
+		
 		AlgebraHighlighter(QTextDocument *doc);
 		//int highlightParagraph(const QString &text, int endStateOfLastPara);
 		Mode mode() { return m_mode; }

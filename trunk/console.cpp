@@ -2,13 +2,15 @@
 #include <QFile>
 #include <QHeaderView>
 
+#include "expression.h"
+
 Console::Console(QWidget *parent) : QListWidget(parent), outs(0) {}
 
 Console::~Console() {}
 
 bool Console::addOperation(const QString& op, bool mathml)
 {
-	Cn res=0.;
+	Expression res;
 	QString operation = op;
 	
 	if(!mathml) {
@@ -27,18 +29,19 @@ bool Console::addOperation(const QString& op, bool mathml)
 		}
 	}
 	
-	a.setTextMML(operation);
-
+	Expression exp;
+	exp.setMathML(operation);
+	a.setExpression(exp);
 	if(a.isCorrect())
-		res=a.calculate();
+		res=a.evaluate();
 	
 	QListWidgetItem *item = new QListWidgetItem(this);
 	QFont f = item->font();
 	if(a.isCorrect()) {
-		a.m_vars->modify("ans", new Cn(res));
-		item->setText(QString("%1 = %2").arg(a.toString()).arg(res.value(), 0, 'g', 12));
+		a.m_vars->modify("ans", res.tree());
+		item->setText(QString("%1 = %2").arg(exp.toString()).arg(res.toString()));
 // 		item->setText(QString("%1\n%2").arg(op).arg(res.value(), 0, 'g', 12));
-		item->setToolTip(QString::number(res.value(), 'g', 12));
+		item->setToolTip(res.toString());
 		if(++outs % 2)
 			item->setBackgroundColor(QColor(233,233,222));
 		else
@@ -131,4 +134,4 @@ void VariableView::updateVariables()
 	}
 }
 
-#include "console.moc"
+//#include "console.moc"

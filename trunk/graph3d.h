@@ -78,7 +78,7 @@ private:
 	bool crea();
 	void sendStatus(const QString& msg) { emit status(msg); }
 	
-	QString func3d;
+	Expression func3d;
 	double default_step;
 	double default_size;
 	double zoom;

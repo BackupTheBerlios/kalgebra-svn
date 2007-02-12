@@ -18,64 +18,50 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef ANALITZA_H
-#define ANALITZA_H
+#ifndef EXPRESSION_H
+#define EXPRESSION_H
 
-#include <cmath>
-
-#include "expression.h"
+#include <QtXml>
 #include "container.h"
-#include "value.h"
-#include "variables.h"
+
 
 /**
-*	@author Aleix Pol <aleixpol@gmail.com>
+	@author Aleix Pol <aleixpol@gmail.com>
 */
-
-class Analitza
+class Expression
 {
-public:
-	Analitza();
-	Analitza(const Analitza& a);
-	~Analitza();
+	friend class Analitza;
+	friend class VarEdit;
 	
-	QString operToString(const Operator&) const;
-	
-	void setVariables(Variables* v) { if(m_vars!=NULL) delete m_vars; m_vars = v; }
-	void setExpression(const Expression &e);
-	Expression* expression() { return &m_exp; }
-	
-	Cn calc(Object* e);
-	Object* eval(Object* e);
-	Cn calculate();
-	Expression evaluate();
-	Cn operate(Container*);
-	bool isCorrect() const { return m_exp.isCorrect() && m_err.isEmpty(); }
-	
-	Cn sum(const Container& c);
-	Cn product(const Container& c);
-	Cn func(const Container& c);
-	bool isFunction(Ci var) const;
-	
-	QStringList bvarList() const;
-	
-	void simplify();
-	Object* simp(Object* root);
-	void simpScalar(Container* c);
-	void simpPolynomials(Container* c);
-	
-	static bool hasVars(Object*);
-	static bool hasVars(Object*, QString var);
-private:
-	Object* derivative(const QString &var, Object*);
-	Object* derivative(const QString &var, Container*);
-	void reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary);
-	
-// private:
-	public: //FIXME:Shame on me
-	Expression m_exp;
-	Variables *m_vars;
-	QStringList m_err;
+	public:
+		Expression();
+		Expression(const Expression& e);
+		Expression(const QString& exp, bool mathml);
+		~Expression();
+		
+		bool setText(const QString &exp);
+		bool setMathML(const QString &exp);
+		QStringList error() const { return m_err; }
+		bool isCorrect() const { return m_tree && m_err.isEmpty(); }
+		Object* branch(const QDomElement& elem);
+		bool operator==(const Expression& e) const;
+		Expression operator=(const Expression& e);
+		Cn uplimit() const;
+		Cn downlimit() const;
+		const Object* tree() const { return m_tree; }
+		
+		QString toString() const;
+		QString toMathML() const;
+		
+		static enum Object::ObjectType whatType(const QString& tag);
+		static bool isMathML(const QString& s) { return !s.isEmpty() && s[0]=='<'; }
+		static Cn uplimit(const Container& c);
+		static Cn downlimit(const Container& c);
+		static Object* objectCopy(const Object *);
+// 	protected:
+		Object* m_tree;
+	private:
+		QStringList m_err;
 };
 
 #endif

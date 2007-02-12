@@ -88,6 +88,7 @@ enum Object::OperatorType Operator::toOperatorType(QString e)
 	else if(e=="ceiling") ret=ceiling;
 	else if(e=="sum") ret=sum;
 	else if(e=="product") ret=product;
+	else if(e=="diff") ret=diff;
 	
 	return ret;
 }
@@ -177,6 +178,7 @@ int Operator::nparams(Operator::OperatorType t)
 		case ceiling:
 		case sum:
 		case product:
+		case diff:
 			return 1;
 		case none:
 			break;
@@ -246,7 +248,7 @@ OperatorsModel::OperatorsModel(QObject *parent) : QStandardItemModel(KEYWORDNUM,
 	ops << "arcsec" << "arcsech" << "arcsinh" << "arctanh";
 	ops << "exp" << "ln" << "log";
 	ops << "conjugate" << "arg" << "real" << "imaginary";
-	ops << "sum" << "product";
+	ops << "sum" << "product" << "diff";
 	
 	m_count = ops.count();
 	

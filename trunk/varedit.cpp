@@ -1,5 +1,6 @@
-#include "analitza.h"
 #include "varedit.h"
+#include "analitza.h"
+#include "expression.h"
 
 #include <QPushButton>
 #include <QLabel>
@@ -65,19 +66,16 @@ Object* VarEdit::val()
 	Analitza a;
 	Object* ret;
 	
-	QString expres = m_exp->text();
-	if(!m_exp->isMathML()) {
-		Exp e(expres);
-		e.parse();
-		expres = e.mathML();
-	}
-	
-	a.setTextMML(expres);
+	Expression e;
+	if(m_exp->isMathML())
+		e.setMathML(m_exp->text());
+	else
+		e.setText(m_exp->text());
 	
 	if(m_opt_calc->isChecked())
 		ret = new Cn(a.calculate());
 	else
-		ret = Analitza::objectCopy(a.m_tree);
+		ret = Expression::objectCopy(a.expression()->m_tree);
 	
 	return ret;
 }
@@ -94,16 +92,17 @@ void VarEdit::edit()
 		return;
 	}
 	
-	if(!m_exp->isMathML()) {
-		Exp e(funct);
-		e.parse();
-		funct = e.mathML();
-		if(e.error().isEmpty())
-			a->setTextMML(funct);
-		else
-			a->m_err << i18n("From parser:") << e.error();
+	Expression e;
+	if(m_exp->isMathML())
+		e.setMathML(m_exp->text());
+	else
+		e.setText(m_exp->text());
+	
+	if(!e.isCorrect()) {
+		a->m_err << i18n("From parser:") << e.error();
+		return;
 	} else
-		a->setTextMML(funct);
+		a->setExpression(e);
 	
 	if(a->isCorrect()) {
 		if(a->bvarList().count()>0)
@@ -132,5 +131,5 @@ void VarEdit::ok(){
 		accept();
 }
 
-#include "varedit.moc"
+//#include "varedit.moc"
 

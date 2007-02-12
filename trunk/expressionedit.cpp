@@ -9,7 +9,7 @@
 
 #include "operator.h"
 
-ExpressionEdit::ExpressionEdit(QWidget *parent, Mode inimode)
+	ExpressionEdit::ExpressionEdit(QWidget *parent, AlgebraHighlighter::Mode inimode)
 	: QTextEdit(parent), m_histPos(0), help(true), m_auto(true), a(NULL), m_check(true), m_correct(true), m_ans("ans")
 {
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -79,7 +79,7 @@ void ExpressionEdit::completed(const QString& newText)
 {
 	int c = newText.length() - lastWord(textCursor().selectionStart()).length();
 	QString toInsert=newText.right(c);
-	if(Analitza::whatType(newText) == Object::oper)
+	if(Expression::whatType(newText) == Object::oper)
 		toInsert += "(";
 	insertPlainText(toInsert);
 }
@@ -100,29 +100,24 @@ ExpressionEdit::~ExpressionEdit() {}
 bool ExpressionEdit::isMathML() const
 {
 	switch(m_highlight->mode()) {
-		case MathML:
+		case AlgebraHighlighter::MathML:
 			return true;
-		case Expression:
+		case AlgebraHighlighter::Expression:
 			return false;
 		default:
-			return Analitza::isMathML(this->toPlainText());
+			return Expression::isMathML(this->toPlainText());
 	}
 }
 
-void ExpressionEdit::setMode(Mode en)
+void ExpressionEdit::setMode(AlgebraHighlighter::Mode en)
 {
 	if(!text().isEmpty()) {
-		Analitza a;
-		if(isMathML() && en==Expression) { //We convert it into MathML
-			a.setTextMML(this->toPlainText());
-			this->setPlainText(a.toString());
-			setCorrect(!a.isCorrect());
-		} else if(!isMathML() && en==MathML) {
-			Exp e(this->toPlainText());
-			e.parse();
-			setCorrect(!a.isCorrect());
-			
-			this->setPlainText(e.mathML());
+		if(isMathML() && en==AlgebraHighlighter::Expression) { //We convert it into MathML
+			Expression e(toPlainText(), true);
+			this->setPlainText(e.toString());
+		} else if(!isMathML() && en==AlgebraHighlighter::MathML) {
+			Expression e(toPlainText(), false);
+			this->setPlainText(e.toMathML());
 		}
 	}
 	m_highlight->setMode(en);
@@ -146,22 +141,17 @@ void ExpressionEdit::keyPressEvent(QKeyEvent * e)
 	switch(e->key()){
 		case Qt::Key_F2: {
 			Analitza a;
-			if(isMathML()){
-				a.setTextMML(toPlainText());
-				a.simplify();
-				this->setPlainText(a.toMathML());
-			} else {
-				Exp e(toPlainText());
-				e.parse();
-				a.setTextMML(e.mathML());
-				a.simplify();
-				this->setPlainText(a.toString());
-				this->selectAll();
-			}
+			a.setExpression(Expression(toPlainText(), isMathML()));
+			a.simplify();
+			if(isMathML())
+				this->setPlainText(a.expression()->toMathML());
+			else
+				this->setPlainText(a.expression()->toString());
+			this->selectAll();
 			return;
 		}
 		case Qt::Key_F3:
-			setMode(isMathML() ? Expression : MathML);
+			setMode(isMathML() ? AlgebraHighlighter::Expression : AlgebraHighlighter::MathML);
 			return;
 		case Qt::Key_Return:
 		case Qt::Key_Enter:
@@ -405,4 +395,4 @@ void ExpressionEdit::focusInEvent ( QFocusEvent * event )
 	}
 }
 
-#include "expressionedit.moc"
+//#include "expressionedit.moc"

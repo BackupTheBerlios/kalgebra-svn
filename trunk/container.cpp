@@ -34,7 +34,7 @@ Container::Container(const Container& c) : Object(Object::container)
 
 Container::Container(const Object *o) : Object(o->type())
 {
-	Q_ASSERT(o!=NULL);
+	Q_ASSERT(o!=0);
 	if(type() == Object::container) {
 		Container *c = (Container*) o;
 		m_cont_type = c->containerType();
@@ -103,9 +103,9 @@ QString Container::toString() const
 	QStringList ret;
 	bool func=false;
 	
-	Operator *op=NULL;
+	Operator *op=0;
 	for(int i=0; i<m_params.count(); i++) {
-		if(m_params[i]==NULL) {
+		if(m_params[i]==0) {
 			qDebug() << "kkk";
 			return "<<kk>>";
 		}
@@ -121,16 +121,16 @@ QString Container::toString() const
 			Container *c = (Container*) m_params[i];
 			QString s = c->toString();
 			Operator child_op = c->firstOperator();
-			if(op!=NULL && op->weight()>child_op.weight() && child_op.nparams()!=1)
+			if(op!=0 && op->weight()>child_op.weight() && child_op.nparams()!=1)
 				s=QString("(%1)").arg(s);
 			
 			if(c->containerType() == Object::bvar) {
 				Container *ul = ulimit(), *dl = dlimit();
-				if(ul!=NULL || dl!=NULL) {
-					if(dl!=NULL)
+				if(ul!=0 || dl!=0) {
+					if(dl!=0)
 						s += dl->toString();
 					s += "..";
-					if(ul!=NULL)
+					if(ul!=0)
 						s += ul->toString();
 				}
 			}
@@ -156,7 +156,7 @@ QString Container::toString() const
 			if(func){
 				QString n = ret.takeFirst();
 				toret += QString("%1(%2)").arg(n).arg(ret.join(", "));
-			} else if(op==NULL)
+			} else if(op==0)
 				toret += ret.join(" ");
 			else switch(op->operatorType()) {
 				case Object::plus:
@@ -256,7 +256,7 @@ Container* Container::ulimit() const
 		if(c->type()==Object::container && c->containerType()==Object::uplimit && c->m_params[0]->type()==Object::value)
 			return (Container*) c->m_params[0];
 	}
-	return NULL;
+	return 0;
 }
 
 Container* Container::dlimit() const
@@ -266,7 +266,7 @@ Container* Container::dlimit() const
 		if(c->type()==Object::container && c->containerType()==Object::downlimit && c->m_params[0]->type()==Object::value)
 			return (Container*) c->m_params[0];
 	}
-	return NULL;
+	return 0;
 }
 
 bool Container::hasVars() const
@@ -309,7 +309,7 @@ bool Container::operator==(const Container& c) const
 
 bool Container::equalTree(Object const* o1, Object const * o2)
 {
-	Q_ASSERT(o1!=NULL && o2!=NULL);
+	Q_ASSERT(o1 && o2);
 	if(o1==o2)
 		return true;
 	bool eq= o1->type()==o2->type();
@@ -334,18 +334,16 @@ bool Container::equalTree(Object const* o1, Object const * o2)
 
 void objectWalker(const Object* root, int ind)
 {
-	Q_ASSERT(root!=NULL);
 	Container *c; Cn *num; Operator *op; Ci *var;
 	QString s;
+	if(!root) {
+		qDebug() << "This is an null object";
+		return;
+	}
 	if(ind>100) return;
 	
 	for(int i=0; i<ind; i++)
 		s += " |_____";
-	
-	if(root==NULL) {
-		qDebug() << "at " << ind << "got a NULL";
-		return;
-	}
 	
 	switch(root->type()) { //TODO: include the function into a module and use toString
 		case Object::container:

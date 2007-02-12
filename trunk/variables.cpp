@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "variables.h"
+#include "expression.h"
 
 Variables::Variables() : QHash<QString, Object*>()
 {
@@ -61,12 +62,12 @@ Variables::~Variables()
 }
 
 
-void Variables::modify(const QString& key, Object* o)
+void Variables::modify(const QString& key, const Object* o)
 {
 	if(contains(key))
 		delete value(key);
 	
-	insert(key, o);
+	insert(key, Expression::objectCopy(o));
 }
 
 

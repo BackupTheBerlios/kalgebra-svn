@@ -54,7 +54,7 @@ public:
 		arcsec, arcsech, arcsinh, arctanh,
 		exp, ln, log,
 		conjugate, arg, real, imaginary,
-		sum, product, function //FIXME: <- ????
+		sum, product, diff, function //FIXME: <- ????
 	};
 	
 	virtual ~Object(){}

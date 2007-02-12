@@ -31,7 +31,7 @@ private:
 
 public slots:
 	bool addOperation(const QString& op, bool mathml);
-	bool addOperation(const QString& op) { return addOperation(op, Analitza::isMathML(op)); }
+	bool addOperation(const QString& op) { return addOperation(op, Expression::isMathML(op)); }
 	bool loadScript(const QString& path);
 	bool saveLog(const QString& path);
 signals:

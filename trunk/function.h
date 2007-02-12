@@ -3,36 +3,37 @@
 
 #include <QColor>
 #include "analitza.h"
+#include "expression.h"
 
 /**
 @author Aleix Pol i Gonzalez
 */
 
 enum Axe { Cartesian=0, Polar};
-class function {
+class function
+{
+	friend class Graph2D;
 public:
-
 	function();
 	function(const function& f);
-	function(const QString& newFunc, const QColor& color, bool selec=false, bool mathml=false);
+	function(const Expression& newExp, const QColor& color, bool selec=false);
 	~function();
 	
 	Analitza *func;
-	QPointF *points;
 	
-	int setFunction(const QString& newFunc, const QColor&, bool selec=false, bool mathml=false);
+	int setFunction(const Expression& newExp, const QColor&, bool selec=false);
 	void update_points(QRect viewport, unsigned int resolucio);
 	
 	QColor color() const { return m_color; }
 	void setColor(const QColor& newColor) { m_color=newColor; }
 	unsigned int npoints() const { return m_last_resolution; }
-	QString expression() const { return m_exp; }
 	void setSelected(bool newSelec) { m_selected=newSelec; }
 	bool selected() const { return m_selected; }
 	void setShown(bool newShow) { m_show=newShow; }
 	bool isShown() const { return m_show && func->isCorrect(); }
 	QPair<QPointF, QString> calc(const QPointF& dp);
-	bool operator==(const function& f) const { return f.expression()==expression() && f.color()==color();}
+	bool operator==(const function& f) const { return f.m_func==m_func && f.color()==color();}
+	
 	function operator=(const function& f);
 	Analitza* analitza() const { return func; }
 	
@@ -40,9 +41,7 @@ public:
 private:
 	bool m_show;
 	bool m_selected;
-	QString m_exp;
 	QString m_firstlambda;
-	
 	QColor m_color;
 	QRect m_last_viewport;
 	unsigned int m_last_resolution;
@@ -53,6 +52,10 @@ private:
 	void update_pointsPolar(QRect viewport, unsigned int resolucio); //for functions such as r=f(sigma)
 	
 	inline QPointF fromPolar(double r, double th) { return QPointF(r*cos(th), r*sin(th)); }
+	
+protected:
+	QString m_func; //Got it for comparisons, I don't like it so solutions will be thanked
+	QPointF *points;
 };
 
 #endif

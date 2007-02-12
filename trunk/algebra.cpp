@@ -184,14 +184,13 @@ void QAlgebra::new_func()
 {
 	QTreeWidgetItem *item;
 	if(!b_funced->editing()) {
-		grafic->addFunction(function(b_funced->text(), b_funced->color(), true, b_funced->isMathML()));
-		grafic->setSelected(b_funced->text());
+		grafic->addFunction(function(Expression(b_funced->text(), b_funced->isMathML()), b_funced->color(), true));
 		
 		item = new QTreeWidgetItem(b_funcs);
 		item->setFlags(Qt::ItemIsSelectable| Qt::ItemIsUserCheckable| Qt::ItemIsEnabled| Qt::ItemIsTristate);
 	} else {
-		grafic->editFunction(b_funcs->currentItem()->text(1),
-				     function(b_funced->text(), b_funced->color(), true, b_funced->isMathML()));
+		grafic->editFunction(Expression(b_funced->text(), b_funced->isMathML()),
+				     function(Expression(b_funced->text(), b_funced->isMathML()), b_funced->color(), true));
 // 		grafic->setSelected(b_funcs->currentItem()->text(1));
 		
 		item = b_funcs->currentItem();
@@ -315,7 +314,7 @@ void QAlgebra::canvi(QTreeWidgetItem *current, QTreeWidgetItem *)
 void QAlgebra::different(QTreeWidgetItem * item, int)
 {
 	QColor c(item->icon(0).pixmap(1,1).toImage().pixel(0,0));
-	grafic->setShown(function(item->text(1), c), item->checkState(0) == Qt::Checked);
+	grafic->setShown(function(Expression(item->text(1), false), c), item->checkState(0) == Qt::Checked);
 }
 
 void QAlgebra::tabChanged(int n)
@@ -350,4 +349,4 @@ void QAlgebra::about()
 				"Licenced under GPLv2 terms."));
 }
 
-#include "algebra.moc"
+//#include "algebra.moc"

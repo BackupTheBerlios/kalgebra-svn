@@ -11,7 +11,7 @@ void AlgebraHighlighter::highlightBlock(const QString &text)
 	wrong=false;
 	if(m_pos>=text.length())
 		m_pos=text.length();
-	if(Analitza::isMathML(text)) {
+	if(Expression::isMathML(text)) {
 		QString lasttag;
 		for(int i=0; i<text.length(); i++){
 			if(text[i]=='<') { //We enter in a tag
@@ -139,7 +139,7 @@ TOKEN AlgebraHighlighter::getToken(QString &a, int &l)
 		
 		for(;a[i].isSpace();i++);
 
-		if((a[i]=='(' || a[i].isLetterOrNumber()) && (Analitza::whatType(ret.val)==Object::oper))
+		if((a[i]=='(' || a[i].isLetterOrNumber()) && (Expression::whatType(ret.val)==Object::oper))
 			ret.tipus=tFunc;
 		else 
 			ret.tipus= tVar;

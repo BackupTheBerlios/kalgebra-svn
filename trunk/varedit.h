@@ -1,5 +1,5 @@
-#ifndef KVAREDIT_H
-#define KVAREDIT_H
+#ifndef VAREDIT_H
+#define VAREDIT_H
 
 #include <QToolTip>
 #include <QDialog>

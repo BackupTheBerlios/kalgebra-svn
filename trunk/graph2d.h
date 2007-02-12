@@ -33,7 +33,7 @@ public:
 	bool setSelected(const QString&);
 	bool setShown(const function&, bool shown);
 	bool editFunction(int num, const function& func);
-	bool editFunction(const QString& tochange, const function& func);
+	bool editFunction(const Expression& tochange, const function& func);
 	function* editFunction(int num);
 	bool toImage(QString path);
 	

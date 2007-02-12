@@ -20,124 +20,128 @@
 
 #include "analitza.h"
 
-Analitza::Analitza() : m_tree(NULL), m_vars(new Variables) { }
+Analitza::Analitza() : m_vars(new Variables) { }
 
-Analitza::Analitza(const Analitza& a) : m_err(a.m_err)
+Analitza::Analitza(const Analitza& a) : m_exp(a.m_exp), m_err(a.m_err)
 {
 	m_vars = new Variables(*a.m_vars);
-	m_tree = new Container(a.m_tree);
 }
 
 Analitza::~Analitza()
 {
-	if(m_tree!=NULL)
-		delete m_tree;
-	
-	if(m_vars!=NULL)
+	if(m_vars)
 		delete m_vars;
 }
 
-bool Analitza::setTextMML(const QString& s)
+
+void Analitza::setExpression(const Expression & e)
 {
-	m_err.clear();
-	
-	if(m_tree!=NULL)
-		delete m_tree;
-	
-	QDomDocument doc;
-	
-	if (!doc.setContent(s)) {
-		m_err << i18n("Error while parsing: %1").arg(s);
-		return false;
-	}
-	
-	m_tree = branch(doc.documentElement());
-	return true;
+	m_exp=e;
 }
 
-enum Object::ObjectType Analitza::whatType(const QString& tag)
+Expression Analitza::evaluate()
 {
-	Object::ObjectType ret=Object::none;
-	if(tag=="cn")
-		ret= Object::value;
-	else if(tag=="ci")
-		ret= Object::variable;
-	else if(Operator::toOperatorType(tag)!=0)
-		ret= Object::oper;
-	else if(Container::toContainerType(tag)!=0)
-		ret= Object::container;
-	
-	return ret;
-}
-
-Object* Analitza::branch(const QDomElement& elem)
-{
-	Container *c; Cn *num; Operator *op;
-	QDomNode n;
-	Object* ret=NULL;
-	
-	switch(whatType(elem.tagName())) {
-		case Object::container: {
-			c=new Container(Container::toContainerType(elem.tagName()));
-			
-			n = elem.firstChild();
-			while(!n.isNull()) {
-				if(n.isElement())
-					c->appendBranch(branch(n.toElement()));
-				
-				n = n.nextSibling();
-			}
-			
-			//Error collection
-			QList<Object*>::iterator i=c->m_params.begin();
-			Cn u=uplimit(*c), d=downlimit(*c);
-			bool dGreaterU = (u.isCorrect() && d.isCorrect()) && d.value()>u.value();
-			if(dGreaterU)
-				m_err << "The downlimit is greater than the uplimit. Probably should be "+ QString("%1..%2").arg(u.value()).arg(d.value());
-			//EOCollect
-			ret = c;
-			break;}
-		case Object::value:
-			num= new Cn(0.);
-			num->setValue(elem);
-			ret = num;
-			break;
-		case Object::oper:
-			op= new Operator(Operator::toOperatorType(elem.tagName()));
-			ret = op;
-			break;
-		case Object::variable:
-			{
-				Ci* var = new Ci(elem.text());
-				var->setFunction(elem.attribute("type")=="function");
-				ret=var;
-			}
-			break;
-		case Object::none:
-			qDebug() << "Not supported: " << elem.tagName();
+	if(m_exp.isCorrect()) {
+		Expression e(m_exp); //FIXME: That's a strange trick, wouldn't have to copy
+		e.m_tree=simp(e.m_tree);
+		objectWalker(e.m_tree);
+		e.m_tree=eval(e.m_tree);
+		objectWalker(e.m_tree);
+		return e;
+	} else {
+		m_err << i18n("Must specify an operation");
+		return Expression();
 	}
-	return ret;
 }
 
 Cn Analitza::calculate()
 {
-// 	qDebug() << "calculate:" << m_tree;
-	if(m_tree!=NULL)
-		return calc(m_tree);
+	if(m_exp.isCorrect())
+		return calc(m_exp.m_tree);
 	else {
 		m_err << i18n("Must specify an operation");
 		return Cn(0.);
 	}
 }
 
+Object* Analitza::eval(Object* branch)
+{
+	Q_ASSERT(branch && branch->type()!=Object::none);
+	//Won't calc so would be a good idea to have it simplified 
+	if(branch->isContainer()) {
+		Container* c = (Container*) branch;
+		Operator op = c->firstOperator();
+		switch(op.operatorType()) {
+			case Object::diff:
+				branch = derivative("x", c->m_params[1]);
+				break;
+			case Object::onone:
+				branch = eval(c->m_params[0]);
+				break;
+			default:
+				break;
+		}
+	}
+	return branch;
+}
+
+Object* Analitza::derivative(const QString &var, Object* o)
+{
+	qDebug() << "Estoy derivando yooooooooo";
+	Q_ASSERT(o);
+	if(o->type()!=Object::oper && !hasVars(o, var)) {
+		delete o;
+		o = new Cn(0.);
+	} else switch(o->type()) {
+		case Object::container:
+			o = derivative(var, (Container*) o);
+			break;
+		case Object::variable:
+			delete o;
+			o = new Cn(1.);
+			break;
+		case Object::value:
+		case Object::oper:
+		case Object::none:
+			break;
+	}
+	return o;
+}
+
+Object* Analitza::derivative(const QString &var, Container *c)
+{
+	Operator op = c->firstOperator();
+	switch(op.operatorType()) {
+		case Object::plus: {
+			QList<Object*>::iterator it(c->m_params.begin());
+			for(; it!=c->m_params.end(); ++it) {
+				*it = derivative(var, *it);
+			}
+			return c;
+		} break;
+		case Object::sin: {
+			Container *ncChain = new Container(Object::apply);
+			ncChain->m_params.append(new Operator(Object::times));
+			ncChain->m_params.append(derivative(var, Expression::objectCopy(c->m_params[1])));
+			Container *nc = new Container(Object::apply);
+			nc->m_params.append(new Operator(Object::cos));
+			nc->m_params.append(c);
+			return c;
+		} break;
+		default:
+			break;
+	}
+	return c;
+}
+
 Cn Analitza::calc(Object* root)
 {
-	Q_ASSERT(root!=NULL && root->type()!=Object::none);
+	Q_ASSERT(root && root->type()!=Object::none);
 	Cn ret=Cn(0.);
 	Ci *a;
 	
 	switch(root->type()) {
-		case Object::container:	
+		case Object::container:
 			ret = operate((Container*) root);
 			break;
 		case Object::value:
@@ -163,14 +167,15 @@ Cn Analitza::calc(Object* root)
 
 Cn Analitza::operate(Container* c)
 {
-	Operator *op=NULL;
+	Q_ASSERT(c);
+	Operator *op=0;
 	Cn ret(0.);
 	QList<Cn> numbers;
 	
 	if(c->containerType() > 100)
 		qDebug() << "wow";
 	
-	if(c->m_params.count()==0) {
+	if(c->m_params.isEmpty()) {
 		m_err << i18n("Empty container: %1").arg(c->containerType());
 		return Cn(0.);
 	}
@@ -178,9 +183,9 @@ Cn Analitza::operate(Container* c)
 	if(c->m_params[0]->type() == Object::oper)
 		op = (Operator*) c->m_params[0];
 	
-	if(op!= NULL && op->operatorType()==Object::sum)
+	if(op!= 0 && op->operatorType()==Object::sum)
 		ret = sum(*c);
-	else if(op!= NULL && op->operatorType()==Object::product)
+	else if(op!= 0 && op->operatorType()==Object::product)
 		ret = product(*c);
 	else switch(c->containerType()) {
 		case Object::apply:
@@ -199,7 +204,7 @@ Cn Analitza::operate(Container* c)
 			} else {
 				QList<Object*>::iterator it = c->m_params.begin();
 				for(; it!=c->m_params.end(); it++) {
-					if((*it)==NULL) {
+					if((*it)==0) {
 						m_err << i18n("Null Object found");
 						ret.setCorrect(false);
 						return ret;
@@ -208,7 +213,7 @@ Cn Analitza::operate(Container* c)
 					}
 				}
 				
-				if(op==NULL) {
+				if(op==0) {
 					ret = numbers.first();
 				} else if(op->nparams()>-1 && numbers.count()!=op->nparams() && op->operatorType()!=Object::minus) {
 					m_err << i18n("Too much operators for <em>%1</em>").arg(op->operatorType());
@@ -272,8 +277,8 @@ Cn Analitza::sum(const Container& n)
 {
 	Cn ret(.0), *c;
 	QString var= n.bvarList()[0];
-	double ul= uplimit(n).value();
-	double dl= downlimit(n).value();
+	double ul= Expression::uplimit(n).value();
+	double dl= Expression::downlimit(n).value();
 	
 	bool existed=m_vars->contains(var);
 	m_vars->rename(var, var+"_"); //We save the var value
@@ -296,8 +301,8 @@ Cn Analitza::product(const Container& n)
 {
 	Cn ret(1.), *c;
 	QString var= n.bvarList()[0];
-	double ul= uplimit(n).value();
-	double dl= downlimit(n).value();
+	double ul= Expression::uplimit(n).value();
+	double dl= Expression::downlimit(n).value();
 	
 	bool existed=m_vars->contains(var);
 	m_vars->rename(var, var+"_"); //We save the var value
@@ -314,30 +319,6 @@ Cn Analitza::product(const Container& n)
 		m_vars->destroy(var);
 	
 	return ret;
-}
-
-Cn Analitza::uplimit(const Container& c) const
-{
-	for(QList<Object*>::const_iterator it=c.m_params.begin(); it!=c.m_params.end(); ++it) {
-		Container *c = (Container*) (*it);
-		if(c->type()==Object::container && c->containerType()==Object::uplimit && c->m_params[0]->type()==Object::value)
-			return Cn(c->m_params[0]);
-	}
-	Cn r=Cn(0.);
-	r.setCorrect(false);
-	return r;
-}
-
-Cn Analitza::downlimit(const Container& c) const
-{
-	for(QList<Object*>::const_iterator it=c.m_params.begin(); it!=c.m_params.end(); ++it) {
-		Container *c = (Container*) (*it);
-		if(c->type()==Object::container && c->containerType()==Object::downlimit && c->m_params[0]->type()==Object::value)
-			return Cn(c->m_params[0]);
-	}
-	Cn r=Cn(0.);
-	r.setCorrect(false);
-	return r;
 }
 
 bool Analitza::isFunction(Ci func) const
@@ -530,7 +511,7 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 			boolean=true;
 			break;
 		case Object::approx:
-			a= abs(a-b)<0.001? 1.0 : 0.0;
+			a= fabs(a-b)<0.001? 1.0 : 0.0;
 			boolean=true;
 			break;
 		case Object::neq:
@@ -595,8 +576,8 @@ void Analitza::reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary
 
 QStringList Analitza::bvarList() const //FIXME: if
 {
-	Container *c = (Container*) m_tree;
-	if(m_tree != NULL && c->type()==Object::container) {
+	Container *c = (Container*) m_exp.m_tree;
+	if(c!=0 && c->type()==Object::container) {
 		c = (Container*) c->m_params[0];
 		
 		if(c->type()==Object::container)
@@ -606,37 +587,20 @@ QStringList Analitza::bvarList() const //FIXME: if
 	
 }
 
-QString Analitza::toMathML() const
-{
-	if(m_tree==NULL)
-		return QString::null;
-	else
-		return m_tree->toMathML();
-}
-
-QString Analitza::toString() const
-{
-	if(m_tree==NULL)
-		return QString::null;
-	else
-		return m_tree->toString();
-}
-
-
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 
 void Analitza::simplify()
 {
-	if(m_tree!=NULL)
-		m_tree = simp(m_tree);
+	if(m_exp.isCorrect())
+		m_exp.m_tree = simp(m_exp.m_tree);
 }
 
 Object* Analitza::simp(Object* root)
 {
-	Q_ASSERT(root!=NULL && root->type()!=Object::none);
-	Object* aux=NULL;
+	Q_ASSERT(root && root->type()!=Object::none);
+	Object* aux=0;
 	if(!hasVars(root)) {
 		if(root->type() !=Object::oper) {
 			aux = root;
@@ -764,7 +728,7 @@ void Analitza::simpScalar(Container * c)
 
 void Analitza::simpPolynomials(Container* c)
 {
-	Q_ASSERT(c!=NULL && c->type()==Object::container);
+	Q_ASSERT(c!=0 && c->type()==Object::container);
 	QList<QPair<double, Object*> > monos;
 	QList<Object*>::iterator it = c->m_params.begin();
 	Operator o(c->firstOperator());
@@ -801,7 +765,7 @@ void Analitza::simpPolynomials(Container* c)
 		
 		if(!ismono) {
 			imono.first = 1;
-			imono.second = objectCopy(o2);
+			imono.second = Expression::objectCopy(o2);
 		}
 		
 		bool found = false;
@@ -817,7 +781,7 @@ void Analitza::simpPolynomials(Container* c)
 		if(found)
 			it1->first += imono.first;
 		else {
-			imono.second = objectCopy(imono.second);
+			imono.second = Expression::objectCopy(imono.second);
 			monos.append(imono);
 		}
 	}
@@ -857,19 +821,24 @@ void Analitza::simpPolynomials(Container* c)
 		qDebug() << "wooooo, not implemented";
 }
 
-bool Analitza::hasVars(Object* o)
+
+bool Analitza::hasVars(Object *o, QString var)
 {
-	Q_ASSERT(o!=NULL);
+	Q_ASSERT(o);
 	bool r=false;
 	switch(o->type()) {
 		case Object::variable:
-			r=true;
+			if(!var.isEmpty()) {
+				Ci *i = (Ci*) o;
+				r=i->name()==var;
+			} else
+				r=true;
 			break;
 		case Object::container: {
 			Container *c = (Container*) o;
 			QList<Object*>::iterator it = c->m_params.begin();
 			
-			for(; it!=c->m_params.end(); it++)
+			for(; !r && it!=c->m_params.end(); it++)
 				r |= hasVars(*it);
 			
 		} break;
@@ -881,28 +850,15 @@ bool Analitza::hasVars(Object* o)
 	return r;
 }
 
-Object* Analitza::objectCopy(Object const* old)
+bool Analitza::hasVars(Object* o)
 {
-	Q_ASSERT(old!=NULL);
-	Object *o=NULL;
-	switch(old->type()) {
-		case Object::oper:
-			o = new Operator(old);
-			break;
-		case Object::value:
-			o = new Cn(old);
-			break;
-		case Object::variable:
-			o = new Ci(old);
-			break;
-		case Object::container:
-			o = new Container(old);
-			break;
-		default:
-			qDebug() << "Oops!";
-	}
-	return o;
+	return hasVars(o, QString());
 }
+
+
+
+
+
 
 
 

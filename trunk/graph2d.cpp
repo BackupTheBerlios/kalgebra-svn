@@ -11,6 +11,8 @@
 #include <QKeyEvent>
 #include <QFrame>
 
+using namespace std;
+
 QColor const Graph2D::m_axeColor(100,100,255);
 QColor const Graph2D::m_axe2Color(235,235,255);
 
@@ -168,7 +170,7 @@ void Graph2D::pintafunc(QPaintDevice *qpd)
 	QRectF panorama(QPoint(0,0), size());
 	finestra.setPen(pfunc);
 	
-	if(funclist.count()>0){
+	if(!funclist.isEmpty()) {
 		for (QList<function>::iterator it=funclist.begin(); it!=funclist.end(); ++it ){
 			if((*it).isShown()) {
 				pfunc.setColor((*it).color());
@@ -178,7 +180,7 @@ void Graph2D::pintafunc(QPaintDevice *qpd)
 				
 				ultim=toWidget((*it).points[0]);
 				
-				for(j=0; j<i;j++){
+				for(j=0; j<i; j++){
 					act=toWidget((*it).points[j]);
 					
 					if(!isnan(act.y()) && !isnan(ultim.y()) && (panorama.contains(act) || panorama.contains(ultim)))
@@ -189,8 +191,8 @@ void Graph2D::pintafunc(QPaintDevice *qpd)
 			}
 		}
 	}
-	valid=true;
 	finestra.end();
+	valid=true;
 }
 
 void Graph2D::paintEvent( QPaintEvent * )
@@ -394,18 +396,18 @@ bool Graph2D::addFunction(const function& func)
 	
 	if(!exist) {
 		funclist.append(func);
-		sendStatus(i18n("%1 function added").arg(func.expression()));
+		sendStatus(i18n("%1 function added").arg(func.func->expression()->toString()));
 	}
 	
 	update_points();
 	return exist;
 }
 
-bool Graph2D::editFunction(const QString& tochange, const function& func){
+bool Graph2D::editFunction(const Expression& tochange, const function& func){
 	bool exist=false;
 	
 	for (QList<function>::iterator it = funclist.begin(); !exist && it != funclist.end(); ++it ){
-		if((*it).expression() == tochange){
+		if(*(*it).func->expression() == tochange){
 			exist=true;
 			(*it)=func;
 		}
@@ -433,7 +435,7 @@ bool Graph2D::editFunction(int num, const function& func)
 
 bool Graph2D::setSelected(const QString& exp){
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it )
-		(*it).setSelected((*it).expression() == exp);
+		(*it).setSelected((*it).m_func == exp);
 	
 	update_points();
 	this->repaint();
@@ -547,4 +549,4 @@ void Graph2D::update_scale()
 	this->repaint();
 }
 
-#include "graph2d.moc"
+//#include "graph2d.moc"
