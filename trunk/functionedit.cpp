@@ -25,6 +25,8 @@ FunctionEdit::FunctionEdit(QWidget *parent, Qt::WFlags f) :
 	topLayout->setMargin(2);
 	topLayout->setSpacing(5);
 	
+	m_name = new QLineEdit(this);
+	
 	m_func = new ExpressionEdit(this);
 	m_func->setAns("x");
 	connect(m_func, SIGNAL(textChanged()), this, SLOT(edit()));
@@ -41,7 +43,7 @@ FunctionEdit::FunctionEdit(QWidget *parent, Qt::WFlags f) :
 	m_graph->setViewport(QRect(QPoint(-9, 5), QPoint(9, -5)));
 	m_graph->setResolution(200);
 	m_graph->setFocusPolicy(Qt::NoFocus);
-	m_graph->addFunction(function(Expression(m_func->text(), m_func->isMathML()), m_color->color(), true));
+	m_graph->addFunction(function(m_name->text(), Expression(m_func->text(), m_func->isMathML()), m_color->color(), true));
 	m_graph->setMouseTracking(false);
 	m_graph->setFramed(true);
 	m_graph->setReadOnly(true);
@@ -53,11 +55,14 @@ FunctionEdit::FunctionEdit(QWidget *parent, Qt::WFlags f) :
 	connect(m_ok, SIGNAL(clicked()), this, SLOT(ok()));
 	connect(m_clear, SIGNAL(clicked()), this, SLOT(clear()));
 	
+	topLayout->addWidget(m_name);
 	topLayout->addWidget(m_func);
 	topLayout->addWidget(m_color);
 	topLayout->addWidget(m_valid);
 	topLayout->addWidget(m_graph);
 	topLayout->addLayout(m_butts);
+	
+	m_name->hide(); //FIXME: Remove this when the name has any sense
 	
 	m_butts->addWidget(m_ok);
 	m_butts->addWidget(m_clear);
@@ -115,7 +120,7 @@ void FunctionEdit::edit()	//Let's see if the exp is correct
 		QStringList bvl = a.bvarList();
 		QString var = bvl.count()==0 ? "x" : bvl[0];
 		a.m_vars->modify(var, 0.);
-		m_valid->setText(QString("<b style='color:#090'>f:=%2</b>").arg(a.expression()->toString()));
+		m_valid->setText(QString("<b style='color:#090'>%1:=%2</b>").arg(m_name->text()).arg(a.expression()->toString()));
 		a.calculate();
 	} else
 		a.m_err << i18n("From parser:") << a.expression()->error();
@@ -123,7 +128,7 @@ void FunctionEdit::edit()	//Let's see if the exp is correct
 	m_correct=a.isCorrect();
 	if(m_correct) {
 		m_graph->clear();
-		m_graph->addFunction(function(Expression(m_func->toPlainText(), m_func->isMathML()), m_color->color(), true));
+		m_graph->addFunction(function(m_name->text(), Expression(m_func->toPlainText(), m_func->isMathML()), m_color->color(), true));
 		m_valid->setToolTip(QString::null);
 	} else {
 		m_graph->clear();

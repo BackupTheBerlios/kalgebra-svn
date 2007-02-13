@@ -14,7 +14,7 @@
 using namespace std;
 
 QColor const Graph2D::m_axeColor(100,100,255);
-QColor const Graph2D::m_axe2Color(235,235,255);
+QColor const Graph2D::m_axe2Color(235,235,235);
 
 Graph2D::Graph2D(QWidget *parent) :
 	QWidget(parent),
@@ -172,16 +172,17 @@ void Graph2D::pintafunc(QPaintDevice *qpd)
 	
 	if(!funclist.isEmpty()) {
 		for (QList<function>::iterator it=funclist.begin(); it!=funclist.end(); ++it ){
-			if((*it).isShown()) {
-				pfunc.setColor((*it).color());
-				pfunc.setWidth((*it).selected()+1);
+			if(it->isShown()) {
+				pfunc.setColor(it->color());
+				pfunc.setWidth(it->selected()+1);
 				finestra.setPen(pfunc);
-				int i = (*it).npoints(), j;
+				int i = it->npoints(), j;
 				
-				ultim=toWidget((*it).points[0]);
+				ultim=toWidget(it->points[0]);
 				
+				QPointF *vect=it->points;
 				for(j=0; j<i; j++){
-					act=toWidget((*it).points[j]);
+					act=toWidget(vect[j]);
 					
 					if(!isnan(act.y()) && !isnan(ultim.y()) && (panorama.contains(act) || panorama.contains(ultim)))
 						finestra.drawLine(ultim, act);
@@ -353,7 +354,8 @@ void Graph2D::keyPressEvent(QKeyEvent * e)
 	this->repaint();
 }
 
-QPointF Graph2D::calcImage(QPointF dp){
+QPointF Graph2D::calcImage(QPointF dp)
+{
 	m_posText="";
 	if(!funclist.isEmpty()){
 		for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
@@ -391,8 +393,8 @@ bool Graph2D::addFunction(const function& func)
 {
 	bool exist=false;
 	
-	for (QList<function>::iterator it = funclist.begin(); it != funclist.end() && !exist; ++it)
-		exist = ((*it) == func);
+	for (QList<function>::iterator it = funclist.begin(); !exist && it!=funclist.end(); ++it)
+		exist = (it->name() == func.name());
 	
 	if(!exist) {
 		funclist.append(func);
@@ -403,11 +405,11 @@ bool Graph2D::addFunction(const function& func)
 	return exist;
 }
 
-bool Graph2D::editFunction(const Expression& tochange, const function& func){
+bool Graph2D::editFunction(const QString& tochange, const function& func){
 	bool exist=false;
 	
 	for (QList<function>::iterator it = funclist.begin(); !exist && it != funclist.end(); ++it ){
-		if(*(*it).func->expression() == tochange){
+		if((*it).name() == tochange){
 			exist=true;
 			(*it)=func;
 		}
@@ -435,38 +437,39 @@ bool Graph2D::editFunction(int num, const function& func)
 
 bool Graph2D::setSelected(const QString& exp){
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it )
-		(*it).setSelected((*it).m_func == exp);
+		(*it).setSelected((*it).name() == exp);
 	
 	update_points();
 	this->repaint();
 	return true;
 }
 
-bool Graph2D::setShown(const function& f, bool shown)
+bool Graph2D::setShown(const QString& f, bool shown)
 {
 	for (QList<function>::iterator it = funclist.begin(); it != funclist.end(); ++it ){
-		if((*it) == f)
-			(*it).setShown(shown);
+		if(it->name() == f) {
+			it->setShown(shown);
+			valid=false;
+			this->repaint();
+			return true;
+		}
 	}
-	
-	valid=false;
-	this->repaint();
-	return true;
+	return false;
 }
 
-QPointF Graph2D::toWidget(const QPointF& p)
+QPointF Graph2D::toWidget(const QPointF& p) const
 {
 	return QPointF((-viewport.left() + p.x()) * rang_x,  (-viewport.top() + p.y()) * rang_y);
 }
 
-QPointF Graph2D::fromWidget(const QPoint& p)
+QPointF Graph2D::fromWidget(const QPoint& p) const
 {
 	double part_negativa_x = -viewport.left();
 	double part_negativa_y = -viewport.top();
 	return QPointF(p.x()/rang_x-part_negativa_x, p.y()/rang_y-part_negativa_y);
 }
 
-QPointF Graph2D::toViewport(const QPoint &mv)
+QPointF Graph2D::toViewport(const QPoint &mv) const
 {
 	return QPointF(mv.x()/rang_x, mv.y()/rang_y);
 }

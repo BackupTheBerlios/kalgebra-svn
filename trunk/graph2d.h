@@ -31,9 +31,9 @@ public:
 	~Graph2D();
 	bool addFunction(const function&);
 	bool setSelected(const QString&);
-	bool setShown(const function&, bool shown);
+	bool setShown(const QString&, bool shown);
 	bool editFunction(int num, const function& func);
-	bool editFunction(const Expression& tochange, const function& func);
+	bool editFunction(const QString& name, const function& func);
 	function* editFunction(int num);
 	bool toImage(QString path);
 	
@@ -65,10 +65,10 @@ private:
 	void drawPolarAxes(QPainter*);
 	void drawCartesianAxes(QPainter*);
 	void update_points();
-	QPointF toWidget(const QPointF &);
-	QPointF fromWidget(const QPoint& p);
+	QPointF toWidget(const QPointF &) const;
+	QPointF fromWidget(const QPoint& p) const;
+	QPointF toViewport(const QPoint &mv) const;
 	QPointF calcImage(QPointF dp);
-	QPointF toViewport(const QPoint &mv);
 	
 	//events
 	void paintEvent( QPaintEvent * );

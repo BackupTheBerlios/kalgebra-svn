@@ -74,7 +74,7 @@ QAlgebra::QAlgebra(QWidget *p) : QMainWindow(p)
 	this->addDockWidget(static_cast<Qt::DockWidgetArea>(2), b_dock_funcs);
 	
 	b_funcs = new QTreeWidget(b_tools);
-	b_funcs->headerItem()->setText(0, i18n("Color"));
+	b_funcs->headerItem()->setText(0, i18n("Name"));
 	b_funcs->headerItem()->setText(1, i18n("Function"));
 	b_funcs->header()->setResizeMode(0, QHeaderView::ResizeToContents);
 	b_funcs->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -184,21 +184,20 @@ void QAlgebra::new_func()
 {
 	QTreeWidgetItem *item;
 	if(!b_funced->editing()) {
-		grafic->addFunction(function(Expression(b_funced->text(), b_funced->isMathML()), b_funced->color(), true));
-		
+		grafic->addFunction(function(b_funced->name(), Expression(b_funced->text(), b_funced->isMathML()), b_funced->color(), true));
 		item = new QTreeWidgetItem(b_funcs);
 		item->setFlags(Qt::ItemIsSelectable| Qt::ItemIsUserCheckable| Qt::ItemIsEnabled| Qt::ItemIsTristate);
 	} else {
-		grafic->editFunction(Expression(b_funced->text(), b_funced->isMathML()),
-				     function(Expression(b_funced->text(), b_funced->isMathML()), b_funced->color(), true));
-// 		grafic->setSelected(b_funcs->currentItem()->text(1));
-		
 		item = b_funcs->currentItem();
+		grafic->editFunction(item->text(0),
+				     function(b_funced->name(), Expression(b_funced->text(), b_funced->isMathML()), b_funced->color(), true));
+// 		grafic->setSelected(b_funcs->currentItem()->text(1));
 	}
 	QPixmap ico(15, 15);
 	ico.fill(b_funced->color());
 
 	item->setIcon(0, ico);
+	item->setText(0, b_funced->name());
 	item->setText(1, b_funced->text());
 	item->setTextColor(1, b_funced->color());
 	item->setCheckState(0, Qt::Checked);
@@ -222,9 +221,15 @@ void QAlgebra::functools(int i)
 	if(i==0)
 		b_tools->setTabText(1, i18n("&Add"));
 	else {
+		b_funced->setName(QString("f").append(QString::number(b_funcs->topLevelItemCount()+1)));
 		b_funced->setEditing(false);
 		b_funced->setFocus();
 	}
+}
+
+void QAlgebra::different(QTreeWidgetItem * item, int)
+{
+	grafic->setShown(item->text(0), item->checkState(0) == Qt::Checked);
 }
 
 void QAlgebra::edit_var(const QModelIndex &)
@@ -308,13 +313,7 @@ void QAlgebra::saveGraph()
 
 void QAlgebra::canvi(QTreeWidgetItem *current, QTreeWidgetItem *)
 {
-	grafic->setSelected(current->text(1));
-}
-
-void QAlgebra::different(QTreeWidgetItem * item, int)
-{
-	QColor c(item->icon(0).pixmap(1,1).toImage().pixel(0,0));
-	grafic->setShown(function(Expression(item->text(1), false), c), item->checkState(0) == Qt::Checked);
+	grafic->setSelected(current->text(0));
 }
 
 void QAlgebra::tabChanged(int n)

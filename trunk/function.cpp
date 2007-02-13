@@ -5,24 +5,24 @@ function::function()
 	: func(0), m_show(true), m_selected(false),m_last_max_res(0), points(0)
 {}
 
-function::function(const Expression& newFunc, const QColor& color=Qt::red, bool selec)
+function::function(const QString &name, const Expression& newFunc, const QColor& color=Qt::red, bool selec)
 	: func(0), m_show(true), m_selected(selec), m_last_max_res(0), points(0)
 {
-	setFunction(newFunc, color, selec);
+	setFunction(name, newFunc, color, selec);
 }
 
 
 function::function(const function& f)
 	: func(0), m_show(true), m_selected(false),m_last_max_res(0), points(0)
 {
-	setFunction(*f.func->expression(), f.color(), f.selected());
+	setFunction(f.m_name, *f.func->expression(), f.color(), f.selected());
 }
 
 function function::operator=(const function& f)
 {
 	m_show=true; func=0; points=0; m_selected=f.selected(); m_last_max_res=0;
 	
-	setFunction(*f.func->expression(), f.color(), f.selected());
+	setFunction(f.m_name, *f.func->expression(), f.color(), f.selected());
 	return *this;
 }
 
@@ -34,7 +34,7 @@ function::~function()
 		delete [] points;
 }
 
-int function::setFunction(const Expression& newFunc, const QColor& color=Qt::red, bool selec)
+int function::setFunction(const QString& name, const Expression& newFunc, const QColor& color=Qt::red, bool selec)
 {
 	int ret;
 	m_last_max_res=0;
@@ -43,8 +43,7 @@ int function::setFunction(const Expression& newFunc, const QColor& color=Qt::red
 	m_selected = selec;
 	m_show=true;
 	m_last_viewport=QRect();
-	m_func = newFunc.toMathML();
-	
+	m_name=name;
 	if(!func)
 		func = new Analitza;
 	func->setExpression(newFunc);

@@ -16,12 +16,12 @@ class function
 public:
 	function();
 	function(const function& f);
-	function(const Expression& newExp, const QColor& color, bool selec=false);
+	function(const QString& name, const Expression& newExp, const QColor& color, bool selec=false);
 	~function();
 	
 	Analitza *func;
 	
-	int setFunction(const Expression& newExp, const QColor&, bool selec=false);
+	int setFunction(const QString& name, const Expression& newExp, const QColor&, bool selec=false);
 	void update_points(QRect viewport, unsigned int resolucio);
 	
 	QColor color() const { return m_color; }
@@ -32,7 +32,8 @@ public:
 	void setShown(bool newShow) { m_show=newShow; }
 	bool isShown() const { return m_show && func->isCorrect(); }
 	QPair<QPointF, QString> calc(const QPointF& dp);
-	bool operator==(const function& f) const { return f.m_func==m_func && f.color()==color();}
+	bool operator==(const function& f) const { return f.m_name==m_name; }
+	QString name() const { return m_name; }
 	
 	function operator=(const function& f);
 	Analitza* analitza() const { return func; }
@@ -52,9 +53,8 @@ private:
 	void update_pointsPolar(QRect viewport, unsigned int resolucio); //for functions such as r=f(sigma)
 	
 	inline QPointF fromPolar(double r, double th) { return QPointF(r*cos(th), r*sin(th)); }
-	
+	QString m_name;
 protected:
-	QString m_func; //Got it for comparisons, I don't like it so solutions will be thanked
 	QPointF *points;
 };
 

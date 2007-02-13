@@ -6,6 +6,7 @@
 #include <QLocale>
 #include <QWidget>
 #include <QPushButton>
+#include <QLineEdit>
 #include <QComboBox>
 #include <QList>
 
@@ -44,8 +45,11 @@ public:
 	bool isMathML() const { return m_func->isMathML();}
 	bool editing() const { return m_modmode; }
 	void setEditing(bool m) { m_modmode=m; m_valid->setText("editing"); }
+	void setName(const QString& name) { m_name->setText(name); }
+	QString name() const { return m_name->text(); }
 private:
 	ExpressionEdit *m_func;
+	QLineEdit *m_name;
 	QPushButton *m_ok;
 	QLabel *m_valid;
 	Graph2D *m_graph;
