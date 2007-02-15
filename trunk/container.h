@@ -33,8 +33,6 @@
 void print_dom(QDomNode in, int ind);
 void objectWalker(const Object*, int a=0);
 
-class Object;
-
 class Container : public Object
 {
 	public:
@@ -59,9 +57,17 @@ class Container : public Object
 	QString toMathML() const;
 	Container* ulimit() const;
 	Container* dlimit() const;
+	
+	//Monomials
+	Container(Cn* base, Object* var, Ci* degree);
+	static Cn* monomialDegree(const Container&);
+	static Cn* monomialBase(const Container&);
+	static Object* monomialVar(const Container&);
 // private:
 	enum ContainerType m_cont_type;
 	QList<Object*> m_params;
 };
+
+
 
 #endif

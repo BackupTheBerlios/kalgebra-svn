@@ -44,9 +44,8 @@ Expression Analitza::evaluate()
 	if(m_exp.isCorrect()) {
 		Expression e(m_exp); //FIXME: That's a strange trick, wouldn't have to copy
 		e.m_tree=simp(e.m_tree);
-		objectWalker(e.m_tree);
 		e.m_tree=eval(e.m_tree);
-		objectWalker(e.m_tree);
+		e.m_tree=simp(e.m_tree);
 		return e;
 	} else {
 		m_err << i18n("Must specify an operation");
@@ -87,8 +86,8 @@ Object* Analitza::eval(Object* branch)
 
 Object* Analitza::derivative(const QString &var, Object* o)
 {
-	qDebug() << "Estoy derivando yooooooooo";
 	Q_ASSERT(o);
+	qDebug() << "Estoy derivando yooooooooo";
 	if(o->type()!=Object::oper && !hasVars(o, var)) {
 		delete o;
 		o = new Cn(0.);
@@ -118,6 +117,23 @@ Object* Analitza::derivative(const QString &var, Container *c)
 				*it = derivative(var, *it);
 			}
 			return c;
+		} break;
+		case Object::power: {
+			if(hasVars(c->m_params[2], var)) {
+			
+			} else {
+				Container *cx = new Container(Object::apply);
+				cx->m_params.append(new Operator(Object::times));
+				cx->m_params.append(Expression::objectCopy(c->m_params[2]));
+				cx->m_params.append(derivative(var, Expression::objectCopy(c->m_params[1])));
+				cx->m_params.append(c);
+				Container *degree = new Container(Object::apply);
+				degree->m_params.append(new Operator(Object::minus));
+				degree->m_params.append(c->m_params[2]);
+				degree->m_params.append(new Cn(1.));
+				c->m_params[2]=degree;
+				return cx;
+			}
 		} break;
 		case Object::sin: {
 			Container *ncChain = new Container(Object::apply);
@@ -602,7 +618,7 @@ Object* Analitza::simp(Object* root)
 	Q_ASSERT(root && root->type()!=Object::none);
 	Object* aux=0;
 	if(!hasVars(root)) {
-		if(root->type() !=Object::oper) {
+		if(root->type()!=Object::value && root->type() !=Object::oper) {
 			aux = root;
 			root = new Cn(calc(root));
 			delete aux;
@@ -661,6 +677,24 @@ Object* Analitza::simp(Object* root)
 						it = c->m_params.erase(it);
 				}
 				break;
+			case Object::power: {
+				c->m_params[1] = simp(c->m_params[1]);
+				c->m_params[2] = simp(c->m_params[2]);
+				
+				if(c->m_params[2]->type()==Object::value) {
+					Cn *n = (Cn*) c->m_params[2];
+					if(n->value()==0.) { //0*exp=0
+						delete root;
+						root = new Cn(1.);
+						break;
+					} else if(n->value()==1.) {
+						root = c->m_params[1];
+						delete c->m_params[2];
+						c->m_params.clear();
+						delete c;
+					}
+				}
+			} break;
 			default:
 				it = c->m_params.begin();
 				

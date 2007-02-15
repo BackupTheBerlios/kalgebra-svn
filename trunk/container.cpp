@@ -332,6 +332,100 @@ bool Container::equalTree(Object const* o1, Object const * o2)
 	return eq;
 }
 
+Container::Container(Cn* base, Object* var, Ci* degree) : Object(Object::container)
+{
+	if(!var)
+		return;
+	else if(!base && var && !degree) {
+		m_params.append(new Operator(Object::times));
+		m_params.append(new Cn(1.));
+		m_params.append(var);
+	} else if(base && var && !degree) {
+		m_params.append(new Operator(Object::times));
+		m_params.append(base);
+		m_params.append(var);
+	} else if(!base && var && degree) {
+		m_params.append(new Operator(Object::power));
+		m_params.append(var);
+		m_params.append(degree);
+	} else {
+		m_params.append(new Operator(Object::times));
+		m_params.append(base);
+		m_params.append(var);
+		m_params.append(new Container(0, var, degree));
+	}
+}
+
+Cn* Container::monomialDegree(const Container& c)
+{
+	bool valid=false;
+	int scalar=-1, var=-1;
+	
+	if(c.m_params[1]->type()==Object::value) {
+		scalar=1;
+		var=2;
+		valid=true;
+	} else if(c.m_params[2]->type()==Object::value) {
+		scalar=2;
+		var=1;
+		valid=true;
+	}
+	
+	if(c.firstOperator()==Object::power) {
+		return (Cn*) c.m_params[scalar];
+	} else if(c.firstOperator()==Object::times) {
+		return monomialDegree(c.m_params[var]);
+	}
+	return 0;
+}
+
+Cn* Container::monomialBase(const Container& c)
+{
+	if(c.firstOperator()==Object::times) {
+		bool valid=false;
+		int scalar=-1, var=-1;
+		
+		if(c.m_params[1]->type()==Object::value) {
+			scalar=1;
+			var=2;
+			valid=true;
+		} else if(c.m_params[2]->type()==Object::value) {
+			scalar=2;
+			var=1;
+			valid=true;
+		}
+		
+		if(valid)
+			return (Cn*) c.m_params[scalar];
+	}
+	return 0;
+}
+
+Object* Container::monomialVar(const Container& c) //FIXME: Must improve these vars
+{
+	bool valid=false;
+	int scalar=-1, var=-1;
+	if(c.m_params[1]->type()==Object::value) {
+		scalar=1;
+		var=2;
+		valid=true;
+	} else if(c.m_params[2]->type()==Object::value) {
+		scalar=2;
+		var=1;
+		valid=true;
+	}
+	
+	if(valid) {
+		Object *o = monomialVar(c.m_params[var]);
+		if(!o)
+			return c.m_params[var];
+		else
+			return o;
+	}
+	
+	return 0;
+}
+
 void objectWalker(const Object* root, int ind)
 {
 	Container *c; Cn *num; Operator *op; Ci *var;

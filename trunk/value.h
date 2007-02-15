@@ -31,7 +31,6 @@ class Cn : public Object
 {
 	public:
 		enum ValueFormat { none, nan, real, integer, boolean };
-		Cn() : Object(Object::value), m_value(0.), m_boolean(false) {}
 		Cn(const Cn& v) : Object(Object::value), m_value(v.value()), m_boolean(v.isBoolean()) { setCorrect(v.isCorrect()); }
 		Cn(const double &b=0.) : Object(Object::value), m_value(b), m_boolean(false) {}
 		Cn(Object const * o);
