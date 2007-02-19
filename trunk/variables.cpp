@@ -89,3 +89,8 @@ bool Variables::destroy(const QString& s)
 	delete take(s);
 	return true;
 }
+
+void Variables::stack(const QString &name, const Object *o)
+{
+	insert(name, Expression::objectCopy(o));
+}

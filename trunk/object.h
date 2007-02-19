@@ -78,7 +78,7 @@ private:
 class Ci : public Object
 {
 	public:
-		Ci(Object const *);
+		Ci(const Object *);
 		Ci(QString b=QString()) : Object(variable), m_name(b) {}
 		void setName(const QString& n) { m_name=n; }
 		QString name() const { return m_name; }

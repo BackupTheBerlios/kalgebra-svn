@@ -228,9 +228,21 @@ unsigned int Operator::operatorWeight(OperatorType op)
 	return 666;
 }
 
+bool Operator::isBounded() const
+{
+	switch(m_optype) {
+		case sum:
+		case product:
+		case function:
+			return true;
+		default:
+			return false;
+	}
+}
+
 OperatorsModel::OperatorsModel(QObject *parent) : QStandardItemModel(KEYWORDNUM, 3, parent)
 {
-	QStringList ops;
+	QStringList ops; //FIXME: The big fixme, I don't like this way
 	ops << "plus" << "times" << "minus" << "divide" << "quotient";
 	ops << "power" << "root" << "factorial";
 	ops << "_and" << "_or" << "_xor" << "_not";
@@ -271,3 +283,4 @@ QString OperatorsModel::operToString(const Operator& op) const
 	}
 	return QString();
 }
+

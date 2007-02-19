@@ -52,6 +52,7 @@ class Container : public Object
 	QStringList bvarList() const;
 	bool hasVars() const;
 	Operator firstOperator() const;
+	QList<Object*>::iterator firstValue();
 	QList<Object*> copyParams() const;
 	QString toString() const;
 	QString toMathML() const;

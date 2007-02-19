@@ -28,6 +28,7 @@ class Operator : public Object
 		Operator operator=(const Operator &a) { setType(a.type()); m_optype=a.operatorType(); return *this;}
 		static const OperatorsModel m_words;
 		static OperatorType multiplicityOperator(OperatorType t); //When we have n t's, we got one rn
+		bool isBounded() const;
 	private:
 		enum OperatorType m_optype;
 };

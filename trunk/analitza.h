@@ -56,21 +56,20 @@ public:
 	Cn product(const Container& c);
 	Cn func(const Container& c);
 	bool isFunction(Ci var) const;
-	
 	QStringList bvarList() const;
+	void flushErrors() { m_err = QStringList(); }
 	
 	void simplify();
 	Object* simp(Object* root);
 	void simpScalar(Container* c);
 	void simpPolynomials(Container* c);
 	
-	static bool hasVars(Object*);
-	static bool hasVars(Object*, QString var);
+	static bool hasVars(Object*, QString var=QString());
 private:
 	Object* derivative(const QString &var, Object*);
 	Object* derivative(const QString &var, Container*);
 	void reduce(enum Object::OperatorType op, Cn *ret, Cn oper, bool unary);
-	
+	Object* removeDependencies(Object* o) const;
 // private:
 	public: //FIXME:Shame on me
 	Expression m_exp;

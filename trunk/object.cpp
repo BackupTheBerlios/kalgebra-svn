@@ -21,10 +21,10 @@
 #include "object.h"
 #include "container.h"
 
-Ci::Ci(Object const * o) : Object(o->type())
+Ci::Ci(const Object * o) : Object(o->type())
 {
 	if(type() == Object::variable) {
-		Ci *c = (Ci*) o;
+		const Ci *c = (Ci*) o;
 		m_name = c->name();
 		m_function = c->isFunction();
 	} else

@@ -54,6 +54,9 @@ Operator Container::firstOperator() const
 		if(m_params[i]->type()==Object::oper) {
 			ret = m_params[i];
 			found = true;
+		} else if(i==0 && containerType()==apply && m_params[i]->type()==Object::variable) {
+			ret = function;
+			found=true;
 		}
 	}
 	
@@ -485,4 +488,16 @@ void print_dom(QDomNode in, int ind)
 		if(in.childNodes().item(i).isElement())
 			print_dom(in.childNodes().item(i), ind+1);
 	}
+}
+
+QList<Object *>::iterator Container::firstValue()
+{
+	QList<Object *>::iterator it(m_params.begin());
+	if(m_cont_type==apply)
+		++it;
+	for(; it!=m_params.end(); ++it) {
+		if((*it)->type()==Object::value || (*it)->type()==Object::variable || ((*it)->type()==Object::container && ((Container*) *it)->m_cont_type==apply))
+			break;
+	}
+	return it;
 }

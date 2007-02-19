@@ -11,35 +11,23 @@ Console::~Console() {}
 bool Console::addOperation(const QString& op, bool mathml)
 {
 	Expression res;
-	QString operation = op;
+	Cn val;
 	
-	if(!mathml) {
-		Exp e(op);
-		e.parse();
-		operation = e.mathML();
-		if(!e.error().isEmpty()) {
-			QListWidgetItem *item = new QListWidgetItem(this);
-			QFont f = item->font();
-			item->setText(QString("%1\nError: %2").arg(op).arg(e.error().join("\n")));
-			item->setBackgroundColor(QColor(255,222,222));
-			item->setTextAlignment(Qt::AlignRight);
-			f.setBold(true);
-			item->setFont(f);
-			return false;
-		}
-	}
-	
-	Expression exp;
-	exp.setMathML(operation);
-	a.setExpression(exp);
-	if(a.isCorrect())
+	a.setExpression(Expression(op, mathml));
+	if(a.isCorrect()) {
 		res=a.evaluate();
+		
+		val=a.calculate();
+		
+		if(!a.isCorrect())
+			a.flushErrors();
+	}
 	
 	QListWidgetItem *item = new QListWidgetItem(this);
 	QFont f = item->font();
 	if(a.isCorrect()) {
 		a.m_vars->modify("ans", res.tree());
-		item->setText(QString("%1 = %2").arg(exp.toString()).arg(res.toString()));
+		item->setText(QString("%1 = %2 = %3").arg(a.expression()->toString()).arg(res.toString()).arg(val.toString()));
 // 		item->setText(QString("%1\n%2").arg(op).arg(res.value(), 0, 'g', 12));
 		item->setToolTip(res.toString());
 		if(++outs % 2)

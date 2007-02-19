@@ -9,7 +9,7 @@
 
 #include "operator.h"
 
-	ExpressionEdit::ExpressionEdit(QWidget *parent, AlgebraHighlighter::Mode inimode)
+ExpressionEdit::ExpressionEdit(QWidget *parent, AlgebraHighlighter::Mode inimode)
 	: QTextEdit(parent), m_histPos(0), help(true), m_auto(true), a(NULL), m_check(true), m_correct(true), m_ans("ans")
 {
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -158,7 +158,7 @@ void ExpressionEdit::keyPressEvent(QKeyEvent * e)
 // 			qDebug() << m_completer->popup()->isVisible();
 			emit returnPressed();
 			return;
-		case Qt::Key_Up:
+		case Qt::Key_Up: //FIXME: Fix navegation, a bit fuzzy sometimes.
 			if(!m_completer->popup()->isVisible()) {
 				m_histPos++;
 				ch=true;

@@ -43,6 +43,7 @@ Expression Analitza::evaluate()
 {
 	if(m_exp.isCorrect()) {
 		Expression e(m_exp); //FIXME: That's a strange trick, wouldn't have to copy
+		e.m_tree=removeDependencies(e.m_tree);
 		e.m_tree=simp(e.m_tree);
 		e.m_tree=eval(e.m_tree);
 		e.m_tree=simp(e.m_tree);
@@ -120,7 +121,7 @@ Object* Analitza::derivative(const QString &var, Container *c)
 		} break;
 		case Object::power: {
 			if(hasVars(c->m_params[2], var)) {
-			
+				
 			} else {
 				Container *cx = new Container(Object::apply);
 				cx->m_params.append(new Operator(Object::times));
@@ -296,19 +297,16 @@ Cn Analitza::sum(const Container& n)
 	double ul= Expression::uplimit(n).value();
 	double dl= Expression::downlimit(n).value();
 	
-	bool existed=m_vars->contains(var);
-	m_vars->rename(var, var+"_"); //We save the var value
-	m_vars->modify(var, new Cn(0.));
+	m_vars->contains(var);
+	m_vars->stack(var, new Cn(0.));
 	c = (Cn*) m_vars->value(var);
 	
 	for(double a = dl; a<=ul; a++){
 		*c = a;
 		reduce(Object::plus, &ret, calc(n.m_params[4]), false);
 	}
-	if(existed)
-		m_vars->rename(var+"_", var); //We restore the var value
-	else
-		m_vars->destroy(var);
+	
+	m_vars->destroy(var);
 	
 	return ret;
 }
@@ -320,19 +318,14 @@ Cn Analitza::product(const Container& n)
 	double ul= Expression::uplimit(n).value();
 	double dl= Expression::downlimit(n).value();
 	
-	bool existed=m_vars->contains(var);
-	m_vars->rename(var, var+"_"); //We save the var value
-	m_vars->modify(var, new Cn(0.));
+	m_vars->stack(var, new Cn(0.));
 	c = (Cn*) m_vars->value(var);
 	
 	for(double a = dl; a<=ul; a++){
 		*c = a;
 		reduce(Object::times, &ret, calc(n.m_params[4]), false);
 	}
-	if(existed)
-		m_vars->rename(var+"_", var); //We restore the var value
-	else
-		m_vars->destroy(var);
+	m_vars->destroy(var);
 	
 	return ret;
 }
@@ -343,10 +336,7 @@ bool Analitza::isFunction(Ci func) const
 		return false;
 	
 	Container *c = (Container*) m_vars->value(func.name());
-	if(c->type()==Object::container && c->containerType() == Object::lambda)
-		return true;
-	else
-		return false;
+	return (c && c->type()==Object::container && c->containerType() == Object::lambda);
 }
 
 Cn Analitza::func(const Container& n)
@@ -369,15 +359,13 @@ Cn Analitza::func(const Container& n)
 	QStringList var = function->bvarList();
 	
 	for(int i=0; i<var.count(); i++) {
-		m_vars->rename(var[i], var[i]+"_"); //We save the var value
-		m_vars->modify(var[i], n.m_params[i+1]);
+		m_vars->stack(var[i], n.m_params[i+1]);
 	}
 	
 	ret=calc(function->m_params[var.count()]);
 	
 	for(int i=0; i<var.count(); i++) {
-		m_vars->remove(var[i]);
-		m_vars->rename(var[i]+"_", var[i]); //We save the var value
+		m_vars->destroy(var[i]);
 	}
 	
 	return ret;
@@ -858,7 +846,7 @@ void Analitza::simpPolynomials(Container* c)
 
 bool Analitza::hasVars(Object *o, QString var)
 {
-	Q_ASSERT(o);
+	Q_ASSERT(o); //FIXME: Must recognize bvars
 	bool r=false;
 	switch(o->type()) {
 		case Object::variable:
@@ -884,15 +872,65 @@ bool Analitza::hasVars(Object *o, QString var)
 	return r;
 }
 
-bool Analitza::hasVars(Object* o)
+Object* Analitza::removeDependencies(Object * o) const
 {
-	return hasVars(o, QString());
+	Q_ASSERT(o);
+	if(o->type()==Object::variable) {
+		Ci* var=(Ci*) o;
+		qDebug() << "Wanna remove" << var->name() << m_vars->value(var->name());
+		if(m_vars->contains(var->name()) && m_vars->value(var->name())) {
+			Object *value=Expression::objectCopy(m_vars->value(var->name()));
+			Object *no = removeDependencies(value);
+			delete o;
+			return no;
+		}
+	} else if(o->type()==Object::container) {
+		Container *c = (Container*) o;
+		Operator op(c->firstOperator());
+		if(c->containerType()==Object::apply && op.isBounded()) { //it is a function
+			Container *cbody = c;
+			QStringList bvars;
+			if(op.operatorType()==Object::function) {
+				Ci *func= (Ci*) c->m_params[0];
+				Object* body= (Object*) m_vars->value(func->name());
+				if(body->type()!=Object::container)
+					return body;
+				cbody = (Container*) body;
+			}
+			
+			bvars = cbody->bvarList();
+			qDebug() << bvars;
+			
+			if(op.operatorType()==Object::function) {
+				QStringList::const_iterator iBvars(bvars.constBegin());
+				int i=0;
+				for(; iBvars!=bvars.constEnd(); ++iBvars)
+					m_vars->stack(*iBvars, c->m_params[++i]);
+				delete c;
+			}
+			
+			QList<Object*>::iterator fval(cbody->firstValue());
+			qDebug() << "removing: " << (*fval)->toString();
+			Object *ret= removeDependencies(Expression::objectCopy(*fval));
+			
+			QStringList::const_iterator iBvars(bvars.constBegin());
+			for(; iBvars!=bvars.constEnd(); ++iBvars)
+				m_vars->destroy(*iBvars);
+			
+			
+			if(op.operatorType()==Object::function)
+				return ret;
+			else {
+				delete *fval;
+				*fval=ret;
+				return c;
+			}
+		} else {
+			QList<Object*>::iterator it(c->m_params.begin());
+			for(; it!=c->m_params.end(); ++it)
+				*it = removeDependencies(*it);
+		}
+	}
+	return o;
 }
-
-
-
-
-
-
-
 
